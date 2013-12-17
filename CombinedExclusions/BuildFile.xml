@@ -1,0 +1,10 @@
+<use   name="root"/>
+<use   name="rootmath"/>
+<use   name="roofitcore"/>
+<use   name="roofit"/>
+<use   name="boost"/>
+<use   name="AnalysisTools/RootTools"/>
+<use   name="AnalysisTools/LanguageTools"/>
+<export>
+  <lib name="1"/>
+</export>
