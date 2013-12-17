@@ -13,6 +13,7 @@ void PrintValidation
 )
 {
     rt::TH1Container hc("plots/stop_test/t2tt_bdt_hists.root");
+    hc.List();
     const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", signal_region_num)); 
     const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
 
@@ -26,6 +27,14 @@ void PrintValidation
     const float den_scaled      = rt::GetBinContent2D(hc["h_den"                       ], mass_stop, mass_lsp);
     const float eff_scaled      = rt::GetBinContent2D(hc["h_eff_scaled_"     +sr_label ], mass_stop, mass_lsp);
     const float eff_scaled_perc = rt::GetBinContent2D(hc["h_eff_scaled_perc_"+sr_label ], mass_stop, mass_lsp);
+    const float err_jes         = rt::GetBinContent2D(hc["h_err_jes_"        +sr_label ], mass_stop, mass_lsp);
+    const float num_jesup       = rt::GetBinContent2D(hc["h_num_jesup_"      +sr_label ], mass_stop, mass_lsp);
+    const float num_jesdn       = rt::GetBinContent2D(hc["h_num_jesdn_"      +sr_label ], mass_stop, mass_lsp);
+    const float err_btag        = rt::GetBinContent2D(hc["h_err_btag_"       +sr_label ], mass_stop, mass_lsp);
+    const float num_btagup      = rt::GetBinContent2D(hc["h_num_btagup_"     +sr_label ], mass_stop, mass_lsp);
+    const float num_btagdn      = rt::GetBinContent2D(hc["h_num_btagdn_"     +sr_label ], mass_stop, mass_lsp);
+    const float err_noisr       = rt::GetBinContent2D(hc["h_err_noisr_"      +sr_label ], mass_stop, mass_lsp);
+    const float num_noisr       = rt::GetBinContent2D(hc["h_num_noisr_"      +sr_label ], mass_stop, mass_lsp);
                                                
     cout << "\nQuick Validation for Search Region " << signal_region_num <<     endl ;
     cout << Form("mass point           = m_stop = %1.0f, m_lsp = %1.0f", mass_stop, mass_lsp) << endl;
@@ -37,6 +46,14 @@ void PrintValidation
     cout << Form("efficiency scaled    = %1.4f", eff_scaled*100.0)                            << endl;
     cout << Form("num_generated scaled = %1.0f", den_scaled)                                  << endl;
     cout << Form("num scaled           = %1.0f", num_scaled)                                  << endl;
+    cout << Form("num JES+             = %1.0f", num_jesup)                                   << endl;
+    cout << Form("num JES-             = %1.0f", num_jesdn)                                   << endl;
+    cout << Form("Uncertainty JES+/-   = %1.5f", err_jes)                                     << endl;
+    cout << Form("num Btag+            = %1.0f", num_btagup)                                  << endl;
+    cout << Form("num Btag-            = %1.0f", num_btagdn)                                  << endl;
+    cout << Form("Uncertainty Btag+/-  = %1.5f", err_btag)                                    << endl;
+    cout << Form("num ISR              = %1.0f", num_noisr)                                   << endl;
+    cout << Form("Uncertainty ISR      = %1.5f", err_noisr)                                   << endl;
 }
 
 void QuickValidation()

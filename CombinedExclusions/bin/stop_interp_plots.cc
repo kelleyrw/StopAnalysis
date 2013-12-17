@@ -59,6 +59,9 @@ class InterpLooper
         void EndJob();
         void Analyze();
         void CalculateEfficiency();
+        void SetJESSystematic();
+        void SetBtagSystematic();
+        void SetISRSystematic();
 
         // scan the chain
         void ScanChain
@@ -157,14 +160,22 @@ void InterpLooper::BeginJob()
         const stop::SignalRegionInfo sr_info = stop::GetSignalRegionInfo(Form("sr%d", m_sr_nums.at(i))); 
         const std::string bin_stem = Form("(%s);%s;%s", sr_info.title.c_str(), xaxis_label.c_str(), yaxis_label.c_str());
 
-        hc.Add(new TH2F(Form("h_nevt_%s"    , sr_info.label.c_str()), Form("# Raw Count Passing %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_%s"     , sr_info.label.c_str()), Form("# Passing %s"            , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_eff_%s"     , sr_info.label.c_str()), Form("Efficiency %s"           , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_eff_perc_%s", sr_info.label.c_str()), Form("Efficiency Percentage %s", bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_nevt_%s"           , sr_info.label.c_str()), Form("# Raw Count Passing %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_%s"            , sr_info.label.c_str()), Form("# Passing %s"            , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_eff_%s"            , sr_info.label.c_str()), Form("Efficiency %s"           , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_eff_perc_%s"       , sr_info.label.c_str()), Form("Efficiency Percentage %s", bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
 
         hc.Add(new TH2F(Form("h_num_scaled_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi %s"            , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_eff_scaled_%s"     , sr_info.label.c_str()), Form("Efficiency with scale1fb*lumi %s"           , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_eff_scaled_perc_%s", sr_info.label.c_str()), Form("Efficiency Percentage with scale1fb*lumi %s", bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_jesup_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES+ %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_jesdn_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES- %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_jes_%s"        , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, JES+/- %s"   , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_btagup_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG+ %s"     , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_btagdn_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG- %s"     , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_btag_%s"       , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, BTAG+/- %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_noisr_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, ISR %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_noisr_%s"      , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, ISR %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
     }
 
     // number of generated events (from the file)
@@ -219,6 +230,9 @@ void InterpLooper::EndJob()
 
     // calculate the efficiencies
     CalculateEfficiency();
+    SetJESSystematic();
+    SetBtagSystematic();
+    SetISRSystematic();
 
     // save the plots
     if (m_verbose) {std::cout << "[InterpLooper::EndJob] InterpLooper saving histograms." << std::endl;}
@@ -234,57 +248,187 @@ void InterpLooper::EndJob()
 }
        
 // selection helper functions
-const bool passes_rho()        {using namespace stop; return (rhovor()>0 && rhovor()<40                                                                                                      );} 
-const bool passes_filters()    {using namespace stop; return (isdata()==0 || (csc()==0 && hbhe()==1 && hcallaser()==1 && ecaltp()==1 && trkfail()==1 && eebadsc()==1 && hbhenew()==1)        );} 
-const bool passes_goodlep()    {using namespace stop; return (ngoodlep() > 0 && fabs(pflep1().pt() - lep1().pt()) < 10.0 && fabs(isopf1() * lep1().pt()) < 5.0                               );} 
-const bool passes_el()         {using namespace stop; return (leptype() == 0 && fabs(lep1().eta()) < 1.4442 && lep1().pt() > 30.0 && eoverpin() < 4.0 && (isdata() == 0 || ele27wp80() == 1) );} 
-const bool passes_mu()         {using namespace stop; return (leptype() == 1 && fabs(lep1().eta()) < 2.1    && lep1().pt() > 25.0 && (isdata() == 0 || isomu24() == 1)                       );} 
-const bool passes_njets4()     {using namespace stop; return (mini_njets() >= 4                                                                                                              );} 
-const bool passes_btag1()      {using namespace stop; return (mini_nb() >= 1                                                                                                                 );} 
-const bool passes_passisotrk() {using namespace stop; return (mini_passisotrk() == 1                                                                                                         );} 
-const bool passes_tauveto()    {using namespace stop; return (mini_passtauveto() == 1                                                                                                        );} 
-const bool passes_mt120()      {using namespace stop; return (mini_mt() > 120                                                                                                                );} 
-const bool passes_mt150()      {using namespace stop; return (mini_mt() > 150                                                                                                                );} 
-const bool passes_dphi()       {using namespace stop; return (mini_dphimjmin() > 0.8                                                                                                         );} 
-const bool passes_chi2()       {using namespace stop; return (mini_chi2() < 5.0                                                                                                              );} 
-const bool passes_mt2w()       {using namespace stop; return (mini_mt2w() > 200.0                                                                                                            );} 
-const bool passes_bpt100()     {using namespace stop; return (mini_pt_b() > 100.0                                                                                                            );} 
-const bool passes_met100()     {using namespace stop; return (mini_met() > 100                                                                                                               );} 
-const bool passes_met150()     {using namespace stop; return (mini_met() > 150.0                                                                                                             );} 
-const bool passes_met200()     {using namespace stop; return (mini_met() > 200.0                                                                                                             );} 
-const bool passes_met250()     {using namespace stop; return (mini_met() > 250.0                                                                                                             );} 
-const bool passes_met300()     {using namespace stop; return (mini_met() > 300.0                                                                                                             );} 
-const bool passes_testing()    {using namespace stop; return (event()%2 == 0                                                                                                                 );} 
-const bool passes_isrweight()  {using namespace stop; return (mini_isrweight()                                                                                                               );} 
-const bool passes_x25()        {using namespace stop; return (x() < 0.3                                                                                                                      );} 
-const bool passes_x50()        {using namespace stop; return (x() > 0.3 && x() < 0.7                                                                                                         );} 
-const bool passes_x75()        {using namespace stop; return (x() > 0.7                                                                                                                      );} 
+// ------------------------------------------------------------------------------------ //
 
-// passes signal region
-const bool PassesSignalRegion
+struct ScaleType
+{
+    enum value_type
+    {
+        NONE,
+        JES_UP,
+        JES_DN,
+        BTAG_UP,
+        BTAG_DN,
+        static_size
+    };
+};
+
+const bool PassesPreselection
 (
-    const stop::SignalRegion::value_type signal_region,
-    const stop::AnalysisType::value_type analysis_type
+    const stop::AnalysisType::value_type analysis_type,
+    const ScaleType::value_type scale_type = ScaleType::NONE
 )
 {
     using namespace stop;
     if (analysis_type == AnalysisType::bdt)
     {
+        // contant values (independent of scale type)
+        const bool passes_rho        = (rhovor()>0 && rhovor()<40                                                                                                      ); 
+        const bool passes_goodlep    = (ngoodlep() > 0 && fabs(pflep1().pt() - lep1().pt()) < 10.0 && fabs(isopf1() * lep1().pt()) < 5.0                               ); 
+        const bool passes_el         = (leptype() == 0 && fabs(lep1().eta()) < 1.4442 && lep1().pt() > 30.0 && eoverpin() < 4.0 && (isdata() == 0 || ele27wp80() == 1) ); 
+        const bool passes_mu         = (leptype() == 1 && fabs(lep1().eta()) < 2.1    && lep1().pt() > 25.0 && (isdata() == 0 || isomu24() == 1)                       ); 
+        const bool passes_passisotrk = (mini_passisotrk() == 1                                                                                                         ); 
+        const bool passes_tauveto    = (mini_passtauveto() == 1                                                                                                        ); 
+        const bool passes_testing    = (event()%2 == 0                                                                                                                 ); 
+//         const bool passes_filters    = (isdata()==0 || (csc()==0 && hbhe()==1 && hcallaser()==1 && ecaltp()==1 && trkfail()==1 && eebadsc()==1 && hbhenew()==1)        ); 
+//         const bool passes_dphi       = (mini_dphimjmin() > 0.8                                                                                                         ); 
+//         const bool passes_isrweight  = (mini_isrweight()                                                                                                               ); 
+//         const bool passes_x25        = (x() < 0.3                                                                                                                      ); 
+//         const bool passes_x50        = (x() > 0.3 && x() < 0.7                                                                                                         ); 
+//         const bool passes_x75        = (x() > 0.7                                                                                                                      ); 
+        
+        // baseline preslection value
+        int   temp_njets = mini_njets();
+        float temp_met   = mini_met();
+        float temp_mt    = mini_mt();
+//         float temp_chi2  = mini_chi2();
+//         float temp_mt2w  = mini_mt2w();
+//         float temp_pt_b  = mini_pt_b();
+        int   temp_nb    = mini_nb();
+
+        // select the appropriate variable to cut on based on the scale type
+        switch(scale_type)
+        {
+            case ScaleType::NONE:
+                temp_njets = mini_njets();
+                temp_met   = mini_met();
+                temp_mt    = mini_mt();
+                temp_nb    = mini_nb();
+//                 temp_chi2  = mini_chi2();
+//                 temp_mt2w  = mini_mt2w();
+//                 temp_pt_b  = mini_pt_b();
+                break;
+            case ScaleType::JES_UP:
+                temp_njets = mini_njetsup();
+                temp_met   = mini_metup();
+                temp_mt    = mini_mtup();
+                temp_nb    = mini_nb();
+//                 temp_chi2  = mini_chi2up();
+//                 temp_mt2w  = mini_mt2wup();
+//                 temp_pt_b  = mini_pt_b_up();
+                break;
+            case ScaleType::JES_DN:
+                temp_njets = mini_njetsdown();
+                temp_met   = mini_metdown();
+                temp_mt    = mini_mtdown();
+                temp_nb    = mini_nb();
+//                 temp_chi2  = mini_chi2down();
+//                 temp_mt2w  = mini_mt2wdown();
+//                 temp_pt_b  = mini_pt_b_down();
+                break;
+            case ScaleType::BTAG_UP:
+                temp_njets = mini_njets();
+                temp_met   = mini_met();
+                temp_mt    = mini_mt();
+                temp_nb    = mini_nbupBC();
+//                 temp_chi2  = mini_chi2bup();
+//                 temp_mt2w  = mini_mt2wbup();
+//                 temp_pt_b  = mini_pt_b_bup();
+                break;
+            case ScaleType::BTAG_DN:
+                temp_njets = mini_njets();
+                temp_met   = mini_met();
+                temp_mt    = mini_mt();
+                temp_nb    = mini_nbdownBC();
+//                 temp_chi2  = mini_chi2bdown();
+//                 temp_mt2w  = mini_mt2wbdown();
+//                 temp_pt_b  = mini_pt_b_bdown();
+                break;
+            default: {/*do nothing*/}
+        };
+
+        // apply cuts for scale type dependent variables
+        bool passes_njets4  = (temp_njets >= 4  ); 
+        bool passes_met100  = (temp_met > 100   ); 
+//         bool passes_met150  = (temp_met > 150.0 ); 
+//         bool passes_met200  = (temp_met > 200.0 ); 
+//         bool passes_met250  = (temp_met > 250.0 ); 
+//         bool passes_met300  = (temp_met > 300.0 ); 
+        bool passes_mt120   = (temp_mt > 120    ); 
+//         bool passes_mt150   = (temp_mt > 150    ); 
+//         bool passes_chi2    = (temp_chi2 < 5.0  ); 
+        bool passes_btag1   = (temp_nb >= 1     ); 
+//         bool passes_mt2w    = (temp_mt2w > 200.0); 
+//         bool passes_bpt100  = (temp_pt_b > 100.0); 
+    
+        bool passes_presel = passes_rho
+                           && passes_goodlep
+                           && (passes_el or passes_mu)
+                           && passes_njets4
+                           && passes_btag1
+                           && passes_passisotrk
+                           && passes_tauveto
+                           && passes_met100
+                           && passes_mt120
+                           && (analysis_type == AnalysisType::bdt ? passes_testing : true);
+
+        // return decision
+        return passes_presel;
+    }
+    else
+    {
+        std::cout << "[InterpLooper::PassesPreslection] selection returning false for unsupported analysis type" << std::endl;
+        return false;
+    }
+}
+
+// passes signal region
+const bool PassesSignalRegion
+(
+    const stop::SignalRegion::value_type signal_region,
+    const stop::AnalysisType::value_type analysis_type,
+    const ScaleType::value_type scale_type
+)
+{
+    // check that it passes the preselection
+    if (not PassesPreselection(analysis_type, scale_type))
+    {
+        return false;
+    }
+
+    using namespace stop;
+    const std::vector<float>* bdt_ptr = NULL;
+    switch(scale_type)
+    {
+        case ScaleType::NONE   : bdt_ptr = &mini_bdt()     ; break;
+        case ScaleType::JES_UP : bdt_ptr = &mini_bdtup()   ; break;
+        case ScaleType::JES_DN : bdt_ptr = &mini_bdtdown() ; break;
+        case ScaleType::BTAG_UP: bdt_ptr = &mini_bdtbup()  ; break;
+        case ScaleType::BTAG_DN: bdt_ptr = &mini_bdtbdown(); break;
+        default: 
+        {
+            std::cout << "[InterpLooper::PassesSignalRegion] selection returning false for unsupported scale type" << std::endl;
+            return false;
+        }
+    };
+    const std::vector<float>& bdt = *bdt_ptr;
+    if (analysis_type == AnalysisType::bdt)
+    {
         switch(signal_region)
         {
             case SignalRegion::sr0: return true; // preselection only
-            case SignalRegion::sr1: return (mini_bdt().at(1) > 0.30);
-            case SignalRegion::sr2: return (mini_bdt().at(1) > 0.40);
-            case SignalRegion::sr3: return (mini_bdt().at(2) > 0.55);
-            case SignalRegion::sr4: return (mini_bdt().at(3) > 0.65);
-            case SignalRegion::sr5: return (mini_bdt().at(4) > 0.50);
-            case SignalRegion::sr6: return (mini_bdt().at(5) > 0.30);
+            case SignalRegion::sr1: return (bdt.at(1) > 0.30);
+            case SignalRegion::sr2: return (bdt.at(1) > 0.40);
+            case SignalRegion::sr3: return (bdt.at(2) > 0.55);
+            case SignalRegion::sr4: return (bdt.at(3) > 0.65);
+            case SignalRegion::sr5: return (bdt.at(4) > 0.50);
+            case SignalRegion::sr6: return (bdt.at(5) > 0.30);
             default: return false; 
         }
     }
     else
     {
-        std::cout << "[InterpLooper::EndJob] selection returning false for unsupported analysis type" << std::endl;
+        std::cout << "[InterpLooper::PassesSignalRegionJES] selection returning false for unsupported analysis type" << std::endl;
         return false;
     }
 }
@@ -332,18 +476,25 @@ void InterpLooper::Analyze()
 
     // does it pass the preselection 
     //--------------------------------------------------
-    bool passes_presel = passes_rho()
-        && passes_goodlep()
-        && (passes_el() or passes_mu())
-        && passes_njets4()
-        && passes_btag1()
-        && passes_passisotrk()
-        && passes_tauveto()
-        && passes_met100()
-        && passes_mt120()
-        && (m_analysis_type == AnalysisType::bdt ? passes_testing() : true);
+    const bool passes_presel_nominal = PassesPreselection(m_analysis_type, ScaleType::NONE);
+    const bool passes_presel_jes_up  = PassesPreselection(m_analysis_type, ScaleType::JES_UP);
+    const bool passes_presel_jes_dn  = PassesPreselection(m_analysis_type, ScaleType::JES_DN);
+    const bool passes_presel_btag_up = PassesPreselection(m_analysis_type, ScaleType::BTAG_UP);
+    const bool passes_presel_btag_dn = PassesPreselection(m_analysis_type, ScaleType::BTAG_DN);
 
-    if (not passes_presel)
+//     bool passes_presel = passes_rho()
+//         && passes_goodlep()
+//         && (passes_el() or passes_mu())
+//         && passes_njets4()
+//         && passes_btag1()
+//         && passes_passisotrk()
+//         && passes_tauveto()
+//         && passes_met100()
+//         && passes_mt120()
+//         && (m_analysis_type == AnalysisType::bdt ? passes_testing() : true);
+
+    if (not (passes_presel_nominal or passes_presel_jes_up or passes_presel_jes_dn or 
+             passes_presel_btag_up or passes_presel_btag_dn))
     {
         if (m_verbose) {cout << "fails the preselection" << endl;}
         return;
@@ -354,7 +505,8 @@ void InterpLooper::Analyze()
     // ----------------------------------------------------------------------------------------------------------------------------//
 
     // scale factors
-    float evt_weight = mini_sltrigeff() * 2.0 * mini_isrweight();
+    float evt_weight_noisr = mini_sltrigeff() * 2.0;
+    float evt_weight       = evt_weight_noisr * mini_isrweight();
 
     // scale1fb
     const float xsec     = rt::GetBinContent1D(hc["h_xsec"], mass_stop); 
@@ -368,7 +520,8 @@ void InterpLooper::Analyze()
     //{
     //    vtxw = is_real_data() ? 1.0 : vtxweight_n(nvtxs(), is_real_data(), false);
     //}
-    evt_weight *= vtxw;
+    evt_weight       *= vtxw;
+    evt_weight_noisr *= vtxw;
 
 
     // Fill hists
@@ -379,12 +532,33 @@ void InterpLooper::Analyze()
         const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", m_sr_nums.at(i))); 
         const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
 
-        // raw number of signal events
-        if (PassesSignalRegion(signal_region, m_analysis_type))
+        // number of signal events (nominal)
+        if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::NONE))
         {
-            rt::Fill2D(hc["h_nevt_"      +sr_label], mass_stop, mass_lsp, 1.0);
-            rt::Fill2D(hc["h_num_"       +sr_label], mass_stop, mass_lsp, evt_weight);
-            rt::Fill2D(hc["h_num_scaled_"+sr_label], mass_stop, mass_lsp, evt_weight*scale1fb*m_lumi);
+            rt::Fill2D(hc["h_nevt_"      +sr_label], mass_stop, mass_lsp, 1.0                             ); 
+            rt::Fill2D(hc["h_num_"       +sr_label], mass_stop, mass_lsp, evt_weight                      ); 
+            rt::Fill2D(hc["h_num_scaled_"+sr_label], mass_stop, mass_lsp, evt_weight*scale1fb*m_lumi      ); 
+            rt::Fill2D(hc["h_num_noisr_" +sr_label], mass_stop, mass_lsp, evt_weight_noisr*scale1fb*m_lumi); 
+        }
+        // number of signal events (JES UP)
+        if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::JES_UP))
+        {
+            rt::Fill2D(hc["h_num_jesup_"+sr_label], mass_stop, mass_lsp, evt_weight*scale1fb*m_lumi);
+        }
+        // number of signal events (JES Down)
+        if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::JES_DN))
+        {
+            rt::Fill2D(hc["h_num_jesdn_"+sr_label], mass_stop, mass_lsp, evt_weight*scale1fb*m_lumi);
+        }
+        // number of signal events (Btag UP)
+        if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::BTAG_UP))
+        {
+            rt::Fill2D(hc["h_num_btagup_"+sr_label], mass_stop, mass_lsp, evt_weight*scale1fb*m_lumi);
+        }
+        // number of signal events (Btag Down)
+        if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::BTAG_DN))
+        {
+            rt::Fill2D(hc["h_num_btagdn_"+sr_label], mass_stop, mass_lsp, evt_weight*scale1fb*m_lumi);
         }
     }
 
@@ -439,6 +613,119 @@ void InterpLooper::CalculateEfficiency()
         }
     } // end sr loop
 
+    return;
+}
+
+void InterpLooper::SetJESSystematic()
+{
+    // convenience alias
+    rt::TH1Container& hc = m_hist_container;
+
+    // looper over num/den hists and divide
+    for (size_t i = 0; i != m_sr_nums.size(); i++)
+    {
+        const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", m_sr_nums.at(i))); 
+        const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
+
+        const unsigned int nbinsx = hc["h_den"]->GetNbinsX()+1;
+        const unsigned int nbinsy = hc["h_den"]->GetNbinsY()+1;
+        for (unsigned int xbin = 1; xbin < nbinsx; xbin++)
+        {
+            for (unsigned int ybin = 1; ybin < nbinsy; ybin++)
+            {
+                const float num    = hc["h_num_scaled_"+sr_label]->GetBinContent(xbin, ybin);
+                const float den    = hc["h_den"                 ]->GetBinContent(xbin ,ybin);
+                const float num_up = hc["h_num_jesup_"+sr_label ]->GetBinContent(xbin, ybin);
+                const float num_dn = hc["h_num_jesdn_"+sr_label ]->GetBinContent(xbin, ybin);
+
+                float djes = 0.0;
+                if (den > 0 && num > 0) 
+                {
+                    const float eff    = num / den;
+                    const float eff_up = (num_up) / den;
+                    const float eff_dn = (num_dn) / den;
+	                const float dup    = fabs(eff_up/eff-1.0);
+	                const float ddn    = fabs(1.0-eff_dn/eff);
+	                djes = 0.5 * (dup+ddn);
+                }
+                hc["h_err_jes_"+sr_label]->SetBinContent(xbin, ybin, djes);
+            }
+        }
+    } // end sr loop
+    return;
+}
+
+void InterpLooper::SetBtagSystematic()
+{
+    // convenience alias
+    rt::TH1Container& hc = m_hist_container;
+
+    // looper over num/den hists and divide
+    for (size_t i = 0; i != m_sr_nums.size(); i++)
+    {
+        const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", m_sr_nums.at(i))); 
+        const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
+
+        const unsigned int nbinsx = hc["h_den"]->GetNbinsX()+1;
+        const unsigned int nbinsy = hc["h_den"]->GetNbinsY()+1;
+        for (unsigned int xbin = 1; xbin < nbinsx; xbin++)
+        {
+            for (unsigned int ybin = 1; ybin < nbinsy; ybin++)
+            {
+                const float num    = hc["h_num_scaled_"+sr_label]->GetBinContent(xbin, ybin);
+                const float den    = hc["h_den"                 ]->GetBinContent(xbin ,ybin);
+                const float num_up = hc["h_num_btagup_"+sr_label ]->GetBinContent(xbin, ybin);
+                const float num_dn = hc["h_num_btagdn_"+sr_label ]->GetBinContent(xbin, ybin);
+
+                float dbtag = 0.0;
+                if (den > 0 && num > 0) 
+                {
+                    const float eff    = num / den;
+                    const float eff_up = (num_up) / den;
+                    const float eff_dn = (num_dn) / den;
+	                const float dup    = fabs(eff_up/eff-1.0);
+	                const float ddn    = fabs(1.0-eff_dn/eff);
+	                dbtag = 0.5 * (dup+ddn);
+                }
+                hc["h_err_btag_"+sr_label]->SetBinContent(xbin, ybin, dbtag);
+            }
+        }
+    } // end sr loop
+    return;
+}
+
+void InterpLooper::SetISRSystematic()
+{
+    // convenience alias
+    rt::TH1Container& hc = m_hist_container;
+
+    // looper over num/den hists and divide
+    for (size_t i = 0; i != m_sr_nums.size(); i++)
+    {
+        const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", m_sr_nums.at(i))); 
+        const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
+
+        const unsigned int nbinsx = hc["h_den"]->GetNbinsX()+1;
+        const unsigned int nbinsy = hc["h_den"]->GetNbinsY()+1;
+        for (unsigned int xbin = 1; xbin < nbinsx; xbin++)
+        {
+            for (unsigned int ybin = 1; ybin < nbinsy; ybin++)
+            {
+                const float num       = hc["h_num_scaled_"+sr_label]->GetBinContent(xbin, ybin);
+                const float den       = hc["h_den"                 ]->GetBinContent(xbin ,ybin);
+                const float num_noisr = hc["h_num_noisr_"+sr_label ]->GetBinContent(xbin, ybin);
+
+                float disr = 0.0;
+                if (den > 0 && num > 0) 
+                {
+                    const float eff       = num / den;
+                    const float eff_noisr = (num_noisr) / den;
+	                disr = fabs(1.0-eff/eff_noisr);
+                }
+                hc["h_err_noisr_"+sr_label]->SetBinContent(xbin, ybin, disr);
+            }
+        }
+    } // end sr loop
     return;
 }
 
