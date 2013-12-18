@@ -4,10 +4,8 @@
 #include <stdexcept>
 
 // ROOT includes
-#include "TH1F.h"
-#include "TROOT.h"
+#include "TH1.h"
 #include "TFile.h"
-#include "TSystem.h"
 #include "TSystem.h"
 #include "TChain.h"
 #include "TBenchmark.h"
@@ -27,8 +25,7 @@
 #include "StopAnalysis/CombinedExclusions/interface/SignalRegion.h"
 #include "StopAnalysis/CombinedExclusions/interface/STOP_BABY.h"
 
-using namespace std;
-
+// ------------------------------------------------------------------------------------ //
 // Looper class to hold all the variables and make the histograms 
 // ------------------------------------------------------------------------------------ //
 
@@ -57,17 +54,7 @@ class InterpLooper
         // destroy:
         ~InterpLooper();
 
-        // analysis methods:
-        void BeginJob();
-        void EndJob();
-        void Analyze();
-        void CalculateEfficiency();
-        void SetJESSystematic();
-        void SetBtagSystematic();
-        void SetISRSystematic();
-        void SetTotalSystematic();
-
-        // scan the chain
+        // public methods:
         void ScanChain
         (
             TChain& dataset,
@@ -78,6 +65,7 @@ class InterpLooper
         );
 
     private:
+
         // parameter members:
         const std::string m_output_file_name;
         const std::string m_sample_name;
@@ -98,6 +86,12 @@ class InterpLooper
         stop::AnalysisType::value_type m_analysis_type;
         stop::Sample::value_type m_sample;
         rt::TH1Container m_hist_container;
+
+        // private methods:
+        void BeginJob();
+        void EndJob();
+        void Analyze();
+        void CalculateEfficiencyAndUncertainties();
 };
 
 // construct:
@@ -147,7 +141,6 @@ InterpLooper::~InterpLooper()
     EndJob();
 }
 
-
 // operations performed at the beginning of the job
 void InterpLooper::BeginJob()
 {
@@ -173,24 +166,20 @@ void InterpLooper::BeginJob()
         const stop::SignalRegionInfo sr_info = stop::GetSignalRegionInfo(Form("sr%d", m_sr_nums.at(i))); 
         const std::string bin_stem = Form("(%s);%s;%s", sr_info.title.c_str(), xaxis_label.c_str(), yaxis_label.c_str());
 
-        hc.Add(new TH2F(Form("h_nevt_%s"           , sr_info.label.c_str()), Form("# Raw Count Passing %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_%s"            , sr_info.label.c_str()), Form("# Passing %s"            , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_eff_%s"            , sr_info.label.c_str()), Form("Efficiency %s"           , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_eff_perc_%s"       , sr_info.label.c_str()), Form("Efficiency Percentage %s", bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-
-        hc.Add(new TH2F(Form("h_num_scaled_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi %s"              , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_eff_scaled_%s"     , sr_info.label.c_str()), Form("Efficiency with scale1fb*lumi %s"             , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_eff_scaled_perc_%s", sr_info.label.c_str()), Form("Efficiency Percentage with scale1fb*lumi %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_jesup_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES+ %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_jesdn_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES- %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_err_jes_%s"        , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, JES+/- %s"     , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_btagup_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG+ %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_btagdn_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG- %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_err_btag_%s"       , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, BTAG+/- %s"    , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_noisr_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, ISR %s"         , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_err_noisr_%s"      , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, ISR %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_err_total_%s"      , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, Total %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_err_stats_%s"      , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, Statistical %s", bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_nevt_%s"      , sr_info.label.c_str()), Form("# Raw Count Passing %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_%s"       , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi %s"              , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_eff_%s"       , sr_info.label.c_str()), Form("Efficiency with scale1fb*lumi %s"             , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_eff_perc_%s"  , sr_info.label.c_str()), Form("Efficiency Percentage with scale1fb*lumi %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_jesup_%s" , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES+ %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_jesdn_%s" , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES- %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_jes_%s"   , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, JES+/- %s"     , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_btagup_%s", sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG+ %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_btagdn_%s", sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG- %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_btag_%s"  , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, BTAG+/- %s"    , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_noisr_%s" , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, ISR %s"         , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_noisr_%s" , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, ISR %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_total_%s" , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, Total %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_stats_%s" , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, Statistical %s", bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
     }
 
     // number of generated events (from the file)
@@ -244,11 +233,7 @@ void InterpLooper::EndJob()
     rt::TH1Container& hc = m_hist_container;
 
     // calculate the efficiencies/uncertainties
-    CalculateEfficiency();
-    SetJESSystematic();
-    SetBtagSystematic();
-    SetISRSystematic();
-    SetTotalSystematic();
+    CalculateEfficiencyAndUncertainties();
 
     // save the plots
     if (m_verbose) {std::cout << "[InterpLooper::EndJob] InterpLooper saving histograms." << std::endl;}
@@ -296,20 +281,11 @@ const bool PassesPreselection
         const bool passes_passisotrk = (mini_passisotrk() == 1                                                                                                         ); 
         const bool passes_tauveto    = (mini_passtauveto() == 1                                                                                                        ); 
         const bool passes_testing    = (event()%2 == 0                                                                                                                 ); 
-//         const bool passes_filters    = (isdata()==0 || (csc()==0 && hbhe()==1 && hcallaser()==1 && ecaltp()==1 && trkfail()==1 && eebadsc()==1 && hbhenew()==1)        ); 
-//         const bool passes_dphi       = (mini_dphimjmin() > 0.8                                                                                                         ); 
-//         const bool passes_isrweight  = (mini_isrweight()                                                                                                               ); 
-//         const bool passes_x25        = (x() < 0.3                                                                                                                      ); 
-//         const bool passes_x50        = (x() > 0.3 && x() < 0.7                                                                                                         ); 
-//         const bool passes_x75        = (x() > 0.7                                                                                                                      ); 
         
         // baseline preslection value
         int   temp_njets = mini_njets();
         float temp_met   = mini_met();
         float temp_mt    = mini_mt();
-//         float temp_chi2  = mini_chi2();
-//         float temp_mt2w  = mini_mt2w();
-//         float temp_pt_b  = mini_pt_b();
         int   temp_nb    = mini_nb();
 
         // select the appropriate variable to cut on based on the scale type
@@ -320,45 +296,30 @@ const bool PassesPreselection
                 temp_met   = mini_met();
                 temp_mt    = mini_mt();
                 temp_nb    = mini_nb();
-//                 temp_chi2  = mini_chi2();
-//                 temp_mt2w  = mini_mt2w();
-//                 temp_pt_b  = mini_pt_b();
                 break;
             case ScaleType::JES_UP:
                 temp_njets = mini_njetsup();
                 temp_met   = mini_metup();
                 temp_mt    = mini_mtup();
                 temp_nb    = mini_nb();
-//                 temp_chi2  = mini_chi2up();
-//                 temp_mt2w  = mini_mt2wup();
-//                 temp_pt_b  = mini_pt_b_up();
                 break;
             case ScaleType::JES_DN:
                 temp_njets = mini_njetsdown();
                 temp_met   = mini_metdown();
                 temp_mt    = mini_mtdown();
                 temp_nb    = mini_nb();
-//                 temp_chi2  = mini_chi2down();
-//                 temp_mt2w  = mini_mt2wdown();
-//                 temp_pt_b  = mini_pt_b_down();
                 break;
             case ScaleType::BTAG_UP:
                 temp_njets = mini_njets();
                 temp_met   = mini_met();
                 temp_mt    = mini_mt();
                 temp_nb    = mini_nbupBC();
-//                 temp_chi2  = mini_chi2bup();
-//                 temp_mt2w  = mini_mt2wbup();
-//                 temp_pt_b  = mini_pt_b_bup();
                 break;
             case ScaleType::BTAG_DN:
                 temp_njets = mini_njets();
                 temp_met   = mini_met();
                 temp_mt    = mini_mt();
                 temp_nb    = mini_nbdownBC();
-//                 temp_chi2  = mini_chi2bdown();
-//                 temp_mt2w  = mini_mt2wbdown();
-//                 temp_pt_b  = mini_pt_b_bdown();
                 break;
             default: {/*do nothing*/}
         };
@@ -366,17 +327,10 @@ const bool PassesPreselection
         // apply cuts for scale type dependent variables
         bool passes_njets4  = (temp_njets >= 4  ); 
         bool passes_met100  = (temp_met > 100   ); 
-//         bool passes_met150  = (temp_met > 150.0 ); 
-//         bool passes_met200  = (temp_met > 200.0 ); 
-//         bool passes_met250  = (temp_met > 250.0 ); 
-//         bool passes_met300  = (temp_met > 300.0 ); 
         bool passes_mt120   = (temp_mt > 120    ); 
-//         bool passes_mt150   = (temp_mt > 150    ); 
-//         bool passes_chi2    = (temp_chi2 < 5.0  ); 
         bool passes_btag1   = (temp_nb >= 1     ); 
-//         bool passes_mt2w    = (temp_mt2w > 200.0); 
-//         bool passes_bpt100  = (temp_pt_b > 100.0); 
     
+        // preselection decision
         bool passes_presel = passes_rho
                            && passes_goodlep
                            && (passes_el or passes_mu)
@@ -444,7 +398,7 @@ const bool PassesSignalRegion
     }
     else
     {
-        std::cout << "[InterpLooper::PassesSignalRegionJES] selection returning false for unsupported analysis type" << std::endl;
+        std::cout << "[InterpLooper::PassesSignalRegion] selection returning false for unsupported analysis type" << std::endl;
         return false;
     }
 }
@@ -505,29 +459,22 @@ void InterpLooper::Analyze()
         return;
     }
 
-
     // Weight Factors
     // ----------------------------------------------------------------------------------------------------------------------------//
-
-    // scale factors
-    float evt_weight_noisr = mini_sltrigeff() * 2.0;
-    float evt_weight       = evt_weight_noisr * mini_isrweight();
 
     // scale1fb
     const float xsec     = rt::GetBinContent1D(hc["h_xsec"], mass_stop); 
     const float ngen     = rt::GetBinContent2D(hc["h_ngen"], mass_stop, mass_lsp);
     const float scale1fb = (ngen > 0 ? xsec * 1000.0f/ngen : -999999.0f); 
-    //evt_weight *= scale1fb * m_lumi;
+
+    // scale factors
+    float evt_weight_noisr = scale1fb * m_lumi * mini_sltrigeff() * 2.0;
+    float evt_weight       = evt_weight_noisr * mini_isrweight();
 
     // vertex re-weight (not used) 
     const float vtxw = 1.0;
-    //if (m_do_vtx_reweight)
-    //{
-    //    vtxw = is_real_data() ? 1.0 : vtxweight_n(nvtxs(), is_real_data(), false);
-    //}
     evt_weight       *= vtxw;
     evt_weight_noisr *= vtxw;
-
 
     // Fill hists
     // ------------------------------------------------------------------------------------//
@@ -540,30 +487,29 @@ void InterpLooper::Analyze()
         // number of signal events (nominal)
         if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::NONE))
         {
-            rt::Fill2D(hc["h_nevt_"      +sr_label], mass_stop, mass_lsp, 1.0                             ); 
-            rt::Fill2D(hc["h_num_"       +sr_label], mass_stop, mass_lsp, evt_weight                      ); 
-            rt::Fill2D(hc["h_num_scaled_"+sr_label], mass_stop, mass_lsp, evt_weight*scale1fb*m_lumi      ); 
-            rt::Fill2D(hc["h_num_noisr_" +sr_label], mass_stop, mass_lsp, evt_weight_noisr*scale1fb*m_lumi); 
+            rt::Fill2D(hc["h_nevt_"     +sr_label], mass_stop, mass_lsp, 1.0             ); 
+            rt::Fill2D(hc["h_num_"      +sr_label], mass_stop, mass_lsp, evt_weight      ); 
+            rt::Fill2D(hc["h_num_noisr_"+sr_label], mass_stop, mass_lsp, evt_weight_noisr); 
         }
         // number of signal events (JES UP)
         if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::JES_UP))
         {
-            rt::Fill2D(hc["h_num_jesup_"+sr_label], mass_stop, mass_lsp, evt_weight*scale1fb*m_lumi);
+            rt::Fill2D(hc["h_num_jesup_"+sr_label], mass_stop, mass_lsp, evt_weight);
         }
         // number of signal events (JES Down)
         if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::JES_DN))
         {
-            rt::Fill2D(hc["h_num_jesdn_"+sr_label], mass_stop, mass_lsp, evt_weight*scale1fb*m_lumi);
+            rt::Fill2D(hc["h_num_jesdn_"+sr_label], mass_stop, mass_lsp, evt_weight);
         }
         // number of signal events (Btag UP)
         if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::BTAG_UP))
         {
-            rt::Fill2D(hc["h_num_btagup_"+sr_label], mass_stop, mass_lsp, evt_weight*scale1fb*m_lumi);
+            rt::Fill2D(hc["h_num_btagup_"+sr_label], mass_stop, mass_lsp, evt_weight);
         }
         // number of signal events (Btag Down)
         if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::BTAG_DN))
         {
-            rt::Fill2D(hc["h_num_btagdn_"+sr_label], mass_stop, mass_lsp, evt_weight*scale1fb*m_lumi);
+            rt::Fill2D(hc["h_num_btagdn_"+sr_label], mass_stop, mass_lsp, evt_weight);
         }
     }
 
@@ -571,7 +517,8 @@ void InterpLooper::Analyze()
     return;
 }
 
-void InterpLooper::CalculateEfficiency()
+// calculate the efficiencies and uncertainties
+void InterpLooper::CalculateEfficiencyAndUncertainties()
 {
     // convenience alias
     rt::TH1Container& hc = m_hist_container;
@@ -582,194 +529,69 @@ void InterpLooper::CalculateEfficiency()
         const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", m_sr_nums.at(i))); 
         const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
 
-        const unsigned int nbinsx = hc["h_ngen"]->GetNbinsX()+1;
-        const unsigned int nbinsy = hc["h_ngen"]->GetNbinsY()+1;
+        const unsigned int nbinsx = hc["h_den"]->GetNbinsX()+1;
+        const unsigned int nbinsy = hc["h_den"]->GetNbinsY()+1;
         for (unsigned int xbin = 1; xbin < nbinsx; xbin++)
         {
             for (unsigned int ybin = 1; ybin < nbinsy; ybin++)
             {
                 const float num = hc["h_num_"+sr_label]->GetBinContent(xbin, ybin);
-                const float den = hc["h_ngen"         ]->GetBinContent(xbin ,ybin);
+                const float den = hc["h_den"          ]->GetBinContent(xbin ,ybin);
 
-                const float num_scaled = hc["h_num_scaled_"+sr_label]->GetBinContent(xbin, ybin);
-                const float den_scaled = hc["h_den"                 ]->GetBinContent(xbin ,ybin);
-                if (den > 0.0) 
+                float eff       = 0.0;
+                float unc_jes   = 0.0;
+                float unc_btag  = 0.0;
+                float unc_noisr = 0.0;
+                float unc_stats = 0.0;
+                float unc_total = 0.0;
+                if (den > 0.0 and num >= 0.0)
                 {
-                    float eff = 0.0;
-                    float eff_scaled = 0.0;
-                    if (num >= 0.0)
-                    {
-                        eff        = fabs(num) / den;                // central value of eps*A*BR
-                        eff_scaled = fabs(num_scaled) / den_scaled;  // central value of eps*A*BR
-                    }
-                    hc["h_eff_"            +sr_label]->SetBinContent(xbin, ybin, eff      );
-                    hc["h_eff_perc_"       +sr_label]->SetBinContent(xbin, ybin, eff*100.0);
-                    hc["h_eff_scaled_"     +sr_label]->SetBinContent(xbin, ybin, eff_scaled      );
-                    hc["h_eff_scaled_perc_"+sr_label]->SetBinContent(xbin, ybin, eff_scaled*100.0);
-                }
-                else
-                {
-                    hc["h_eff_"            +sr_label]->SetBinContent(xbin, ybin, 0.0);
-                    hc["h_eff_perc_"       +sr_label]->SetBinContent(xbin, ybin, 0.0);
-                    hc["h_eff_scaled_"     +sr_label]->SetBinContent(xbin, ybin, 0.0);
-                    hc["h_eff_scaled_perc_"+sr_label]->SetBinContent(xbin, ybin, 0.0);
-                }
-            }
-        }
-    } // end sr loop
+                    // nominal efficiency
+                    eff = num / den;
 
-    return;
-}
+                    // JES +/-
+                    const float num_jes_up = hc["h_num_jesup_"+sr_label]->GetBinContent(xbin, ybin);
+                    const float num_jes_dn = hc["h_num_jesdn_"+sr_label]->GetBinContent(xbin, ybin);
+                    const float eff_jes_up = (num_jes_up) / den;
+                    const float eff_jes_dn = (num_jes_dn) / den;
+                    const float unc_jes_up = fabs(eff_jes_up/eff-1.0);
+                    const float unc_jes_dn = fabs(1.0-eff_jes_dn/eff);
+                    unc_jes    = 0.5 * (unc_jes_up + unc_jes_dn);
 
-void InterpLooper::SetJESSystematic()
-{
-    // convenience alias
-    rt::TH1Container& hc = m_hist_container;
+                    // Btag +/-
+                    const float num_btag_up = hc["h_num_btagup_"+sr_label]->GetBinContent(xbin, ybin);
+                    const float num_btag_dn = hc["h_num_btagdn_"+sr_label]->GetBinContent(xbin, ybin);
+                    const float eff_btag_up = (num_btag_up) / den;
+                    const float eff_btag_dn = (num_btag_dn) / den;
+                    const float unc_btag_up = fabs(eff_btag_up/eff-1.0);
+                    const float unc_btag_dn = fabs(1.0-eff_btag_dn/eff);
+                    unc_btag    = 0.5 * (unc_btag_up + unc_btag_dn);
 
-    // looper over num/den hists and divide
-    for (size_t i = 0; i != m_sr_nums.size(); i++)
-    {
-        const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", m_sr_nums.at(i))); 
-        const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
-
-        const unsigned int nbinsx = hc["h_den"]->GetNbinsX()+1;
-        const unsigned int nbinsy = hc["h_den"]->GetNbinsY()+1;
-        for (unsigned int xbin = 1; xbin < nbinsx; xbin++)
-        {
-            for (unsigned int ybin = 1; ybin < nbinsy; ybin++)
-            {
-                const float num    = hc["h_num_scaled_"+sr_label]->GetBinContent(xbin, ybin);
-                const float den    = hc["h_den"                 ]->GetBinContent(xbin ,ybin);
-                const float num_up = hc["h_num_jesup_"+sr_label ]->GetBinContent(xbin, ybin);
-                const float num_dn = hc["h_num_jesdn_"+sr_label ]->GetBinContent(xbin, ybin);
-
-                float djes = 0.0;
-                if (den > 0 && num > 0) 
-                {
-                    const float eff    = num / den;
-                    const float eff_up = (num_up) / den;
-                    const float eff_dn = (num_dn) / den;
-	                const float dup    = fabs(eff_up/eff-1.0);
-	                const float ddn    = fabs(1.0-eff_dn/eff);
-	                djes = 0.5 * (dup+ddn);
-                }
-                hc["h_err_jes_"+sr_label]->SetBinContent(xbin, ybin, djes);
-            }
-        }
-    } // end sr loop
-    return;
-}
-
-void InterpLooper::SetBtagSystematic()
-{
-    // convenience alias
-    rt::TH1Container& hc = m_hist_container;
-
-    // looper over num/den hists and divide
-    for (size_t i = 0; i != m_sr_nums.size(); i++)
-    {
-        const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", m_sr_nums.at(i))); 
-        const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
-
-        const unsigned int nbinsx = hc["h_den"]->GetNbinsX()+1;
-        const unsigned int nbinsy = hc["h_den"]->GetNbinsY()+1;
-        for (unsigned int xbin = 1; xbin < nbinsx; xbin++)
-        {
-            for (unsigned int ybin = 1; ybin < nbinsy; ybin++)
-            {
-                const float num    = hc["h_num_scaled_"+sr_label]->GetBinContent(xbin, ybin);
-                const float den    = hc["h_den"                 ]->GetBinContent(xbin ,ybin);
-                const float num_up = hc["h_num_btagup_"+sr_label ]->GetBinContent(xbin, ybin);
-                const float num_dn = hc["h_num_btagdn_"+sr_label ]->GetBinContent(xbin, ybin);
-
-                float dbtag = 0.0;
-                if (den > 0 && num > 0) 
-                {
-                    const float eff    = num / den;
-                    const float eff_up = (num_up) / den;
-                    const float eff_dn = (num_dn) / den;
-	                const float dup    = fabs(eff_up/eff-1.0);
-	                const float ddn    = fabs(1.0-eff_dn/eff);
-	                dbtag = 0.5 * (dup+ddn);
-                }
-                hc["h_err_btag_"+sr_label]->SetBinContent(xbin, ybin, dbtag);
-            }
-        }
-    } // end sr loop
-    return;
-}
-
-void InterpLooper::SetISRSystematic()
-{
-    // convenience alias
-    rt::TH1Container& hc = m_hist_container;
-
-    // looper over num/den hists and divide
-    for (size_t i = 0; i != m_sr_nums.size(); i++)
-    {
-        const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", m_sr_nums.at(i))); 
-        const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
-
-        const unsigned int nbinsx = hc["h_den"]->GetNbinsX()+1;
-        const unsigned int nbinsy = hc["h_den"]->GetNbinsY()+1;
-        for (unsigned int xbin = 1; xbin < nbinsx; xbin++)
-        {
-            for (unsigned int ybin = 1; ybin < nbinsy; ybin++)
-            {
-                const float num       = hc["h_num_scaled_"+sr_label]->GetBinContent(xbin, ybin);
-                const float den       = hc["h_den"                 ]->GetBinContent(xbin ,ybin);
-                const float num_noisr = hc["h_num_noisr_"+sr_label ]->GetBinContent(xbin, ybin);
-
-                float disr = 0.0;
-                if (den > 0 && num > 0) 
-                {
-                    const float eff       = num / den;
+                    // no ISR
+                    const float num_noisr = hc["h_num_noisr_"+sr_label]->GetBinContent(xbin, ybin);
                     const float eff_noisr = (num_noisr) / den;
-	                disr = fabs(1.0-eff/eff_noisr);
+                    unc_noisr = fabs(1.0-eff/eff_noisr);
+
+                    // stats error
+                    const float nevt = hc["h_nevt_"+sr_label]->GetBinContent(xbin, ybin);
+                    unc_stats = (nevt > 0.0 ? 1.0/sqrt(nevt) : 0.0);
+
+                    // total systematic unc
+                    // lumi (4.4%), trigger (3%), lepton selection (5%), JES, ISR, btagging
+                    unc_total = sqrt(m_unc_lumi*m_unc_lumi + m_unc_trig*m_unc_trig + m_unc_lept*m_unc_lept +
+                                     unc_jes*unc_jes + unc_noisr*unc_noisr + unc_btag*unc_btag);
                 }
-                hc["h_err_noisr_"+sr_label]->SetBinContent(xbin, ybin, disr);
+                hc["h_eff_"      +sr_label]->SetBinContent(xbin, ybin, eff      );
+                hc["h_eff_perc_" +sr_label]->SetBinContent(xbin, ybin, eff*100.0);
+                hc["h_err_jes_"  +sr_label]->SetBinContent(xbin, ybin, unc_jes  );
+                hc["h_err_btag_" +sr_label]->SetBinContent(xbin, ybin, unc_btag );
+                hc["h_err_noisr_"+sr_label]->SetBinContent(xbin, ybin, unc_noisr);
+                hc["h_err_stats_"+sr_label]->SetBinContent(xbin, ybin, unc_stats);
+                hc["h_err_total_"+sr_label]->SetBinContent(xbin, ybin, unc_total);
             }
         }
     } // end sr loop
-    return;
-}
 
-void InterpLooper::SetTotalSystematic()
-{
-    // convenience alias
-    rt::TH1Container& hc = m_hist_container;
-
-    // looper over num/den hists and divide
-    for (size_t i = 0; i != m_sr_nums.size(); i++)
-    {
-        const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", m_sr_nums.at(i))); 
-        const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
-
-        const unsigned int nbinsx = hc["h_den"]->GetNbinsX()+1;
-        const unsigned int nbinsy = hc["h_den"]->GetNbinsY()+1;
-        for (unsigned int xbin = 1; xbin < nbinsx; xbin++)
-        {
-            for (unsigned int ybin = 1; ybin < nbinsy; ybin++)
-            {
-                // statistical unc
-                const float nevt     = hc["h_nevt_"+sr_label]->GetBinContent(xbin, ybin);
-                const float unc_stat = (nevt > 0.0 ? 1.0/sqrt(nevt) : 0.0);
-                hc["h_err_stats_"+sr_label]->SetBinContent(xbin, ybin, unc_stat);
-
-                // systematic unc
-                const float unc_jes   = hc["h_err_jes_" +sr_label ]->GetBinContent(xbin, ybin);
-                const float unc_btag  = hc["h_err_btag_"+sr_label ]->GetBinContent(xbin, ybin);
-                const float unc_noisr = hc["h_err_noisr_"+sr_label]->GetBinContent(xbin, ybin);
-	
-                // lumi (4.4%), trigger (3%), lepton selection (5%), JES, ISR, btagging
-                const float total_unc = sqrt(m_unc_lumi*m_unc_lumi + m_unc_trig*m_unc_trig + m_unc_lept*m_unc_lept +
-                                             unc_jes*unc_jes + unc_noisr*unc_noisr + unc_btag*unc_btag);
-
-                hc["h_err_total_"+sr_label]->SetBinContent(xbin, ybin, total_unc);
-
-            }
-        }
-    } // end sr loop
     return;
 }
 
@@ -804,9 +626,6 @@ void InterpLooper::ScanChain
 
     // tree name
     string tree_name = chain.GetName();
-
-    // reset duplicate counter
-//     reset();
 
     // benchmark
     TBenchmark bmark;
@@ -943,7 +762,7 @@ void InterpLooper::ScanChain
     return;
 }
 
-
+// ------------------------------------------------------------------------------------ //
 // The main program 
 // ------------------------------------------------------------------------------------ //
 
@@ -1064,7 +883,7 @@ try
 }
 catch (std::exception& e)
 {
-    cerr << "[stop_interp_plots] Error: failed..." << endl;
-    cerr << e.what() << endl;
+    std::cerr << "[stop_interp_plots] Error: failed..." << std::endl;
+    std::cerr << e.what() << std::endl;
     return 1;
 }
