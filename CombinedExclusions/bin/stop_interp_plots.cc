@@ -47,6 +47,9 @@ class InterpLooper
              const double lumi,
              const double mass_stop,
              const double mass_lsp,
+             const double unc_lumi,
+             const double unc_trig,
+             const double unc_lept,
              const std::string& suffix,
              const bool verbose
         );
@@ -62,6 +65,7 @@ class InterpLooper
         void SetJESSystematic();
         void SetBtagSystematic();
         void SetISRSystematic();
+        void SetTotalSystematic();
 
         // scan the chain
         void ScanChain
@@ -84,6 +88,9 @@ class InterpLooper
         const double m_lumi;
         const double m_mass_stop;
         const double m_mass_lsp;
+        const double m_unc_lumi;
+        const double m_unc_trig;
+        const double m_unc_lept;
         const std::string m_suffix;
         const bool m_verbose;
 
@@ -105,6 +112,9 @@ InterpLooper::InterpLooper
     const double lumi,
     const double mass_stop,
     const double mass_lsp,
+    const double unc_lumi,
+    const double unc_trig,
+    const double unc_lept,
     const std::string& suffix,
     const bool verbose
 )
@@ -117,6 +127,9 @@ InterpLooper::InterpLooper
     , m_lumi(lumi)
     , m_mass_stop(mass_stop)
     , m_mass_lsp(mass_lsp)
+    , m_unc_lumi(unc_lumi)
+    , m_unc_trig(unc_trig)
+    , m_unc_lept(unc_lept)
     , m_suffix(suffix)
     , m_verbose(verbose)
     , m_analysis_type(stop::GetAnalysisTypeFromName(m_analysis_type_name))
@@ -165,17 +178,19 @@ void InterpLooper::BeginJob()
         hc.Add(new TH2F(Form("h_eff_%s"            , sr_info.label.c_str()), Form("Efficiency %s"           , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_eff_perc_%s"       , sr_info.label.c_str()), Form("Efficiency Percentage %s", bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
 
-        hc.Add(new TH2F(Form("h_num_scaled_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi %s"            , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_eff_scaled_%s"     , sr_info.label.c_str()), Form("Efficiency with scale1fb*lumi %s"           , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_eff_scaled_perc_%s", sr_info.label.c_str()), Form("Efficiency Percentage with scale1fb*lumi %s", bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_jesup_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES+ %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_jesdn_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES- %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_err_jes_%s"        , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, JES+/- %s"   , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_btagup_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG+ %s"     , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_btagdn_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG- %s"     , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_err_btag_%s"       , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, BTAG+/- %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_num_noisr_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, ISR %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
-        hc.Add(new TH2F(Form("h_err_noisr_%s"      , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, ISR %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_scaled_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi %s"              , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_eff_scaled_%s"     , sr_info.label.c_str()), Form("Efficiency with scale1fb*lumi %s"             , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_eff_scaled_perc_%s", sr_info.label.c_str()), Form("Efficiency Percentage with scale1fb*lumi %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_jesup_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES+ %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_jesdn_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES- %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_jes_%s"        , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, JES+/- %s"     , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_btagup_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG+ %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_btagdn_%s"     , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG- %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_btag_%s"       , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, BTAG+/- %s"    , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_noisr_%s"      , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, ISR %s"         , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_noisr_%s"      , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, ISR %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_total_%s"      , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, Total %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_stats_%s"      , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, Statistical %s", bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
     }
 
     // number of generated events (from the file)
@@ -228,11 +243,12 @@ void InterpLooper::EndJob()
     // convenience alias
     rt::TH1Container& hc = m_hist_container;
 
-    // calculate the efficiencies
+    // calculate the efficiencies/uncertainties
     CalculateEfficiency();
     SetJESSystematic();
     SetBtagSystematic();
     SetISRSystematic();
+    SetTotalSystematic();
 
     // save the plots
     if (m_verbose) {std::cout << "[InterpLooper::EndJob] InterpLooper saving histograms." << std::endl;}
@@ -474,24 +490,13 @@ void InterpLooper::Analyze()
         return;
     }
 
-    // does it pass the preselection 
+    // does it pass the preselection?
     //--------------------------------------------------
     const bool passes_presel_nominal = PassesPreselection(m_analysis_type, ScaleType::NONE);
     const bool passes_presel_jes_up  = PassesPreselection(m_analysis_type, ScaleType::JES_UP);
     const bool passes_presel_jes_dn  = PassesPreselection(m_analysis_type, ScaleType::JES_DN);
     const bool passes_presel_btag_up = PassesPreselection(m_analysis_type, ScaleType::BTAG_UP);
     const bool passes_presel_btag_dn = PassesPreselection(m_analysis_type, ScaleType::BTAG_DN);
-
-//     bool passes_presel = passes_rho()
-//         && passes_goodlep()
-//         && (passes_el() or passes_mu())
-//         && passes_njets4()
-//         && passes_btag1()
-//         && passes_passisotrk()
-//         && passes_tauveto()
-//         && passes_met100()
-//         && passes_mt120()
-//         && (m_analysis_type == AnalysisType::bdt ? passes_testing() : true);
 
     if (not (passes_presel_nominal or passes_presel_jes_up or passes_presel_jes_dn or 
              passes_presel_btag_up or passes_presel_btag_dn))
@@ -729,6 +734,45 @@ void InterpLooper::SetISRSystematic()
     return;
 }
 
+void InterpLooper::SetTotalSystematic()
+{
+    // convenience alias
+    rt::TH1Container& hc = m_hist_container;
+
+    // looper over num/den hists and divide
+    for (size_t i = 0; i != m_sr_nums.size(); i++)
+    {
+        const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", m_sr_nums.at(i))); 
+        const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
+
+        const unsigned int nbinsx = hc["h_den"]->GetNbinsX()+1;
+        const unsigned int nbinsy = hc["h_den"]->GetNbinsY()+1;
+        for (unsigned int xbin = 1; xbin < nbinsx; xbin++)
+        {
+            for (unsigned int ybin = 1; ybin < nbinsy; ybin++)
+            {
+                // statistical unc
+                const float nevt     = hc["h_nevt_"+sr_label]->GetBinContent(xbin, ybin);
+                const float unc_stat = (nevt > 0.0 ? 1.0/sqrt(nevt) : 0.0);
+                hc["h_err_stats_"+sr_label]->SetBinContent(xbin, ybin, unc_stat);
+
+                // systematic unc
+                const float unc_jes   = hc["h_err_jes_" +sr_label ]->GetBinContent(xbin, ybin);
+                const float unc_btag  = hc["h_err_btag_"+sr_label ]->GetBinContent(xbin, ybin);
+                const float unc_noisr = hc["h_err_noisr_"+sr_label]->GetBinContent(xbin, ybin);
+	
+                // lumi (4.4%), trigger (3%), lepton selection (5%), JES, ISR, btagging
+                const float total_unc = sqrt(m_unc_lumi*m_unc_lumi + m_unc_trig*m_unc_trig + m_unc_lept*m_unc_lept +
+                                             unc_jes*unc_jes + unc_noisr*unc_noisr + unc_btag*unc_btag);
+
+                hc["h_err_total_"+sr_label]->SetBinContent(xbin, ybin, total_unc);
+
+            }
+        }
+    } // end sr loop
+    return;
+}
+
 // boiler plate code to perform a analysis on a chain
 // (no run list or duplicate removal at the moment)
 void InterpLooper::ScanChain
@@ -945,6 +989,9 @@ try
     const double lumi                              = cfg.getParameter<double>("lumi");
     const double mass_stop                         = cfg.getParameter<double>("mass_stop");
     const double mass_lsp                          = cfg.getParameter<double>("mass_lsp");
+    const double unc_lumi                          = cfg.getParameter<double>("unc_lumi");
+    const double unc_trig                          = cfg.getParameter<double>("unc_trig");
+    const double unc_lept                          = cfg.getParameter<double>("unc_lept");
     const std::vector<unsigned int> search_regions = cfg.getParameter<std::vector<unsigned int> >("search_regions");
 
     // for each search region, makes the set of histograms
@@ -968,8 +1015,11 @@ try
     printf("%-25s = %s\n"    , "xsec_hist_name"     , xsec_hist_name.c_str()     ); 
     printf("%-25s = %d\n"    , "verbose"            , verbose                    ); 
     printf("%-25s = %s\n"    , "suffix"             , suffix.c_str()             ); 
-    printf("%-25s = %1.2f\n" , "mass_stop"          , mass_stop                  ); 
-    printf("%-25s = %1.2f\n" , "mass_lsp"           , mass_lsp                   ); 
+    printf("%-25s = %1.0f\n" , "mass_stop"          , mass_stop                  ); 
+    printf("%-25s = %1.0f\n" , "mass_lsp"           , mass_lsp                   ); 
+    printf("%-25s = %1.3f\n" , "unc_lumi"           , unc_lumi                   ); 
+    printf("%-25s = %1.3f\n" , "unc_trig"           , unc_trig                   ); 
+    printf("%-25s = %1.3f\n" , "unc_lept"           , unc_lept                   ); 
 
     // print the search regions
     printf("%-25s = ", "SR(s)");
@@ -997,6 +1047,9 @@ try
         lumi,
         mass_stop,
         mass_lsp,
+        unc_lumi,
+        unc_trig,
+        unc_lept,
         suffix,
         verbose
     ); 

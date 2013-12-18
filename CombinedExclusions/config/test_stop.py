@@ -35,6 +35,11 @@ process.stop_interp_plots = cms.PSet(
 	## search regions
 	search_regions = cms.vuint32(0, 1, 2, 3, 4, 5, 6),
 
+	## signal uncertainties measured elsewhere
+	unc_lumi = cms.double(0.044),
+	unc_trig = cms.double(0.030),
+	unc_lept = cms.double(0.050),
+
 	## select a specific sparm parameter
 	mass_stop = cms.double(-1),
 	mass_lsp  = cms.double(-1),
