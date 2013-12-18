@@ -13,7 +13,7 @@ void PrintValidation
 )
 {
     rt::TH1Container hc("plots/stop_test/t2tt_bdt_hists.root");
-    hc.List();
+/*     hc.List(); */
     const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", signal_region_num)); 
     const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
 
@@ -59,9 +59,9 @@ void PrintValidation
 void QuickValidation()
 {
     PrintValidation(300, 50, 1);
-/*     PrintValidation(300, 50, 2); */
-/*     PrintValidation(300, 50, 3); */
-/*     PrintValidation(300, 50, 4); */
-/*     PrintValidation(300, 50, 5); */
-/*     PrintValidation(300, 50, 6); */
+    PrintValidation(300, 50, 2);
+    PrintValidation(300, 50, 3);
+    PrintValidation(300, 50, 4);
+    PrintValidation(300, 50, 5);
+    PrintValidation(300, 50, 6);
 }
