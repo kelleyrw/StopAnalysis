@@ -11,10 +11,11 @@ namespace stop
     {
         struct value_t
         {
+            // members:
             double value;
             double error;
         
-            // members
+            // methods:
             std::string pm() const;
         };
 
@@ -40,8 +41,3 @@ namespace stop
 } // namespace stop
 
 #endif // STOP_YIELDS_H
-
-
-// yield[sr].rare.el.value = blah
-
-
