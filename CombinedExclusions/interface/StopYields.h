@@ -5,8 +5,7 @@
 
 namespace stop
 {
-    // simple struct to hold the values
-
+    // simple struct to hold the yield
     struct Yield
     {
         struct value_t
@@ -24,6 +23,7 @@ namespace stop
         value_t lep;
     };
 
+    // simple struct to hold the results
     struct Result
     {
         Yield ttdil;
