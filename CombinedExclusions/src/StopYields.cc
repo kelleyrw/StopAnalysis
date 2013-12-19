@@ -11,7 +11,9 @@ namespace stop
     }
 
     // static variable to hold the data
-    static const Result s_stop_yields[stop::SignalRegion::static_size] = 
+    // Taken from AN-2013/89 (page 48)
+    // http://cms.cern.ch/iCMS/jsp/openfile.jsp?tp=draft&files=AN2013_089_v9.pdf
+    static const Result s_yields[stop::SignalRegion::static_size] = 
     {
         //         electrons       muons           both
         { // preselection (not used)
@@ -76,7 +78,7 @@ namespace stop
     void PrintYieldTable()
     {
         // convenience reference
-        const Result (&y)[stop::SignalRegion::static_size] = s_stop_yields;
+        const Result (&y)[stop::SignalRegion::static_size] = s_yields;
 
         CTable t_mu;
         t_mu.useTitle();
