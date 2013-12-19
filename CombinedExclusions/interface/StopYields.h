@@ -22,7 +22,6 @@ namespace stop
         value_t el;
         value_t mu;
         value_t lep;
-
     };
 
     struct Result
