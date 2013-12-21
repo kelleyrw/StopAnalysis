@@ -6,3 +6,7 @@
 <environment>
   <bin file="stop_interp_plots.cc"/>
 </environment>
+<environment>
+  <use name="boost_program_options"/>
+  <bin file="stop_create_card.cc"/>
+</environment>

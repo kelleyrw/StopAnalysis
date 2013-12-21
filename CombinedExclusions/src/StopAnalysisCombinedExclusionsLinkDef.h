@@ -17,5 +17,9 @@
 #pragma link C++ enum stop::AnalysisType::value_type;
 #pragma link C++ enum stop::Sample::value_type;
 #pragma link C++ enum stop::SignalRegion::value_type;
+#pragma link C++ typedef stop::ResultArray;
+// #pragma link C++ function stop::GetResultArray;
+// #pragma link C++ function stop::GetResult;
+// #pragma link C++ function stop::PrintYieldTable;
 
 #endif

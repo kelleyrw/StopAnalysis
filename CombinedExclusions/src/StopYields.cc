@@ -10,10 +10,17 @@ namespace stop
         return lt::pm(value, error, "4.1");
     }
 
+    // calc the percent error 
+    double Yield::value_t::frac_error() const
+    {
+        return error/value;
+    }
+
     // static variable to hold the data
     // Taken from AN-2013/89 (page 48)
     // http://cms.cern.ch/iCMS/jsp/openfile.jsp?tp=draft&files=AN2013_089_v9.pdf
-    static const Result s_yields[stop::SignalRegion::static_size] = 
+    // BDT only results
+    static const ResultArray s_yields = 
     {
         //         electrons       muons           both
         { // preselection (not used)
@@ -74,11 +81,23 @@ namespace stop
         }
     };
 
+    // retun the results for each signal region (for BDT only for now)
+    const ResultArray& GetResultArray()
+    {
+        return s_yields;
+    }
+
+    // return the results for an individual SR
+    const Result& GetResult(const stop::SignalRegion::value_type signal_region)
+    {
+        return s_yields[signal_region];
+    }
+
     // quick method to print the yields
-    void PrintYieldTable()
+    void PrintYieldTable(std::ostream& out)
     {
         // convenience reference
-        const Result (&y)[stop::SignalRegion::static_size] = s_yields;
+        const ResultArray& y = GetResultArray();
 
         CTable t_mu;
         t_mu.useTitle();
@@ -91,7 +110,7 @@ namespace stop
                     ("Total"                             , y[1].total.mu.pm() , y[2].total.mu.pm() , y[3].total.mu.pm() , y[4].total.mu.pm() , y[5].total.mu.pm() , y[6].total.mu.pm())
                     ("Data"                              , y[1].data.mu.value , y[2].data.mu.value , y[3].data.mu.value , y[4].data.mu.value , y[5].data.mu.value , y[6].data.mu.value)
                     ;
-        t_mu.print();
+        out << t_mu << std::endl;
 
         CTable t_el;
         t_el.useTitle();
@@ -104,7 +123,7 @@ namespace stop
                     ("Total"                             , y[1].total.el.pm() , y[2].total.el.pm() , y[3].total.el.pm() , y[4].total.el.pm() , y[5].total.el.pm() , y[6].total.el.pm())
                     ("Data"                              , y[1].data.el.value , y[2].data.el.value , y[3].data.el.value , y[4].data.el.value , y[5].data.el.value , y[6].data.el.value)
                     ;
-        t_el.print();
+        out << t_el << std::endl;
 
         CTable t_lep;
         t_lep.useTitle();
@@ -117,7 +136,7 @@ namespace stop
                     ("Total"                             , y[1].total.lep.pm() , y[2].total.lep.pm() , y[3].total.lep.pm() , y[4].total.lep.pm() , y[5].total.lep.pm() , y[6].total.lep.pm())
                     ("Data"                              , y[1].data.lep.value , y[2].data.lep.value , y[3].data.lep.value , y[4].data.lep.value , y[5].data.lep.value , y[6].data.lep.value)
                     ;
-        t_lep.print();
+        out << t_lep << std::endl;
     }
 
 } // namespace stop

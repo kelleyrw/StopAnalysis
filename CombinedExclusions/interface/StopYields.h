@@ -2,6 +2,8 @@
 #define STOP_YIELDS_H
 
 #include <string>
+#include <iostream>
+#include "StopAnalysis/CombinedExclusions/interface/SignalRegion.h"
 
 namespace stop
 {
@@ -16,6 +18,7 @@ namespace stop
         
             // methods:
             std::string pm() const;
+            double frac_error() const;
         };
 
         value_t el;
@@ -34,8 +37,15 @@ namespace stop
         Yield data;
     };
 
+    // retun the results for each signal region (for BDT only for now)
+    typedef Result ResultArray[stop::SignalRegion::static_size];
+    const ResultArray& GetResultArray();
+
+    // return the results for an individual SR
+    const Result& GetResult(const stop::SignalRegion::value_type signal_region);
+
     // quick method to print the yields
-    void PrintYieldTable();
+    void PrintYieldTable(std::ostream& out = std::cout);
 
 } // namespace stop
 
