@@ -33,7 +33,7 @@ namespace stop
         Yield ttslo;
         Yield wjets;
         Yield rare;
-        Yield total;
+        Yield bkgd;
         Yield data;
     };
 

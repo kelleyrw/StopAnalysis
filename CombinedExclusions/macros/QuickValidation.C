@@ -59,9 +59,9 @@ void PrintValidation
 void QuickValidation()
 {
     PrintValidation(300, 50, 1);
-    PrintValidation(300, 50, 2);
-    PrintValidation(300, 50, 3);
-    PrintValidation(300, 50, 4);
-    PrintValidation(300, 50, 5);
-    PrintValidation(300, 50, 6);
+/*     PrintValidation(300, 50, 2); */
+/*     PrintValidation(300, 50, 3); */
+/*     PrintValidation(300, 50, 4); */
+/*     PrintValidation(300, 50, 5); */
+/*     PrintValidation(300, 50, 6); */
 }

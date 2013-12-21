@@ -20,6 +20,8 @@ struct card_info_t
     float wjets_unc;
     float rare;
     float rare_unc;
+    float bkgd;
+    float bkgd_unc;
     float acc;
     float trig_unc;
     float lep_unc;
@@ -28,50 +30,85 @@ struct card_info_t
     float btag_unc;
     float jes_unc;
     float stat_unc;
+    float total_unc;
 };
 
 void PrintCard(std::ostream &out, const card_info_t& info)
 {
     // card string
+//     const std::string card = Form("imax 1 number of search regions\n"
+// "jmax 4 number of backgrounds ('*' = automatic)\n"
+// "kmax * number of nuisance parameters (sources of systematical uncertainties)\n"
+// "------------\n"
+// "       bin      %s\n"
+// "observation     %u\n"
+// "------------\n"
+// "bin                     %-12s%-12s%-12s%-12s%-12s\n"
+// "process                 signal      ttdil       ttslo       wjets       rare  \n"
+// "process                 0           1           2           3           4     \n"
+// "rate                    %-6.3f      %-6.1f      %-6.1f      %-6.1f      %-6.1f\n"
+// "### Error Matrix\n"                                                        
+// "------------\n"                                                            
+// "ttdil_unc        lnN    -           %1.3f       -           -           -     \n"
+// "ttslo_unc        lnN    -           -           %1.3f       -           -     \n"
+// "wjets_unc        lnN    -           -           -           %1.3f       -     \n"
+// "rare_unc         lnN    -           -           -           -           %1.3f \n"
+// "trig_unc         lnN    %1.3f       -           -           -           -     \n"
+// "lep_unc          lnN    %1.3f       -           -           -           -     \n"
+// "lumi_unc         lnN    %1.3f       -           -           -           -     \n"
+// "isr_unc          lnN    %1.3f       -           -           -           -     \n"
+// "btag_unc         lnN    %1.3f       -           -           -           -     \n"
+// "jes_unc          lnN    %1.3f       -           -           -           -     \n"
+//         , info.sr_name.c_str() 
+//         , info.obs
+//         , info.sr_name.c_str() 
+//         , info.sr_name.c_str() 
+//         , info.sr_name.c_str() 
+//         , info.sr_name.c_str() 
+//         , info.sr_name.c_str() 
+//         , info.acc
+//         , info.ttdil
+//         , info.ttslo
+//         , info.wjets
+//         , info.rare
+//         , info.ttdil_unc
+//         , info.ttslo_unc
+//         , info.wjets_unc
+//         , info.rare_unc
+//         , info.trig_unc
+//         , info.lep_unc
+//         , info.lumi_unc
+//         , info.isr_unc
+//         , info.btag_unc
+//         , info.jes_unc
+//     );
     const std::string card = Form("imax 1 number of search regions\n"
-"jmax 4 number of backgrounds ('*' = automatic)\n"
+"jmax 1 number of backgrounds ('*' = automatic)\n"
 "kmax * number of nuisance parameters (sources of systematical uncertainties)\n"
 "------------\n"
 "       bin      %s\n"
 "observation     %u\n"
 "------------\n"
-"bin                     %-12s%-12s%-12s%-12s%-12s\n"
-"process                 signal      ttdil       ttslo       wjets       rare  \n"
-"process                 0           1           2           3           4     \n"
-"rate                    %-6.3f      %-6.1f      %-6.1f      %-6.1f      %-6.1f\n"
-"### Error Matrix\n"                                                        
-"------------\n"                                                            
-"ttdil_unc        lnN    -           %1.3f       -           -           -     \n"
-"ttslo_unc        lnN    -           -           %1.3f       -           -     \n"
-"wjets_unc        lnN    -           -           -           %1.3f       -     \n"
-"rare_unc         lnN    -           -           -           -           %1.3f \n"
-"trig_unc         lnN    %1.3f       -           -           -           -     \n"
-"lep_unc          lnN    %1.3f       -           -           -           -     \n"
-"lumi_unc         lnN    %1.3f       -           -           -           -     \n"
-"isr_unc          lnN    %1.3f       -           -           -           -     \n"
-"btag_unc         lnN    %1.3f       -           -           -           -     \n"
-"jes_unc          lnN    %1.3f       -           -           -           -     \n"
+"bin                     %-12s%-12s\n"
+"process                 signal      bkgd  \n"
+"process                 0           1     \n"
+"rate                    %-6.3f      %-6.1f\n"
+"### Error Matrix\n"                       
+"------------\n"                           
+"bkgd_unc         lnN    -           %1.3f \n"
+"trig_unc         lnN    %1.3f       -     \n"
+"lep_unc          lnN    %1.3f       -     \n"
+"lumi_unc         lnN    %1.3f       -     \n"
+"isr_unc          lnN    %1.3f       -     \n"
+"btag_unc         lnN    %1.3f       -     \n"
+"jes_unc          lnN    %1.3f       -     \n"
         , info.sr_name.c_str() 
         , info.obs
         , info.sr_name.c_str() 
         , info.sr_name.c_str() 
-        , info.sr_name.c_str() 
-        , info.sr_name.c_str() 
-        , info.sr_name.c_str() 
         , info.acc
-        , info.ttdil
-        , info.ttslo
-        , info.wjets
-        , info.rare
-        , info.ttdil_unc
-        , info.ttslo_unc
-        , info.wjets_unc
-        , info.rare_unc
+        , info.bkgd
+        , info.bkgd_unc
         , info.trig_unc
         , info.lep_unc
         , info.lumi_unc
@@ -202,12 +239,14 @@ try
     info.ttslo     = stop_result.ttslo.lep.value; 
     info.wjets     = stop_result.wjets.lep.value; 
     info.rare      = stop_result.rare.lep.value; 
+    info.bkgd      = stop_result.bkgd.lep.value; 
     info.ttdil_unc = 1.0 + stop_result.ttdil.lep.frac_error(); 
     info.ttslo_unc = 1.0 + stop_result.ttslo.lep.frac_error(); 
     info.wjets_unc = 1.0 + stop_result.wjets.lep.frac_error(); 
     info.rare_unc  = 1.0 + stop_result.rare.lep.frac_error(); 
+    info.bkgd_unc  = 1.0 + stop_result.bkgd.lep.frac_error(); 
 
-    info.acc       = lumi*GetValueFromScanHist(hc["h_eff_"+signal_region_info.label], mass_stop, mass_lsp) ;
+    info.acc       = lumi*GetValueFromScanHist(hc["h_eff_"+signal_region_info.label], mass_stop, mass_lsp);
     info.trig_unc  = 1.030;
     info.lumi_unc  = 1.044;
     info.lep_unc   = 1.050;
@@ -215,6 +254,7 @@ try
     info.btag_unc  = 1.0 + GetValueFromScanHist(hc["h_err_btag_" +signal_region_info.label], mass_stop, mass_lsp);
     info.jes_unc   = 1.0 + GetValueFromScanHist(hc["h_err_jes_"  +signal_region_info.label], mass_stop, mass_lsp);
     info.stat_unc  = 1.0 + GetValueFromScanHist(hc["h_err_stats_"+signal_region_info.label], mass_stop, mass_lsp);
+    info.total_unc = 1.0 + GetValueFromScanHist(hc["h_err_total_"+signal_region_info.label], mass_stop, mass_lsp);
 
     // print the card
     if (output_file.empty())
