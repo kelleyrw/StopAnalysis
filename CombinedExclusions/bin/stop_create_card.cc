@@ -43,7 +43,7 @@ void PrintCard(std::ostream &out, const card_info_t& info)
 "bin                     %-12s%-12s%-12s%-12s%-12s\n"
 "process                 signal      ttdil       ttslo       wjets       rare  \n"
 "process                 0           1           2           3           4     \n"
-"rate                    %-6.1f      %-6.1f      %-6.1f      %-6.1f      %-6.1f\n"
+"rate                    %-6.3f      %-6.1f      %-6.1f      %-6.1f      %-6.1f\n"
 "### Error Matrix\n"                                                        
 "------------\n"                                                            
 "ttdil_unc        lnN    -           %1.3f       -           -           -     \n"
@@ -97,7 +97,7 @@ const float GetValueFromScanHist(TH1* const hist, const float mass_stop, const f
     }
     else
     {
-        return 1.0 + value;
+        return value;
     }
 }
 
@@ -207,14 +207,14 @@ try
     info.wjets_unc = 1.0 + stop_result.wjets.lep.frac_error(); 
     info.rare_unc  = 1.0 + stop_result.rare.lep.frac_error(); 
 
-    info.acc       = GetValueFromScanHist(hc["h_eff_"+signal_region_info.label], mass_stop, mass_lsp) ;
+    info.acc       = lumi*GetValueFromScanHist(hc["h_eff_"+signal_region_info.label], mass_stop, mass_lsp) ;
     info.trig_unc  = 1.030;
     info.lumi_unc  = 1.044;
     info.lep_unc   = 1.050;
-    info.isr_unc   = GetValueFromScanHist(hc["h_err_noisr_"+signal_region_info.label], mass_stop, mass_lsp);
-    info.btag_unc  = GetValueFromScanHist(hc["h_err_btag_" +signal_region_info.label], mass_stop, mass_lsp);
-    info.jes_unc   = GetValueFromScanHist(hc["h_err_jes_"  +signal_region_info.label], mass_stop, mass_lsp);
-    info.stat_unc  = GetValueFromScanHist(hc["h_err_stats_"+signal_region_info.label], mass_stop, mass_lsp);
+    info.isr_unc   = 1.0 + GetValueFromScanHist(hc["h_err_noisr_"+signal_region_info.label], mass_stop, mass_lsp);
+    info.btag_unc  = 1.0 + GetValueFromScanHist(hc["h_err_btag_" +signal_region_info.label], mass_stop, mass_lsp);
+    info.jes_unc   = 1.0 + GetValueFromScanHist(hc["h_err_jes_"  +signal_region_info.label], mass_stop, mass_lsp);
+    info.stat_unc  = 1.0 + GetValueFromScanHist(hc["h_err_stats_"+signal_region_info.label], mass_stop, mass_lsp);
 
     // print the card
     if (output_file.empty())
