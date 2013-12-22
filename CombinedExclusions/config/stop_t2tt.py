@@ -27,7 +27,7 @@ process.stop_interp_plots = cms.PSet(
 	lumi = cms.double(19.5),
 	
 	## output label to give it a unique name
-	output_label = cms.string("stop_test"),
+	output_label = cms.string("t2tt"),
 
 	## analysis type name 
 	analysis_type_name = cms.string("bdt"),

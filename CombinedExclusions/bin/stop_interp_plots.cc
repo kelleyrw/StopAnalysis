@@ -817,7 +817,7 @@ try
     // -------------------------------------------------------------------------------------------------//
 
     // output ROOT file name
-    const std::string output_file_name = Form("%s/plots/%s/%s_%s_hists.root",
+    const std::string output_file_name = Form("%s/plots/interp/%s/%s_%s_hists.root",
             analysis_path.c_str(),
             output_label.c_str(),
             sample_name.c_str(),

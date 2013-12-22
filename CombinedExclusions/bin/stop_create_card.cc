@@ -82,6 +82,7 @@ void PrintCard(std::ostream &out, const card_info_t& info)
 //         , info.btag_unc
 //         , info.jes_unc
 //     );
+
     const std::string card = Form("imax 1 number of search regions\n"
 "jmax 1 number of backgrounds ('*' = automatic)\n"
 "kmax * number of nuisance parameters (sources of systematical uncertainties)\n"
@@ -116,6 +117,31 @@ void PrintCard(std::ostream &out, const card_info_t& info)
         , info.btag_unc
         , info.jes_unc
     );
+
+//     const std::string card = Form("imax 1 number of search regions\n"
+// "jmax 1 number of backgrounds ('*' = automatic)\n"
+// "kmax * number of nuisance parameters (sources of systematical uncertainties)\n"
+// "------------\n"
+// "       bin      %s\n"
+// "observation     %u\n"
+// "------------\n"
+// "bin                     %-12s%-12s\n"
+// "process                 signal      bkgd  \n"
+// "process                 0           1     \n"
+// "rate                    %-6.3f      %-6.1f\n"
+// "### Error Matrix\n"                       
+// "------------\n"                           
+// "bkgd_unc         lnN    -           %1.3f \n"
+// "signal_unc       lnN    %1.3f       -     \n"
+//         , info.sr_name.c_str() 
+//         , info.obs
+//         , info.sr_name.c_str() 
+//         , info.sr_name.c_str() 
+//         , info.acc
+//         , info.bkgd
+//         , info.bkgd_unc
+//         , info.total_unc
+//     );
 
     // print it
     out << card << std::endl;

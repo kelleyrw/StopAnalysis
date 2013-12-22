@@ -12,7 +12,7 @@ void PrintValidation
     const int signal_region_num
 )
 {
-    rt::TH1Container hc("plots/stop_test/t2tt_bdt_hists.root");
+    rt::TH1Container hc("plots/interp/t2tt/t2tt_bdt_hists.root");
 /*     hc.List(); */
     const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", signal_region_num)); 
     const std::string sr_label = stop::GetSignalRegionInfo(signal_region).label; 
