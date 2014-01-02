@@ -37,8 +37,8 @@ void PrintCard(std::ostream &out, const card_info_t& info)
 {
     // card string
 //     const std::string card = Form("imax 1 number of search regions\n"
-// "jmax 4 number of backgrounds ('*' = automatic)\n"
-// "kmax * number of nuisance parameters (sources of systematical uncertainties)\n"
+// "jmax 4  number of backgrounds ('*' = automatic)\n"
+// "kmax 10 number of nuisance parameters (sources of systematical uncertainties)\n"
 // "------------\n"
 // "       bin      %s\n"
 // "observation     %u\n"
@@ -85,7 +85,7 @@ void PrintCard(std::ostream &out, const card_info_t& info)
 
     const std::string card = Form("imax 1 number of search regions\n"
 "jmax 1 number of backgrounds ('*' = automatic)\n"
-"kmax * number of nuisance parameters (sources of systematical uncertainties)\n"
+"kmax 7 number of nuisance parameters (sources of systematical uncertainties)\n"
 "------------\n"
 "       bin      %s\n"
 "observation     %u\n"
@@ -120,7 +120,7 @@ void PrintCard(std::ostream &out, const card_info_t& info)
 
 //     const std::string card = Form("imax 1 number of search regions\n"
 // "jmax 1 number of backgrounds ('*' = automatic)\n"
-// "kmax * number of nuisance parameters (sources of systematical uncertainties)\n"
+// "kmax 2 number of nuisance parameters (sources of systematical uncertainties)\n"
 // "------------\n"
 // "       bin      %s\n"
 // "observation     %u\n"
