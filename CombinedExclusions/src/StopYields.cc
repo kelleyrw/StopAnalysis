@@ -10,6 +10,12 @@ namespace stop
         return lt::pm(value, error, "4.1");
     }
 
+    // simple struct to print +/-
+    std::string Yield::value_t::pp() const
+    {
+        return Form("%s (%1.0f%%)", lt::pm(value, error, "4.1").c_str(), 100.0*frac_error());
+    }
+
     // calc the percent error 
     double Yield::value_t::frac_error() const
     {
@@ -107,7 +113,7 @@ namespace stop
                     ("t\\bar{t} \\rigtharrow \\ell + X"  , y[1].ttslo.mu.pm() , y[2].ttslo.mu.pm() , y[3].ttslo.mu.pm() , y[4].ttslo.mu.pm() , y[5].ttslo.mu.pm() , y[6].ttslo.mu.pm())
                     ("W + \\text{jets}"                  , y[1].wjets.mu.pm() , y[2].wjets.mu.pm() , y[3].wjets.mu.pm() , y[4].wjets.mu.pm() , y[5].wjets.mu.pm() , y[6].wjets.mu.pm())
                     ("Rare"                              , y[1].rare.mu.pm()  , y[2].rare.mu.pm()  , y[3].rare.mu.pm()  , y[4].rare.mu.pm()  , y[5].rare.mu.pm()  , y[6].rare.mu.pm() )
-                    ("Total"                             , y[1].bkgd.mu.pm()  , y[2].bkgd.mu.pm()  , y[3].bkgd.mu.pm()  , y[4].bkgd.mu.pm()  , y[5].bkgd.mu.pm()  , y[6].bkgd.mu.pm())
+                    ("Total"                             , y[1].bkgd.mu.pp()  , y[2].bkgd.mu.pp()  , y[3].bkgd.mu.pp()  , y[4].bkgd.mu.pp()  , y[5].bkgd.mu.pp()  , y[6].bkgd.mu.pp())
                     ("Data"                              , y[1].data.mu.value , y[2].data.mu.value , y[3].data.mu.value , y[4].data.mu.value , y[5].data.mu.value , y[6].data.mu.value)
                     ;
         out << t_mu << std::endl;
@@ -120,7 +126,7 @@ namespace stop
                     ("t\\bar{t} \\rigtharrow \\ell + X"  , y[1].ttslo.el.pm() , y[2].ttslo.el.pm() , y[3].ttslo.el.pm() , y[4].ttslo.el.pm() , y[5].ttslo.el.pm() , y[6].ttslo.el.pm())
                     ("W + \\text{jets}"                  , y[1].wjets.el.pm() , y[2].wjets.el.pm() , y[3].wjets.el.pm() , y[4].wjets.el.pm() , y[5].wjets.el.pm() , y[6].wjets.el.pm())
                     ("Rare"                              , y[1].rare.el.pm()  , y[2].rare.el.pm()  , y[3].rare.el.pm()  , y[4].rare.el.pm()  , y[5].rare.el.pm()  , y[6].rare.el.pm() )
-                    ("Total"                             , y[1].bkgd.el.pm()  , y[2].bkgd.el.pm()  , y[3].bkgd.el.pm()  , y[4].bkgd.el.pm()  , y[5].bkgd.el.pm()  , y[6].bkgd.el.pm())
+                    ("Total"                             , y[1].bkgd.el.pp()  , y[2].bkgd.el.pp()  , y[3].bkgd.el.pp()  , y[4].bkgd.el.pp()  , y[5].bkgd.el.pp()  , y[6].bkgd.el.pp())
                     ("Data"                              , y[1].data.el.value , y[2].data.el.value , y[3].data.el.value , y[4].data.el.value , y[5].data.el.value , y[6].data.el.value)
                     ;
         out << t_el << std::endl;
@@ -133,7 +139,7 @@ namespace stop
                     ("t\\bar{t} \\rigtharrow \\ell + X"  , y[1].ttslo.lep.pm() , y[2].ttslo.lep.pm() , y[3].ttslo.lep.pm() , y[4].ttslo.lep.pm() , y[5].ttslo.lep.pm() , y[6].ttslo.lep.pm())
                     ("W + \\text{jets}"                  , y[1].wjets.lep.pm() , y[2].wjets.lep.pm() , y[3].wjets.lep.pm() , y[4].wjets.lep.pm() , y[5].wjets.lep.pm() , y[6].wjets.lep.pm())
                     ("Rare"                              , y[1].rare.lep.pm()  , y[2].rare.lep.pm()  , y[3].rare.lep.pm()  , y[4].rare.lep.pm()  , y[5].rare.lep.pm()  , y[6].rare.lep.pm() )
-                    ("Total"                             , y[1].bkgd.lep.pm()  , y[2].bkgd.lep.pm()  , y[3].bkgd.lep.pm()  , y[4].bkgd.lep.pm()  , y[5].bkgd.lep.pm()  , y[6].bkgd.lep.pm())
+                    ("Total"                             , y[1].bkgd.lep.pp()  , y[2].bkgd.lep.pp()  , y[3].bkgd.lep.pp()  , y[4].bkgd.lep.pp()  , y[5].bkgd.lep.pp()  , y[6].bkgd.lep.pp())
                     ("Data"                              , y[1].data.lep.value , y[2].data.lep.value , y[3].data.lep.value , y[4].data.lep.value , y[5].data.lep.value , y[6].data.lep.value)
                     ;
         out << t_lep << std::endl;

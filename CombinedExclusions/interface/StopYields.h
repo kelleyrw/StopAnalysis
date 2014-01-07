@@ -17,7 +17,8 @@ namespace stop
             double error;
         
             // methods:
-            std::string pm() const;
+            std::string pm() const;  // value +/- error
+            std::string pp() const;  // value +/- error (perc error %)
             double frac_error() const;
         };
 
