@@ -2,22 +2,22 @@
 
 # mass_stop_min=100
 # mass_stop_max=800
-mass_stop_min=600
-mass_stop_max=600
+mass_stop_min=300
+mass_stop_max=300
 mass_stop_step=25
 mass_stop_offset=100
 
 # mass_lsp_min=0
 # mass_lsp_max=700
-mass_lsp_min=0
-mass_lsp_max=0
+mass_lsp_min=50
+mass_lsp_max=50
 mass_lsp_step=25
 
 sr_min=1
 sr_max=6
 
 syst_file="plots/interp/t2tt/t2tt_bdt_hists.root"
-card_stem="card"
+card_stem="card_method1"
 
 for (( sr = sr_min; sr <= sr_max; sr++ )) 
 do

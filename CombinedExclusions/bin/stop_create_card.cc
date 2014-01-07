@@ -33,115 +33,136 @@ struct card_info_t
     float total_unc;
 };
 
-void PrintCard(std::ostream &out, const card_info_t& info)
+
+void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short method = 1)
 {
-    // card string
-//     const std::string card = Form("imax 1 number of search regions\n"
-// "jmax 4  number of backgrounds ('*' = automatic)\n"
-// "kmax 10 number of nuisance parameters (sources of systematical uncertainties)\n"
-// "------------\n"
-// "       bin      %s\n"
-// "observation     %u\n"
-// "------------\n"
-// "bin                     %-12s%-12s%-12s%-12s%-12s\n"
-// "process                 signal      ttdil       ttslo       wjets       rare  \n"
-// "process                 0           1           2           3           4     \n"
-// "rate                    %-6.3f      %-6.1f      %-6.1f      %-6.1f      %-6.1f\n"
-// "### Error Matrix\n"                                                        
-// "------------\n"                                                            
-// "ttdil_unc        lnN    -           %1.3f       -           -           -     \n"
-// "ttslo_unc        lnN    -           -           %1.3f       -           -     \n"
-// "wjets_unc        lnN    -           -           -           %1.3f       -     \n"
-// "rare_unc         lnN    -           -           -           -           %1.3f \n"
-// "trig_unc         lnN    %1.3f       -           -           -           -     \n"
-// "lep_unc          lnN    %1.3f       -           -           -           -     \n"
-// "lumi_unc         lnN    %1.3f       -           -           -           -     \n"
-// "isr_unc          lnN    %1.3f       -           -           -           -     \n"
-// "btag_unc         lnN    %1.3f       -           -           -           -     \n"
-// "jes_unc          lnN    %1.3f       -           -           -           -     \n"
-//         , info.sr_name.c_str() 
-//         , info.obs
-//         , info.sr_name.c_str() 
-//         , info.sr_name.c_str() 
-//         , info.sr_name.c_str() 
-//         , info.sr_name.c_str() 
-//         , info.sr_name.c_str() 
-//         , info.acc
-//         , info.ttdil
-//         , info.ttslo
-//         , info.wjets
-//         , info.rare
-//         , info.ttdil_unc
-//         , info.ttslo_unc
-//         , info.wjets_unc
-//         , info.rare_unc
-//         , info.trig_unc
-//         , info.lep_unc
-//         , info.lumi_unc
-//         , info.isr_unc
-//         , info.btag_unc
-//         , info.jes_unc
-//     );
 
-    const std::string card = Form("imax 1 number of search regions\n"
-"jmax 1 number of backgrounds ('*' = automatic)\n"
-"kmax 7 number of nuisance parameters (sources of systematical uncertainties)\n"
-"------------\n"
-"       bin      %s\n"
-"observation     %u\n"
-"------------\n"
-"bin                     %-12s%-12s\n"
-"process                 signal      bkgd  \n"
-"process                 0           1     \n"
-"rate                    %-6.3f      %-6.1f\n"
-"### Error Matrix\n"                       
-"------------\n"                           
-"bkgd_unc         lnN    -           %1.3f \n"
-"trig_unc         lnN    %1.3f       -     \n"
-"lep_unc          lnN    %1.3f       -     \n"
-"lumi_unc         lnN    %1.3f       -     \n"
-"isr_unc          lnN    %1.3f       -     \n"
-"btag_unc         lnN    %1.3f       -     \n"
-"jes_unc          lnN    %1.3f       -     \n"
-        , info.sr_name.c_str() 
-        , info.obs
-        , info.sr_name.c_str() 
-        , info.sr_name.c_str() 
-        , info.acc
-        , info.bkgd
-        , info.bkgd_unc
-        , info.trig_unc
-        , info.lep_unc
-        , info.lumi_unc
-        , info.isr_unc
-        , info.btag_unc
-        , info.jes_unc
-    );
+// method 1: the background and signal systematics are fully factorized into componenents.
+// method 2: the background systematic is combined into one number and signal systematics are factorized into componenents.
+// method 3: the background systematic and signal systematics are combined into one number (what was originally used). 
 
-//     const std::string card = Form("imax 1 number of search regions\n"
-// "jmax 1 number of backgrounds ('*' = automatic)\n"
-// "kmax 2 number of nuisance parameters (sources of systematical uncertainties)\n"
-// "------------\n"
-// "       bin      %s\n"
-// "observation     %u\n"
-// "------------\n"
-// "bin                     %-12s%-12s\n"
-// "process                 signal      bkgd  \n"
-// "process                 0           1     \n"
-// "rate                    %-6.3f      %-6.1f\n"
-// "### Error Matrix\n"                       
-// "------------\n"                           
-// "bkgd_unc         lnN    -           %1.3f \n"
-// "signal_unc       lnN    %1.3f       -     \n"
-//         , info.sr_name.c_str() 
-//         , info.obs
-//         , info.sr_name.c_str() 
-//         , info.sr_name.c_str() 
-//         , info.acc
-//         , info.bkgd
-//         , info.bkgd_unc
-//         , info.total_unc
-//     );
+    std::string card;
+    switch (method)
+    {
+        case 1:
+            // card string
+            card = Form("imax 1 number of search regions\n"
+                    "jmax 4  number of backgrounds ('*' = automatic)\n"
+                    "kmax 10 number of nuisance parameters (sources of systematical uncertainties)\n"
+                    "------------\n"
+                    "       bin      %s\n"
+                    "observation     %u\n"
+                    "------------\n"
+                    "bin                     %-12s%-12s%-12s%-12s%-12s\n"
+                    "process                 signal      ttdil       ttslo       wjets       rare  \n"
+                    "process                 0           1           2           3           4     \n"
+                    "rate                    %-6.3f      %-6.1f      %-6.1f      %-6.1f      %-6.1f\n"
+                    "### Error Matrix\n"                                                        
+                    "------------\n"                                                            
+                    "ttdil_unc        lnN    -           %1.3f       -           -           -     \n"
+                    "ttslo_unc        lnN    -           -           %1.3f       -           -     \n"
+                    "wjets_unc        lnN    -           -           -           %1.3f       -     \n"
+                    "rare_unc         lnN    -           -           -           -           %1.3f \n"
+                    "trig_unc         lnN    %1.3f       -           -           -           -     \n"
+                    "lep_unc          lnN    %1.3f       -           -           -           -     \n"
+                    "lumi_unc         lnN    %1.3f       -           -           -           -     \n"
+                    "isr_unc          lnN    %1.3f       -           -           -           -     \n"
+                    "btag_unc         lnN    %1.3f       -           -           -           -     \n"
+                    "jes_unc          lnN    %1.3f       -           -           -           -     \n"
+                    , info.sr_name.c_str() 
+                    , info.obs
+                    , info.sr_name.c_str() 
+                    , info.sr_name.c_str() 
+                    , info.sr_name.c_str() 
+                    , info.sr_name.c_str() 
+                    , info.sr_name.c_str() 
+                    , info.acc
+                    , info.ttdil
+                    , info.ttslo
+                    , info.wjets
+                    , info.rare
+                    , info.ttdil_unc
+                    , info.ttslo_unc
+                    , info.wjets_unc
+                    , info.rare_unc
+                    , info.trig_unc
+                    , info.lep_unc
+                    , info.lumi_unc
+                    , info.isr_unc
+                    , info.btag_unc
+                    , info.jes_unc
+                    );
+            break;
+
+        case 2:
+
+            card = Form("imax 1 number of search regions\n"
+                    "jmax 1 number of backgrounds ('*' = automatic)\n"
+                    "kmax 7 number of nuisance parameters (sources of systematical uncertainties)\n"
+                    "------------\n"
+                    "       bin      %s\n"
+                    "observation     %u\n"
+                    "------------\n"
+                    "bin                     %-12s%-12s\n"
+                    "process                 signal      bkgd  \n"
+                    "process                 0           1     \n"
+                    "rate                    %-6.3f      %-6.1f\n"
+                    "### Error Matrix\n"                       
+                    "------------\n"                           
+                    "bkgd_unc         lnN    -           %1.3f \n"
+                    "trig_unc         lnN    %1.3f       -     \n"
+                    "lep_unc          lnN    %1.3f       -     \n"
+                    "lumi_unc         lnN    %1.3f       -     \n"
+                    "isr_unc          lnN    %1.3f       -     \n"
+                    "btag_unc         lnN    %1.3f       -     \n"
+                    "jes_unc          lnN    %1.3f       -     \n"
+                    , info.sr_name.c_str() 
+                    , info.obs
+                    , info.sr_name.c_str() 
+                    , info.sr_name.c_str() 
+                    , info.acc
+                    , info.bkgd
+                    , info.bkgd_unc
+                    , info.trig_unc
+                    , info.lep_unc
+                    , info.lumi_unc
+                    , info.isr_unc
+                    , info.btag_unc
+                    , info.jes_unc
+                    );
+            break;
+
+        case 3:
+
+            card = Form("imax 1 number of search regions\n"
+                    "jmax 1 number of backgrounds ('*' = automatic)\n"
+                    "kmax 2 number of nuisance parameters (sources of systematical uncertainties)\n"
+                    "------------\n"
+                    "       bin      %s\n"
+                    "observation     %u\n"
+                    "------------\n"
+                    "bin                     %-12s%-12s\n"
+                    "process                 signal      bkgd  \n"
+                    "process                 0           1     \n"
+                    "rate                    %-6.3f      %-6.1f\n"
+                    "### Error Matrix\n"                       
+                    "------------\n"                           
+                    "bkgd_unc         lnN    -           %1.3f \n"
+                    "signal_unc       lnN    %1.3f       -     \n"
+                    , info.sr_name.c_str() 
+                    , info.obs
+                    , info.sr_name.c_str() 
+                    , info.sr_name.c_str() 
+                    , info.acc
+                    , info.bkgd
+                    , info.bkgd_unc
+                    , info.total_unc
+                    );
+            break;
+
+        default:
+            throw std::runtime_error("[PrintCard] Error: method not supported");
+    }
 
     // print it
     out << card << std::endl;
@@ -180,7 +201,13 @@ try
     double mass_stop        = -999999.0;
     double mass_lsp         = -999999.0;
     double lumi             = 19.9;
+    unsigned short method   = 1;
     bool verbose            = false;
+
+    const string method_desc =
+"1: the background and signal systematics are fully factorized into componenents.\n"
+"2: the background systematic is combined into one number and signal systematics are factorized into componenents.\n"
+"3: the background systematic and signal systematics are combined into one number (what was originally used).";
 
     namespace po = boost::program_options;
     po::options_description desc("Allowed options");
@@ -190,6 +217,7 @@ try
         ("mass_stop" , po::value<double>(&mass_stop)->required()     , "REQUIRED: mass stop value"                              )
         ("mass_lsp"  , po::value<double>(&mass_lsp)->required()      , "REQUIRED: mass lsp value"                               )
         ("sr"        , po::value<int>(&sr_num)->required()           , "REQUIRED: SRs to run on"                                )
+        ("method"    , po::value<unsigned short>(&method)            , Form("Method:\n%s", method_desc.c_str())                 )
         ("output"    , po::value<std::string>(&output_file)          , "name of output file (blank = stdout)"                   )
         ("lumi"      , po::value<double>(&lumi)                      , "luminosity"                                             )
         ("verbose"   , po::value<bool>(&verbose)                     , "verbosity"                                              )
@@ -285,13 +313,13 @@ try
     // print the card
     if (output_file.empty())
     {
-        PrintCard(std::cout, info);
+        PrintCard(std::cout, info, method);
     }
     else
     {
         lt::mkdir(lt::dirname(output_file), /*force=*/true);
         std::ofstream out(output_file.c_str(), std::ofstream::out);
-        PrintCard(out, info);
+        PrintCard(out, info, method);
         out.close();
     }
 
