@@ -17,7 +17,33 @@ sr_min=1
 sr_max=6
 
 syst_file="plots/interp/t2tt/t2tt_bdt_hists.root"
-card_stem="card_method1"
+method=3
+card_stem="card_method${method}"
+
+function get_sr_name
+{
+    local sr=$1
+    case $sr in
+    1)
+        sr_name="bdt1l"
+        ;;
+    2)
+        sr_name="bdt1t"
+        ;;
+    3)
+        sr_name="bdt2"
+        ;;
+    4)
+        sr_name="bdt3"
+        ;;
+    5)
+        sr_name="bdt4"
+        ;;
+    6)
+        sr_name="bdt5"
+        ;;
+    esac
+}
 
 for (( sr = sr_min; sr <= sr_max; sr++ )) 
 do
@@ -28,7 +54,8 @@ do
 			if [[ $ms -lt $(( ml+mass_stop_offset )) ]]; then 
 				continue
 			fi
-			cmd="stop_create_card --syst $syst_file --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/lands/t2tt/${card_stem}_${ms}_${ml}_sr${sr}.txt"
+            get_sr_name $sr
+			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/lands/t2tt/${card_stem}_${ms}_${ml}_${sr_name}.txt"
 			echo $cmd
 			eval $cmd
 		done
