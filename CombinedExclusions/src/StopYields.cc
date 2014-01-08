@@ -5,15 +5,15 @@
 namespace stop
 {
     // simple struct to print +/-
-    std::string Yield::value_t::pm() const
+    std::string Yield::value_t::pm(const std::string& fmt) const
     {
-        return lt::pm(value, error, "4.1");
+        return lt::pm(value, error, fmt);
     }
 
     // simple struct to print +/-
-    std::string Yield::value_t::pp() const
+    std::string Yield::value_t::pp(const std::string& fmt) const
     {
-        return Form("%s (%1.0f%%)", lt::pm(value, error, "4.1").c_str(), 100.0*frac_error());
+        return Form("%s (%1.0f%%)", lt::pm(value, error, fmt).c_str(), 100.0*frac_error());
     }
 
     // calc the percent error 

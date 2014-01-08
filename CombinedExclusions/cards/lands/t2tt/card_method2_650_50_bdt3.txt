@@ -1,0 +1,21 @@
+imax 1 number of search regions
+jmax 1 number of backgrounds ('*' = automatic)
+kmax 7 number of nuisance parameters (sources of systematical uncertainties)
+------------
+       bin      bdt3
+observation     8
+------------
+bin                     bdt3        bdt3        
+process                 signal      bkgd  
+process                 0           1     
+rate                    0.47344     13.0  
+### Error Matrix
+------------
+bkgd_unc         lnN    -           1.277 
+trig_unc         lnN    1.030       -     
+lep_unc          lnN    1.050       -     
+lumi_unc         lnN    1.044       -     
+isr_unc          lnN    1.054       -     
+btag_unc         lnN    1.015       -     
+jes_unc          lnN    1.032       -     
+

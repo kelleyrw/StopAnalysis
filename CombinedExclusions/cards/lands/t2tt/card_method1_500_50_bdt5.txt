@@ -1,0 +1,24 @@
+imax 1 number of search regions
+jmax 4  number of backgrounds ('*' = automatic)
+kmax 10 number of nuisance parameters (sources of systematical uncertainties)
+------------
+       bin      bdt5
+observation     76
+------------
+bin                     bdt5        bdt5        bdt5        bdt5        bdt5        
+process                 signal      ttdil       ttslo       wjets       rare  
+process                 0           1           2           3           4     
+rate                    0.144       48.1        29.6        5.1         4.1   
+### Error Matrix
+------------
+ttdil_unc        lnN    -           1.264       -           -           -     
+ttslo_unc        lnN    -           -           1.399       -           -     
+wjets_unc        lnN    -           -           -           1.353       -     
+rare_unc         lnN    -           -           -           -           1.488 
+trig_unc         lnN    1.030       -           -           -           -     
+lep_unc          lnN    1.050       -           -           -           -     
+lumi_unc         lnN    1.044       -           -           -           -     
+isr_unc          lnN    1.082       -           -           -           -     
+btag_unc         lnN    1.011       -           -           -           -     
+jes_unc          lnN    1.048       -           -           -           -     
+

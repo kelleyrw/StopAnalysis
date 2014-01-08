@@ -2,8 +2,8 @@
 
 # mass_stop_min=100
 # mass_stop_max=800
-mass_stop_min=300
-mass_stop_max=300
+mass_stop_min=650
+mass_stop_max=650
 mass_stop_step=25
 mass_stop_offset=100
 
@@ -17,7 +17,7 @@ sr_min=1
 sr_max=6
 
 syst_file="plots/interp/t2tt/t2tt_bdt_hists.root"
-method=3
+method=1
 card_stem="card_method${method}"
 
 function get_sr_name
