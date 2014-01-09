@@ -150,10 +150,7 @@ void CompareMethods
     cout << table << std::endl;
 }
 
-stop::Yield::value_t ExtractExpUpperLimitCombine
-(
-    const std::string& filename
-)
+stop::Yield::value_t ExtractExpUpperLimitCombine(const std::string& filename)
 {
     TChain chain("limit");
     chain.Add(filename.c_str());
@@ -164,10 +161,7 @@ stop::Yield::value_t ExtractExpUpperLimitCombine
     return result;
 }
 
-stop::Yield::value_t ExtractObsUpperLimitCombine
-(
-    const std::string& filename
-)
+stop::Yield::value_t ExtractObsUpperLimitCombine(const std::string& filename)
 {
     TChain chain("limit");
     chain.Add(filename.c_str());
@@ -176,6 +170,27 @@ stop::Yield::value_t ExtractObsUpperLimitCombine
     chain.SetBranchAddress("limitErr", &result.error);
     chain.GetEntry(5);
     return result;
+}
+
+void FillLimitHistogram
+(
+    TH1F& hist,
+    stop::Yield::value_t* const ul
+)
+{
+    hist.Sumw2();
+    for (size_t bin = 1; bin <= 6; bin++)
+    {
+        hist.SetBinContent(bin, ul[bin-1].value);
+        hist.SetBinError  (bin, ul[bin-1].error);
+    }
+    hist.GetXaxis()->SetBinLabel(1, "BDT1L");
+    hist.GetXaxis()->SetBinLabel(2, "BDT1T");
+    hist.GetXaxis()->SetBinLabel(3, "BDT2" );
+    hist.GetXaxis()->SetBinLabel(4, "BDT3" );
+    hist.GetXaxis()->SetBinLabel(5, "BDT4" );
+    hist.GetXaxis()->SetBinLabel(6, "BDT5" );
+    return;
 }
 
 void CompareMethodsCombine
@@ -200,12 +215,12 @@ void CompareMethodsCombine
     };
     stop::Yield::value_t ul_exp_orig[stop::SignalRegion::static_size] =
     {
-        {1000.0*hc_orig["hxsec_exp_0"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_0"]->GetBinContent(bin), hc_orig["hxsec_expm1_0"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_1"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_1"]->GetBinContent(bin), hc_orig["hxsec_expm1_1"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_2"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_2"]->GetBinContent(bin), hc_orig["hxsec_expm1_2"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_3"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_3"]->GetBinContent(bin), hc_orig["hxsec_expm1_3"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_4"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_4"]->GetBinContent(bin), hc_orig["hxsec_expm1_4"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_5"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_5"]->GetBinContent(bin), hc_orig["hxsec_expm1_5"]->GetBinContent(bin))},
+        {1000.0*hc_orig["hxsec_exp_0"]->GetBinContent(bin), 0},
+        {1000.0*hc_orig["hxsec_exp_1"]->GetBinContent(bin), 0},
+        {1000.0*hc_orig["hxsec_exp_2"]->GetBinContent(bin), 0},
+        {1000.0*hc_orig["hxsec_exp_3"]->GetBinContent(bin), 0},
+        {1000.0*hc_orig["hxsec_exp_4"]->GetBinContent(bin), 0},
+        {1000.0*hc_orig["hxsec_exp_5"]->GetBinContent(bin), 0},
     };
 
     std::string limit_path = "output/lands/t2tt/";
@@ -265,6 +280,46 @@ void CompareMethodsCombine
     ("method3 obs UL (Combine)" , ul_obs_m3c [0].pm(fmt) , ul_obs_m3c [1].pm(fmt), ul_obs_m3c [2].pm(fmt), ul_obs_m3c [3].pm(fmt), ul_obs_m3c [4].pm(fmt), ul_obs_m3c [5].pm(fmt) )
     ("method3 exp UL (Combine)" , ul_exp_m3c [0].pm(fmt) , ul_exp_m3c [1].pm(fmt), ul_exp_m3c [2].pm(fmt), ul_exp_m3c [3].pm(fmt), ul_exp_m3c [4].pm(fmt), ul_exp_m3c [5].pm(fmt) )
     ;
-
     cout << table << std::endl;
+
+    // output plot
+    TH1F h_obs_orig("h_obs_orig", Form("Observed xsec UL Original, m_{stop} = %1.0f GeV, m_{LSP} = %1.0f GeV; Signal Regon; #sigma UL (fb)"       , mass_stop, mass_lsp), 6, 0.5, 6.5);
+    TH1F h_exp_orig("h_exp_orig", Form("Expected xsec UL Original, m_{stop} = %1.0f GeV, m_{LSP} = %1.0f GeV; Signal Regon; #sigma UL (fb)"       , mass_stop, mass_lsp), 6, 0.5, 6.5);
+    TH1F h_obs_m3a ("h_obs_m3a" , Form("Observed xsec UL method3 LandS, m_{stop} = %1.0f GeV, m_{LSP} = %1.0f GeV; Signal Regon; #sigma UL (fb)"  , mass_stop, mass_lsp), 6, 0.5, 6.5);
+    TH1F h_exp_m3a ("h_exp_m3a" , Form("Expected xsec UL method3 LandS, m_{stop} = %1.0f GeV, m_{LSP} = %1.0f GeV; Signal Regon; #sigma UL (fb)"  , mass_stop, mass_lsp), 6, 0.5, 6.5);
+    TH1F h_obs_m3c ("h_obs_m3c" , Form("Observed xsec UL method3 combine, m_{stop} = %1.0f GeV, m_{LSP} = %1.0f GeV; Signal Regon; #sigma UL (fb)", mass_stop, mass_lsp), 6, 0.5, 6.5);
+    TH1F h_exp_m3c ("h_exp_m3c" , Form("Expected xsec UL method3 combine, m_{stop} = %1.0f GeV, m_{LSP} = %1.0f GeV; Signal Regon; #sigma UL (fb)", mass_stop, mass_lsp), 6, 0.5, 6.5);
+
+    FillLimitHistogram(h_obs_orig, ul_obs_orig);
+    FillLimitHistogram(h_exp_orig, ul_exp_orig);
+    FillLimitHistogram(h_obs_m3a , ul_obs_m3a );
+    FillLimitHistogram(h_exp_m3a , ul_exp_m3a );
+    FillLimitHistogram(h_obs_m3c , ul_obs_m3c );
+    FillLimitHistogram(h_exp_m3c , ul_exp_m3c );
+
+    TCanvas c1;
+    gStyle->SetPadRightMargin(0.05);
+    gStyle->SetPadLeftMargin(0.15);
+    gStyle->SetTitleOffset(1.50, "Y"); 
+    rt::TH1Overlay p_obs(Form("Observed xsec UL, m_{stop} = %1.0f GeV, m_{LSP} = %1.0f GeV; Signal Regon; #sigma UL (fb)", mass_stop, mass_lsp), "sb::off lg::top_left");
+    p_obs.Add(&h_obs_orig, "Original"       , kBlack, 2);
+    p_obs.Add(&h_obs_m3a , "method3 LandS"  , kRed  , 2);
+    p_obs.Add(&h_obs_m3c , "method3 combine", kBlue , 2);
+    p_obs.Draw();
+    lt::mkdir("plots/compare/", /*force=*/true);
+    c1.Print(Form("plots/compare/p_obs_%1.0f_%1.0f.pdf", mass_stop, mass_lsp));
+
+    rt::TH1Overlay p_exp(Form("Expected xsec UL, m_{stop} = %1.0f GeV, m_{LSP} = %1.0f GeV; Signal Regon; #sigma UL (fb)", mass_stop, mass_lsp), "sb::off lg::top_left");
+    p_exp.Add(&h_exp_orig, "Original"       , kBlack, 2);
+    p_exp.Add(&h_exp_m3a , "method3 LandS"  , kRed  , 2);
+    p_exp.Add(&h_exp_m3c , "method3 combine", kBlue , 2);
+    p_exp.Draw();
+    c1.Print(Form("plots/compare/p_exp_%1.0f_%1.0f.pdf", mass_stop, mass_lsp));
+}
+
+void QuickCompareMethodsCombine()
+{
+    CompareMethodsCombine(300,50);
+    CompareMethodsCombine(500,50);
+    CompareMethodsCombine(650,50);
 }
