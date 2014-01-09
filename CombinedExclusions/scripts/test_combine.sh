@@ -19,7 +19,7 @@ function run_combine
     eval $cmd
 
 	# remove junk
-	rm rootstats-*
+	rm roostats-*
 }
 
 mass_stop=650

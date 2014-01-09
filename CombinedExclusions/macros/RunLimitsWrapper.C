@@ -1,7 +1,5 @@
 #include "AnalysisTools/LanguageTools/interface/LanguageTools.h"
 #include "fitRvsCLs.C"
-/* #include "/usr/local/lands/03.06.07/test/fitRvsCLs.C" */
-//#include "/home/users/rwkelley/code/LandS/03.06.07/test/fitRvsCLs.C"
 
 void RunLimitsWrapper(const std::string& input_file_name)
 {

@@ -2,8 +2,8 @@
 
 # mass_stop_min=100
 # mass_stop_max=800
-mass_stop_min=650
-mass_stop_max=650
+mass_stop_min=300
+mass_stop_max=300
 mass_stop_step=25
 mass_stop_offset=100
 
@@ -17,8 +17,9 @@ sr_min=1
 sr_max=6
 
 syst_file="plots/interp/t2tt/t2tt_bdt_hists.root"
-method=1
-card_stem="card_method${method}"
+method=3
+# card_stem="card_method${method}"
+card_stem="t2tt"
 
 function get_sr_name
 {
@@ -54,8 +55,9 @@ do
 			if [[ $ms -lt $(( ml+mass_stop_offset )) ]]; then 
 				continue
 			fi
-            get_sr_name $sr
-			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/lands/t2tt/${card_stem}_${ms}_${ml}_${sr_name}.txt"
+#             get_sr_name $sr
+# 			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/lands/t2tt/${card_stem}_${ms}_${ml}_${sr_name}.txt"
+			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/t2tt/${card_stem}_${ms}_${ml}_sr${sr}.txt"
 			echo $cmd
 			eval $cmd
 		done
