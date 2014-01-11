@@ -1,5 +1,10 @@
 #!/bin/bash
 
+mass_stop=${1:-300}
+mass_lsp=${2:-50}
+method=${3:-3}
+echo "[test_combine]: m_stop $mass_stop, m_lsp $mass_lsp, method $method"
+
 function run_combine
 {
     local card=$1
@@ -41,20 +46,15 @@ function run_combine
     eval $cmd
 
 	# remove junk
-	rm higgsCombine${stem}.HybridNew.mH120.*
-	rm roostats-*
+#     rm roostats-* higgsCombine*.root                                           
+# 	rm *higgsCombine${stem}.HybridNew.mH120.${seed}.*
+# 	rm roostats-*
 }
 
-mass_stop=300
-mass_lsp=50
-# method=1
-# method=2
-method=3
-
-run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt1l.txt output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt1l.root
-# run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt1l.txt output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt1l.root >& logs/combine_m${method}a_${mass_stop}_${mass_lsp}_bdt1l.txt &
-# run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt1t.txt output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt1t.root >& logs/combine_m${method}a_${mass_stop}_${mass_lsp}_bdt1t.txt &
-# run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt2.txt  output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt2.root  >& logs/combine_m${method}a_${mass_stop}_${mass_lsp}_bdt2.txt  &
-# run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt3.txt  output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt3.root  >& logs/combine_m${method}a_${mass_stop}_${mass_lsp}_bdt3.txt  &
-# run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt4.txt  output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt4.root  >& logs/combine_m${method}a_${mass_stop}_${mass_lsp}_bdt4.txt  &
-# run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt5.txt  output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt5.root  >& logs/combine_m${method}a_${mass_stop}_${mass_lsp}_bdt5.txt  &
+# run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt1l.txt output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt1l.root
+run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt1l.txt output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt1l.root >& logs/combine_m${method}_${mass_stop}_${mass_lsp}_bdt1l.txt &
+run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt1t.txt output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt1t.root >& logs/combine_m${method}_${mass_stop}_${mass_lsp}_bdt1t.txt &
+run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt2.txt  output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt2.root  >& logs/combine_m${method}_${mass_stop}_${mass_lsp}_bdt2.txt  &
+run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt3.txt  output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt3.root  >& logs/combine_m${method}_${mass_stop}_${mass_lsp}_bdt3.txt  &
+run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt4.txt  output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt4.root  >& logs/combine_m${method}_${mass_stop}_${mass_lsp}_bdt4.txt  &
+run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt5.txt  output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt5.root  >& logs/combine_m${method}_${mass_stop}_${mass_lsp}_bdt5.txt  &
