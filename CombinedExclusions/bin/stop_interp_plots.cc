@@ -544,7 +544,7 @@ void InterpLooper::CalculateEfficiencyAndUncertainties()
                 float unc_noisr = 0.0;
                 float unc_stats = 0.0;
                 float unc_total = 0.0;
-                if (den > 0.0 and num >= 0.0)
+                if (den > 0.0 and num > 0.0)
                 {
                     // nominal efficiency
                     eff = num / den;
@@ -556,7 +556,7 @@ void InterpLooper::CalculateEfficiencyAndUncertainties()
                     const float eff_jes_dn = (num_jes_dn) / den;
                     const float unc_jes_up = fabs(eff_jes_up/eff-1.0);
                     const float unc_jes_dn = fabs(1.0-eff_jes_dn/eff);
-                    unc_jes    = 0.5 * (unc_jes_up + unc_jes_dn);
+                    unc_jes                = 0.5 * (unc_jes_up + unc_jes_dn);
 
                     // Btag +/-
                     const float num_btag_up = hc["h_num_btagup_"+sr_label]->GetBinContent(xbin, ybin);
@@ -565,16 +565,16 @@ void InterpLooper::CalculateEfficiencyAndUncertainties()
                     const float eff_btag_dn = (num_btag_dn) / den;
                     const float unc_btag_up = fabs(eff_btag_up/eff-1.0);
                     const float unc_btag_dn = fabs(1.0-eff_btag_dn/eff);
-                    unc_btag    = 0.5 * (unc_btag_up + unc_btag_dn);
+                    unc_btag                = 0.5 * (unc_btag_up + unc_btag_dn);
 
                     // no ISR
                     const float num_noisr = hc["h_num_noisr_"+sr_label]->GetBinContent(xbin, ybin);
                     const float eff_noisr = (num_noisr) / den;
-                    unc_noisr = fabs(1.0-eff/eff_noisr);
+                    unc_noisr             = fabs(1.0-eff/eff_noisr);
 
                     // stats error
                     const float nevt = hc["h_nevt_"+sr_label]->GetBinContent(xbin, ybin);
-                    unc_stats = (nevt > 0.0 ? 1.0/sqrt(nevt) : 0.0);
+                    unc_stats        = (nevt > 0.0 ? 1.0/sqrt(nevt) : 0.0);
 
                     // total systematic unc
                     // lumi (4.4%), trigger (3%), lepton selection (5%), JES, ISR, btagging
