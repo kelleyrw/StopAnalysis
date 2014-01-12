@@ -177,7 +177,7 @@ const float GetValueFromScanHist(TH1* const hist, const float mass_stop, const f
     const float value = rt::GetBinContent2D(h2, mass_stop, mass_lsp);
     if (lt::is_zero(value))
     {
-        return 1.0;
+        return 0.0;
     }
     else
     {
@@ -200,7 +200,7 @@ try
     int sr_num              = -1;
     double mass_stop        = -999999.0;
     double mass_lsp         = -999999.0;
-    double lumi             = 19.9;
+    double lumi             = 19.5;
     unsigned short method   = 1;
     bool verbose            = false;
 
