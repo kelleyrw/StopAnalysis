@@ -12,7 +12,8 @@ function run_combine
 	local stem=`echo $(basename $output) | cut -c 7- | perl -pe 's/\..*$//;s{^.*/}{}'`
 	local base=`basename $output`
 	local seed=1234
-	local options="--method HybridNew --frequentist --testStat LHC --hintMethod ProfileLikelihood --seed $seed"
+# 	local options="--method HybridNew --frequentist --testStat LHC --hintMethod ProfileLikelihood --seed $seed"
+	local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed"
 
     # run combine 
 
