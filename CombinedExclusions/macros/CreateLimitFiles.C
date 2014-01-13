@@ -139,12 +139,12 @@ void CreateLimitHists
     TH2F h_xsec_expp2_ul_best(h_bins);
     TH2F h_xsec_expm2_ul_best(h_bins);
     h_sr_best           .SetNameTitle("h_sr_best"           , Form("Best Signal Region;%s;%s"                        , xbin_label.c_str(), ybin_label.c_str()));
-    h_xsec_obs_ul_best  .SetNameTitle("h_xsec_obs_ul_best"  , Form("Xsec Observed Upper Limit (fb) (Best);%s;%s"     , xbin_label.c_str(), ybin_label.c_str()));
-    h_xsec_exp_ul_best  .SetNameTitle("h_xsec_exp_ul_best"  , Form("Xsec Expected Upper Limit (fb) (Best);%s;%s"     , xbin_label.c_str(), ybin_label.c_str()));
-    h_xsec_expp1_ul_best.SetNameTitle("h_xsec_expp1_ul_best", Form("Xsec Expected Upper Limit + 1#sigma (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
-    h_xsec_expm1_ul_best.SetNameTitle("h_xsec_expm1_ul_best", Form("Xsec Expected Upper Limit + 1#sigma (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
-    h_xsec_expp2_ul_best.SetNameTitle("h_xsec_expp2_ul_best", Form("Xsec Expected Upper Limit + 2#sigma (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
-    h_xsec_expm2_ul_best.SetNameTitle("h_xsec_expm2_ul_best", Form("Xsec Expected Upper Limit + 2#sigma (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
+    h_xsec_obs_ul_best  .SetNameTitle("h_xsec_obs_ul_best"  , Form("Xsec Observed Upper Limit (pb) (Best);%s;%s"     , xbin_label.c_str(), ybin_label.c_str()));
+    h_xsec_exp_ul_best  .SetNameTitle("h_xsec_exp_ul_best"  , Form("Xsec Expected Upper Limit (pb) (Best);%s;%s"     , xbin_label.c_str(), ybin_label.c_str()));
+    h_xsec_expp1_ul_best.SetNameTitle("h_xsec_expp1_ul_best", Form("Xsec Expected Upper Limit + 1#sigma (pb) (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
+    h_xsec_expm1_ul_best.SetNameTitle("h_xsec_expm1_ul_best", Form("Xsec Expected Upper Limit + 1#sigma (pb) (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
+    h_xsec_expp2_ul_best.SetNameTitle("h_xsec_expp2_ul_best", Form("Xsec Expected Upper Limit + 2#sigma (pb) (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
+    h_xsec_expm2_ul_best.SetNameTitle("h_xsec_expm2_ul_best", Form("Xsec Expected Upper Limit + 2#sigma (pb) (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
 
     for (size_t sr_num = 1; sr_num != stop::SignalRegion::static_size; sr_num++)
     {
@@ -161,12 +161,26 @@ void CreateLimitHists
         TH2F h_xsec_expm1_ul(h_bins);
         TH2F h_xsec_expp2_ul(h_bins);
         TH2F h_xsec_expm2_ul(h_bins);
-        h_xsec_obs_ul  .SetNameTitle(Form("h_xsec_obs_ul_%s"  , sr_hist_name.c_str()), Form("Xsec Observed Upper Limit (fb) (%s);%s;%s"          , sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_exp_ul  .SetNameTitle(Form("h_xsec_exp_ul_%s"  , sr_hist_name.c_str()), Form("Xsec Expected Upper Limit (fb) (%s);%s;%s"          , sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_expp1_ul.SetNameTitle(Form("h_xsec_expp1_ul_%s", sr_hist_name.c_str()), Form("Xsec Expected Upper Limit + 1#sigma (fb) (%s);%s;%s", sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_expm1_ul.SetNameTitle(Form("h_xsec_expm1_ul_%s", sr_hist_name.c_str()), Form("Xsec Expected Upper Limit + 1#sigma (fb) (%s);%s;%s", sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_expp2_ul.SetNameTitle(Form("h_xsec_expp2_ul_%s", sr_hist_name.c_str()), Form("Xsec Expected Upper Limit + 2#sigma (fb) (%s);%s;%s", sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_expm2_ul.SetNameTitle(Form("h_xsec_expm2_ul_%s", sr_hist_name.c_str()), Form("Xsec Expected Upper Limit + 2#sigma (fb) (%s);%s;%s", sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+        h_xsec_obs_ul  .SetNameTitle(Form("h_xsec_obs_ul_%s"  , sr_hist_name.c_str()), Form("Xsec Observed Upper Limit (pb) (%s);%s;%s"          , sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+        h_xsec_exp_ul  .SetNameTitle(Form("h_xsec_exp_ul_%s"  , sr_hist_name.c_str()), Form("Xsec Expected Upper Limit (pb) (%s);%s;%s"          , sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+        h_xsec_expp1_ul.SetNameTitle(Form("h_xsec_expp1_ul_%s", sr_hist_name.c_str()), Form("Xsec Expected Upper Limit + 1#sigma (pb) (%s);%s;%s", sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+        h_xsec_expm1_ul.SetNameTitle(Form("h_xsec_expm1_ul_%s", sr_hist_name.c_str()), Form("Xsec Expected Upper Limit + 1#sigma (pb) (%s);%s;%s", sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+        h_xsec_expp2_ul.SetNameTitle(Form("h_xsec_expp2_ul_%s", sr_hist_name.c_str()), Form("Xsec Expected Upper Limit + 2#sigma (pb) (%s);%s;%s", sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+        h_xsec_expm2_ul.SetNameTitle(Form("h_xsec_expm2_ul_%s", sr_hist_name.c_str()), Form("Xsec Expected Upper Limit + 2#sigma (pb) (%s);%s;%s", sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+
+        // exclusion hists
+        TH2F h_excl_obs_ul  (h_bins);
+        TH2F h_excl_exp_ul  (h_bins);
+        TH2F h_excl_expp1_ul(h_bins);
+        TH2F h_excl_expm1_ul(h_bins);
+        TH2F h_excl_obsp1_ul(h_bins);
+        TH2F h_excl_obsm1_ul(h_bins);
+        h_excl_obs_ul  .SetNameTitle(Form("h_excl_obs_ul_%s"  , sr_hist_name.c_str()), Form("Excluded Observed (%s);%s;%s"               , sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+        h_excl_exp_ul  .SetNameTitle(Form("h_excl_exp_ul_%s"  , sr_hist_name.c_str()), Form("Excluded Expected (%s);%s;%s"               , sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+        h_excl_expp1_ul.SetNameTitle(Form("h_excl_expp1_ul_%s", sr_hist_name.c_str()), Form("Excluded Expected + 1#sigma (%s);%s;%s"     , sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+        h_excl_expm1_ul.SetNameTitle(Form("h_excl_expm1_ul_%s", sr_hist_name.c_str()), Form("Excluded Expected + 1#sigma (%s);%s;%s"     , sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+        h_excl_obsp1_ul.SetNameTitle(Form("h_excl_obsp1_ul_%s", sr_hist_name.c_str()), Form("Excluded Observed + 1#sigma_{th} (%s);%s;%s", sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
+        h_excl_obsm1_ul.SetNameTitle(Form("h_excl_obsm1_ul_%s", sr_hist_name.c_str()), Form("Excluded Observed + 1#sigma_{th} (%s);%s;%s", sr_hist_title.c_str(), xbin_label.c_str(), ybin_label.c_str()));
 
         // populate hists 
         std::vector<std::string> band_files = lt::ls(input_file_path + "/bands_*_" + sr_info.label + "_m2lnQ.root");
@@ -175,16 +189,31 @@ void CreateLimitHists
             const std::string band_file_name = band_files.at(i);
             const std::vector<std::string> split = lt::string_split(band_file_name);
             LimitInfo limit_info = CreateLimitInfo(h_xsec, band_file_name);
+            const float sparm0   = limit_info.sparm0;
+            const float sparm1   = limit_info.sparm1;
 
-            rt::SetBinContent2D(&h_xsec_obs_ul  , limit_info.sparm0, limit_info.sparm1, limit_info.obs, limit_info.obs_err);
-            rt::SetBinContent2D(&h_xsec_exp_ul  , limit_info.sparm0, limit_info.sparm1, limit_info.exp, limit_info.exp_err);
-            rt::SetBinContent2D(&h_xsec_expp1_ul, limit_info.sparm0, limit_info.sparm1, limit_info.exp_1sigma_up, 0.0);
-            rt::SetBinContent2D(&h_xsec_expm1_ul, limit_info.sparm0, limit_info.sparm1, limit_info.exp_1sigma_dn, 0.0);
-            rt::SetBinContent2D(&h_xsec_expp2_ul, limit_info.sparm0, limit_info.sparm1, limit_info.exp_2sigma_up, 0.0);
-            rt::SetBinContent2D(&h_xsec_expm2_ul, limit_info.sparm0, limit_info.sparm1, limit_info.exp_2sigma_dn, 0.0);
+            rt::SetBinContent2D(&h_xsec_obs_ul  , sparm0, sparm1, 1e-3*limit_info.obs, 1e-3*limit_info.obs_err);
+            rt::SetBinContent2D(&h_xsec_exp_ul  , sparm0, sparm1, 1e-3*limit_info.exp, 1e-3*limit_info.exp_err);
+            rt::SetBinContent2D(&h_xsec_expp1_ul, sparm0, sparm1, 1e-3*limit_info.exp_1sigma_up, 0.0);
+            rt::SetBinContent2D(&h_xsec_expm1_ul, sparm0, sparm1, 1e-3*limit_info.exp_1sigma_dn, 0.0);
+            rt::SetBinContent2D(&h_xsec_expp2_ul, sparm0, sparm1, 1e-3*limit_info.exp_2sigma_up, 0.0);
+            rt::SetBinContent2D(&h_xsec_expm2_ul, sparm0, sparm1, 1e-3*limit_info.exp_2sigma_dn, 0.0);
 
             // set "best" SR to dummy value for comparison
-            rt::SetBinContent2D(&h_xsec_exp_ul_best, limit_info.sparm0, limit_info.sparm1, std::numeric_limits<float>::max());
+            rt::SetBinContent2D(&h_xsec_exp_ul_best, sparm0, sparm1, std::numeric_limits<float>::max());
+
+            // determin if point is excluded
+            const float xsec     = rt::GetBinContent1D(&h_xsec, sparm0);
+            const float xsec_err = rt::GetBinError1D  (&h_xsec, sparm0);
+            const float xsec_up  = xsec + xsec_err;
+            const float xsec_dn  = xsec - xsec_err;
+
+            if (xsec    > 1e-3*limit_info.obs          ) {rt::SetBinContent2D(&h_excl_obs_ul  , sparm0, sparm1, 1);}
+            if (xsec    > 1e-3*limit_info.exp          ) {rt::SetBinContent2D(&h_excl_exp_ul  , sparm0, sparm1, 1);}
+            if (xsec    > 1e-3*limit_info.exp_1sigma_up) {rt::SetBinContent2D(&h_excl_expp1_ul, sparm0, sparm1, 1);}
+            if (xsec    > 1e-3*limit_info.exp_1sigma_dn) {rt::SetBinContent2D(&h_excl_expp1_ul, sparm0, sparm1, 1);}
+            if (xsec_up > 1e-3*limit_info.obs          ) {rt::SetBinContent2D(&h_excl_obsp1_ul, sparm0, sparm1, 1);}
+            if (xsec_dn > 1e-3*limit_info.obs          ) {rt::SetBinContent2D(&h_excl_obsm1_ul, sparm0, sparm1, 1);}
 
         }
     
@@ -195,6 +224,13 @@ void CreateLimitHists
         hc.Add(h_xsec_expm1_ul);
         hc.Add(h_xsec_expp2_ul);
         hc.Add(h_xsec_expm2_ul);
+
+        hc.Add(h_excl_obs_ul  );
+        hc.Add(h_excl_exp_ul  );
+        hc.Add(h_excl_expp1_ul);
+        hc.Add(h_excl_expm1_ul);
+        hc.Add(h_excl_obsp1_ul);
+        hc.Add(h_excl_obsm1_ul);
     }
 
     // get the "best" sr
@@ -242,15 +278,6 @@ void CreateLimitHists
     hc.Add(h_xsec_expm1_ul_best);
     hc.Add(h_xsec_expp2_ul_best);
     hc.Add(h_xsec_expm2_ul_best);
-
-    for (size_t sr_num = 0; sr_num != stop::SignalRegion::static_size; sr_num++)
-    {
-        // sr info
-        const stop::SignalRegion::value_type signal_region = static_cast<stop::SignalRegion::value_type>(sr_num);
-        const stop::SignalRegionInfo sr_info               = stop::GetSignalRegionInfo(signal_region); 
-        const std::string sr_hist_name                     = sr_info.label;
-        const std::string sr_hist_title                    = sr_info.title;
-    }
 
     // save
     hc.Write(output_file_name);
