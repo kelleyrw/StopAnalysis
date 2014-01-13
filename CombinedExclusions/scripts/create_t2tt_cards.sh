@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# mass_stop_min=100
-# mass_stop_max=800
-mass_stop_min=300
-mass_stop_max=300
+mass_stop_min=100
+mass_stop_max=800
+# mass_stop_min=300
+# mass_stop_max=300
 mass_stop_step=25
 mass_stop_offset=100
 
-# mass_lsp_min=0
-# mass_lsp_max=700
-mass_lsp_min=50
-mass_lsp_max=50
+mass_lsp_min=0
+mass_lsp_max=700
+# mass_lsp_min=50
+# mass_lsp_max=50
 mass_lsp_step=25
 
 sr_min=1
@@ -55,9 +55,10 @@ do
 			if [[ $ms -lt $(( ml+mass_stop_offset )) ]]; then 
 				continue
 			fi
-#             get_sr_name $sr
+            get_sr_name $sr
 # 			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/lands/t2tt/${card_stem}_${ms}_${ml}_${sr_name}.txt"
-			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/t2tt/${card_stem}_${ms}_${ml}_sr${sr}.txt"
+# 			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/t2tt/${card_stem}_${ms}_${ml}_sr${sr}.txt"
+			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/t2tt/${card_stem}_${ms}_${ml}_${sr_name}.txt"
 			echo $cmd
 			eval $cmd
 		done
