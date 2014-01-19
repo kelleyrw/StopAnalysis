@@ -37,38 +37,38 @@ g++ sweepRoot.cc -o sweepRoot `root-config --cflags --libs`
 function run_combine
 {
     local card=$1
-	local job_id=$2
+    local job_id=$2
     local output="combine_${job_id}.root"
-	local seed=1234
-	local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed"
+    local seed=1234
+    local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed"
 
     # run combine 
 
     # run combine for observed limit 
-	cmd="combine --datacard $card --name $job_id $options"
+    cmd="combine --datacard $card --name $job_id $options"
     echo $cmd
     eval $cmd
 
     # run combine for expected
-	#0.5 gives you the median. use 0.16/0.84 to get the endpoints of 68% interval, 0.025/0.975 to get the 95% one)
-	cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.50000" # median
+    #0.5 gives you the median. use 0.16/0.84 to get the endpoints of 68% interval, 0.025/0.975 to get the 95% one)
+    cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.50000" # median
     echo $cmd
     eval $cmd
-	cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.84135" # median + 1 sigma
+    cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.84135" # median + 1 sigma
     echo $cmd
     eval $cmd
-	cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.15865" # median - 1 sigma
+    cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.15865" # median - 1 sigma
     echo $cmd
     eval $cmd
-	cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.97725" # median + 2 sigma
+    cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.97725" # median + 2 sigma
     echo $cmd
     eval $cmd
-	cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.02275" # median - 2 sigma
+    cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.02275" # median - 2 sigma
     echo $cmd
     eval $cmd
 
-	# move output
-	cmd="hadd -f $output higgsCombine${job_id}.HybridNew.mH120.${seed}.*"
+    # move output
+    cmd="hadd -f $output higgsCombine${job_id}.HybridNew.mH120.${seed}.*"
     echo $cmd
     eval $cmd
 }
