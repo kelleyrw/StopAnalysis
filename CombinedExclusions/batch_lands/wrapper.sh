@@ -178,9 +178,10 @@ fi
 ./sweepRoot $OUTPUT
 echo OUTPUT = $OUTPUT
 ls -l $OUTPUT
-#if [ $(du -b $OUTPUT | cut -f 1) -le 23136 ];
-echo ./sweepRoot bands_$OUTPUT -o T
-if [ $(./sweepRoot bands_$OUTPUT -o T 2>&1 | grep SUMMARY | awk '{print $2}') == 0 ];
+cmd="./sweepRoot bands_$OUTPUT -o T"
+echo "[Wrapper] $cmd"
+eval $cmd
+if [ $(eval $cmd 2>&1 | grep SUMMARY | awk '{print $2}') == 0 ];
 then 
     echo "[wrapper] preparing to transfer $OUTPUT to ${COPYDIR}/${OUTPUT}..." | ./appendTimeStamp.sh
     echo lcg-cp -b -D srmv2 --vo cms -t 2400 --verbose file:`pwd`/${OUTPUT} srm://bsrm-3.t2.ucsd.edu:8443/srm/v2/server?SFN=${COPYDIR}/${OUTPUT}             | ./appendTimeStamp.sh

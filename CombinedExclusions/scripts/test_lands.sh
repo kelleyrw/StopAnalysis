@@ -32,7 +32,7 @@ function run_lands_apriori
     eval $cmd
 }
 
-mass_stop=650
+mass_stop=300
 mass_lsp=50
 # method=1
 # method=2

@@ -392,3 +392,72 @@ void QuickCompareMethodsCombine()
     CompareMethodsCombine(500,50);
     CompareMethodsCombine(650,50);
 }
+
+void PrintComparison
+(
+    TH1* const h1,
+    TH1* const h2,
+    const std::string& path,
+    const std::string& suffix,
+    const std::string& draw_option,
+    const std::string& paint_text_option = "1.0f",
+    const float zmin = 1.0f,
+    const float zmax = -1.0f
+)
+{
+    // unzoom
+    h1->GetXaxis()->SetRange(1, 0);
+    h1->GetYaxis()->SetRange(1, 0);
+    h2->GetXaxis()->SetRange(1, 0);
+    h2->GetYaxis()->SetRange(1, 0);
+
+    const std::string diff_name  = Form("%s_diff", h2->GetName());
+    const std::string diff_title = Form("100*(%s_v1 - %s_v2)/%s_v1", h2->GetName(), h2->GetName(), h2->GetName());
+    TH1* h_diff = rt::RelativeDiffHists(h1, h2, diff_name, diff_title); 
+    h_diff->Scale(100.0);
+    h_diff->SetDirectory(NULL);
+
+    TCanvas c1("c1", "c1", 1600, 1200);
+    gStyle->SetPadRightMargin(0.10);
+    if (lt::string_contains(draw_option, "colz"))
+    {
+        gStyle->SetPadRightMargin(0.15);
+    }
+    {
+        gStyle->SetPaintTextFormat(paint_text_option.c_str());
+    }
+    if (zmax > zmin)
+    {
+        h1->GetZaxis()->SetRangeUser(zmin, zmax);
+        h2->GetZaxis()->SetRangeUser(zmin, zmax);
+    }
+    h1->Draw(draw_option.c_str()); c1.Print((path + "/" + h2->GetName() + "_v1."   + suffix).c_str());
+    h2->Draw(draw_option.c_str()); c1.Print((path + "/" + h2->GetName() + "_v2."   + suffix).c_str());
+
+    gStyle->SetPaintTextFormat("1.1");
+    h_diff->Draw(draw_option.c_str());
+    c1.Print((path + "/" + diff_name + "." + suffix).c_str());
+    
+    delete h_diff;
+}
+
+void CompareHists(const std::string& file_name, const std::string& label = "test1", const std::string& suffix = "pdf")
+{
+    rt::TH1Container hc1a("/Users/rwk7t/temp/from_ben/exclusion2012_postLHCP_T2bwFixed/rootfiles/T2tt_BDT_histos.root");
+    rt::TH1Container hc1b("/Users/rwk7t/temp/from_ben/exclusion2012_postLHCP_T2bwFixed/rootfiles/T2tt_combinePlots_BDT.root");
+    rt::TH1Container hc2(file_name);
+
+/*     gStyle->SetCanvasDefX(3200); */
+/*     gStyle->SetCanvasDefY(2400); */
+
+    // no stat boxes
+    hc1a.SetStats(false);
+    hc1b.SetStats(false);
+    hc2.SetStats(false);
+
+    std::string path = "plots/compare/t2tt/" + label;
+    lt::mkdir(path, true);
+
+    PrintComparison(hc1b["hbest"  ], hc2["h_sr_best"          ], path, suffix, "text", "1.0f");
+    PrintComparison(hc1a["hxsec_0"], hc2["h_xsec_obs_ul_bdt1l"], path, suffix, "text", "1.1f");
+}
