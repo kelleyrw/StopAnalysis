@@ -31,7 +31,7 @@ scramv1 b -j20
 popd
 
 # compile sweepRoot.cc
-g++ sweepRoot.cc -o sweepRoot `root-config --cflags --libs`
+g++ sweepRoot.C -o sweepRoot `root-config --cflags --libs`
 
 # run combine
 function run_combine
