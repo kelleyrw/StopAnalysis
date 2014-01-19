@@ -175,12 +175,12 @@ if [[ $? -ne 0 ]] ; then
     echo "[wrapper] *m2lnQ.root file not found!  Exiting." | ./appendTimeStamp.sh
     echo
 fi
-./sweepRoot $OUTPUT
+cmd="./sweepRoot -o limit $OUTPUT"
 echo OUTPUT = $OUTPUT
 ls -l $OUTPUT
-#if [ $(du -b $OUTPUT | cut -f 1) -le 23136 ];
-echo ./sweepRoot $OUTPUT -o limit
-if [ $(./sweepRoot $OUTPUT 2 -o limit >&1 | grep SUMMARY | awk '{print $2}') == 0 ];
+eval $cmd
+echo "[wrapper] $cmd" | ./appendTimeStamp.sh
+if [ $(eval $cmd >&1 | grep SUMMARY | awk '{print $2}') == 0 ];
 then 
     echo "[wrapper] preparing to transfer $OUTPUT to ${COPYDIR}/${OUTPUT}..." | ./appendTimeStamp.sh
     echo lcg-cp -b -D srmv2 --vo cms -t 2400 --verbose file:`pwd`/${OUTPUT} srm://bsrm-3.t2.ucsd.edu:8443/srm/v2/server?SFN=${COPYDIR}/${OUTPUT}             | ./appendTimeStamp.sh
