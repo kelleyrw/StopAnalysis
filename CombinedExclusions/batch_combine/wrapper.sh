@@ -167,7 +167,7 @@ echo
 #
 echo
 echo "[wrapper] copying file" | ./appendTimeStamp.sh
-OUTPUT=${JOBID}_m2lnQ.root
+OUTPUT=combine_${JOBID}.root
 ls $OUTPUT | ./appendTimeStamp.sh
 JOB_EXIT_CODE=`echo $?`
 if [[ $? -ne 0 ]] ; then
@@ -175,18 +175,16 @@ if [[ $? -ne 0 ]] ; then
     echo "[wrapper] *m2lnQ.root file not found!  Exiting." | ./appendTimeStamp.sh
     echo
 fi
-./sweepRoot $OUTPUT
+cmd="./sweepRoot -o limit $OUTPUT"
 echo OUTPUT = $OUTPUT
 ls -l $OUTPUT
-#if [ $(du -b $OUTPUT | cut -f 1) -le 23136 ];
-echo ./sweepRoot bands_$OUTPUT -o T
-if [ $(./sweepRoot bands_$OUTPUT -o T 2>&1 | grep SUMMARY | awk '{print $2}') == 0 ];
+eval $cmd
+echo "[wrapper] $cmd" | ./appendTimeStamp.sh
+if [ $(eval $cmd >&1 | grep SUMMARY | awk '{print $2}') == 0 ];
 then 
     echo "[wrapper] preparing to transfer $OUTPUT to ${COPYDIR}/${OUTPUT}..." | ./appendTimeStamp.sh
     echo lcg-cp -b -D srmv2 --vo cms -t 2400 --verbose file:`pwd`/${OUTPUT} srm://bsrm-3.t2.ucsd.edu:8443/srm/v2/server?SFN=${COPYDIR}/${OUTPUT}             | ./appendTimeStamp.sh
-    echo lcg-cp -b -D srmv2 --vo cms -t 2400 --verbose file:`pwd`/bands_${OUTPUT} srm://bsrm-3.t2.ucsd.edu:8443/srm/v2/server?SFN=${COPYDIR}/bands_${OUTPUT} | ./appendTimeStamp.sh
     lcg-cp -b -D srmv2 --vo cms -t 2400 --verbose file:`pwd`/${OUTPUT} srm://bsrm-3.t2.ucsd.edu:8443/srm/v2/server?SFN=${COPYDIR}/${OUTPUT}
-    lcg-cp -b -D srmv2 --vo cms -t 2400 --verbose file:`pwd`/bands_${OUTPUT} srm://bsrm-3.t2.ucsd.edu:8443/srm/v2/server?SFN=${COPYDIR}/bands_${OUTPUT}
 else
     echo "[wrapper] $OUTPUT is considered bad by sweepRoot..." | ./appendTimeStamp.sh
 fi
