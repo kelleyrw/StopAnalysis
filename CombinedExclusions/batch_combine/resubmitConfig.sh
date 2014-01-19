@@ -47,8 +47,8 @@ output_path=$(echo ${arg_list[0]} | awk '{print $3}' | sed s/\"//g)
 for (( i=0; i < $num_args; i++ )); 
 do
 	input_file=$(echo ${arg_list[$i]} | awk '{print $2}')
-	file=$(basename ${input_file})_m2lnQ.root
-    #echo find $output_path -type f -name $file
+	file=combine_$(basename ${input_file}).root
+#     echo find $output_path -type f -name $file
 	if [ ! $(find $output_path -type f -name $file) ]; then
 		index_of_missing_files=(${index_of_missing_files[@]} $i)
 	fi
