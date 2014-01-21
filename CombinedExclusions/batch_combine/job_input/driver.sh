@@ -40,7 +40,7 @@ function run_combine
     local job_id=$2
     local output="combine_${job_id}.root"
     local seed=1234
-    local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed"
+    local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed --rMin 10 --rMax 1000000"
 
     # run combine 
 
