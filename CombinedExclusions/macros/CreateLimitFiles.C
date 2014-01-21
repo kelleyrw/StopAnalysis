@@ -127,8 +127,8 @@ LimitInfo CreateLimitInfoCombine(const TH1& h_xsec, const std::string& file_name
 
     TChain chain("limit");
     chain.Add(file_name.c_str());
-    float ul;
-    float ul_err;
+    double ul;
+    double ul_err;
     chain.SetBranchAddress("limit"   , &ul    );
     chain.SetBranchAddress("limitErr", &ul_err);
     chain.GetEntry(5);
@@ -252,12 +252,12 @@ void CreateLimitHists
                 const float sparm0   = limit_info.sparm0;
                 const float sparm1   = limit_info.sparm1;
 
-                rt::SetBinContent2D(&h_xsec_obs_ul  , sparm0, sparm1, 1e-3*limit_info.obs, 1e-3*limit_info.obs_err);
-                rt::SetBinContent2D(&h_xsec_exp_ul  , sparm0, sparm1, 1e-3*limit_info.exp, 1e-3*limit_info.exp_err);
-                rt::SetBinContent2D(&h_xsec_expp1_ul, sparm0, sparm1, 1e-3*limit_info.exp_1sigma_up, 0.0);
-                rt::SetBinContent2D(&h_xsec_expm1_ul, sparm0, sparm1, 1e-3*limit_info.exp_1sigma_dn, 0.0);
-                rt::SetBinContent2D(&h_xsec_expp2_ul, sparm0, sparm1, 1e-3*limit_info.exp_2sigma_up, 0.0);
-                rt::SetBinContent2D(&h_xsec_expm2_ul, sparm0, sparm1, 1e-3*limit_info.exp_2sigma_dn, 0.0);
+                rt::SetBinContent2D(&h_xsec_obs_ul  , sparm0, sparm1, 1e-3*limit_info.obs          , 1e-3*limit_info.obs_err          );
+                rt::SetBinContent2D(&h_xsec_exp_ul  , sparm0, sparm1, 1e-3*limit_info.exp          , 1e-3*limit_info.exp_err          );
+                rt::SetBinContent2D(&h_xsec_expp1_ul, sparm0, sparm1, 1e-3*limit_info.exp_1sigma_up, 1e-3*limit_info.exp_1sigma_up_err);
+                rt::SetBinContent2D(&h_xsec_expm1_ul, sparm0, sparm1, 1e-3*limit_info.exp_1sigma_dn, 1e-3*limit_info.exp_1sigma_dn_err);
+                rt::SetBinContent2D(&h_xsec_expp2_ul, sparm0, sparm1, 1e-3*limit_info.exp_2sigma_up, 1e-3*limit_info.exp_2sigma_up_err);
+                rt::SetBinContent2D(&h_xsec_expm2_ul, sparm0, sparm1, 1e-3*limit_info.exp_2sigma_dn, 1e-3*limit_info.exp_2sigma_dn_err);
 
                 // set "best" SR to dummy value for comparison
                 rt::SetBinContent2D(&h_xsec_exp_ul_best, sparm0, sparm1, std::numeric_limits<float>::max());
@@ -304,8 +304,19 @@ void CreateLimitHists
             {
                 for (int ybin = 0; ybin != h_bins.GetNbinsY(); ybin++)
                 {
+                    const float mass_stop = h_bins.GetXaxis()->GetBinCenter(xbin);
+                    const float mass_lsp  = h_bins.GetYaxis()->GetBinCenter(ybin);
+                    if (not (lt::is_equal(mass_stop, 250.0f) and lt::is_equal(mass_lsp, 150.0f))) {continue;}
                     const float xsec_exp = hc["h_xsec_exp_ul_"+sr_hist_name]->GetBinContent(xbin, ybin);
-                    if (lt::is_zero(xsec_exp)) {continue;}
+                    if (lt::is_zero(xsec_exp))
+                    {
+                        std::cout << "skipping " << sr_hist_name << " for " << mass_stop << ", " << mass_lsp << endl;
+                        continue;
+                    }
+                    else
+                    {
+                        std::cout << "expected limit " << xsec_exp << " for " << sr_hist_name << ", " << mass_stop << ", " << mass_lsp << endl;
+                    }
 
                     if (xsec_exp < h_xsec_exp_ul_best.GetBinContent(xbin, ybin))
                     {
@@ -351,8 +362,8 @@ void CreateLimitHists
 // convenience
 void CreateLimits()
 {
-    //CreateLimitHists("/hadoop/cms/store/user/rwkelley/limits/lands/t2tt/"  , "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/t2tt/t2tt_bdt_limit_hists.root" , /*use_lands*/true );
-    //CreateLimitHists("/hadoop/cms/store/user/rwkelley/limits/combine/t2tt/", "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/combine/t2tt/t2tt_bdt_limit_hists.root", /*use_lands*/false);
-    CreateLimitHists("output/limits/lands/t2tt/"  , "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/t2tt/t2tt_bdt_limit_hists.root" , /*use_lands*/true );
-/*     CreateLimitHists("output/limits/combine/t2tt/", "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/combine/t2tt/t2tt_bdt_limit_hists.root", /*use_lands*/false); */
+    //CreateLimitHists("/hadoop/cms/store/user/rwkelley/limits/lands/t2tt"  , "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/t2tt/t2tt_bdt_limit_hists.root" , /*use_lands*/true );
+    //CreateLimitHists("/hadoop/cms/store/user/rwkelley/limits/combine/t2tt", "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/combine/t2tt/t2tt_bdt_limit_hists.root", /*use_lands*/false);
+    //CreateLimitHists("output/limits/lands/t2tt"  , "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/lands/t2tt/t2tt_bdt_limit_hists.root" , /*use_lands*/true);
+    CreateLimitHists("output/limits/combine/t2tt", "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/combine/t2tt/t2tt_bdt_limit_hists.root", /*use_lands*/false);
 }

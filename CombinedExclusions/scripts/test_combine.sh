@@ -13,7 +13,7 @@ function run_combine
 	local base=`basename $output`
 	local seed=1234
 # 	local options="--method HybridNew --frequentist --testStat LHC --hintMethod ProfileLikelihood --seed $seed"
-	local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed"
+	local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed --rMin 10 --rMax 1000000"
 
     # run combine 
 
@@ -26,7 +26,7 @@ function run_combine
 	#0.5 gives you the median. use 0.16/0.84 to get the endpoints of 68% interval, 0.025/0.975 to get the 95% one)
 	cmd="combine --datacard $card --name $stem $options --expectedFromGrid 0.50000" # median
     echo $cmd
-#     eval $cmd
+    eval $cmd
 	cmd="combine --datacard $card --name $stem $options --expectedFromGrid 0.84135" # median + 1 sigma
     echo $cmd
 #     eval $cmd
@@ -53,7 +53,7 @@ function run_combine
 # 	rm roostats-*
 }
 
-run_combine cards/t2tt/t2tt_${mass_stop}_${mass_lsp}_bdt1l.txt output/combine/test/limit_method${method}_${mass_stop}_${mass_lsp}_bdt1l.root
+run_combine cards/t2tt/t2tt_${mass_stop}_${mass_lsp}_bdt4.txt output/combine/test/limit_method${method}_${mass_stop}_${mass_lsp}_bdt4.root
 # run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt1l.txt output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt1l.root >& logs/combine_m${method}_${mass_stop}_${mass_lsp}_bdt1l.txt &
 # run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt1t.txt output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt1t.root >& logs/combine_m${method}_${mass_stop}_${mass_lsp}_bdt1t.txt &
 # run_combine cards/lands/t2tt/card_method${method}_${mass_stop}_${mass_lsp}_bdt2.txt  output/combine/t2tt/limit_method${method}_${mass_stop}_${mass_lsp}_bdt2.root  >& logs/combine_m${method}_${mass_stop}_${mass_lsp}_bdt2.txt  &
