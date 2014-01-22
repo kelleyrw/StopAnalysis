@@ -178,7 +178,7 @@ fi
 ./sweepRoot $OUTPUT
 echo OUTPUT = $OUTPUT
 ls -l $OUTPUT
-cmd="./sweepRoot bands_$OUTPUT -o T"
+cmd="./sweepRoot -o T bands_$OUTPUT"
 echo "[Wrapper] $cmd"
 eval $cmd
 if [ $(eval $cmd 2>&1 | grep SUMMARY | awk '{print $2}') == 0 ];
