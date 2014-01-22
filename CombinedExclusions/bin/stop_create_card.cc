@@ -12,6 +12,7 @@ struct card_info_t
     card_info_t() {}
     std::string sr_name;
     unsigned int obs;
+    unsigned int ngen;
     float ttdil;
     float ttdil_unc;
     float ttslo;
@@ -56,7 +57,7 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     "bin                     %-12s%-12s%-12s%-12s%-12s\n"
                     "process                 signal      ttdil       ttslo       wjets       rare  \n"
                     "process                 0           1           2           3           4     \n"
-                    "rate                    %-6.5f     %-6.1f      %-6.1f      %-6.1f      %-6.1f\n"
+                    "rate                    %-12.4e%-6.1f      %-6.1f      %-6.1f      %-6.1f\n"
                     "### Error Matrix\n"                                                        
                     "------------\n"                                                            
                     "ttdil_unc        lnN    -           %1.3f       -           -           -     \n"
@@ -76,7 +77,7 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     , info.sr_name.c_str() 
                     , info.sr_name.c_str() 
                     , info.sr_name.c_str() 
-                    , info.acc
+                    , (lt::is_zero(info.acc) ? 1.0/static_cast<float>(info.ngen) : info.acc)
                     , info.ttdil
                     , info.ttslo
                     , info.wjets
@@ -106,7 +107,7 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     "bin                     %-12s%-12s\n"
                     "process                 signal      bkgd  \n"
                     "process                 0           1     \n"
-                    "rate                    %-6.5f     %-6.1f\n"
+                    "rate                    %-12.e%-6.1f\n"
                     "### Error Matrix\n"                       
                     "------------\n"                           
                     "bkgd_unc         lnN    -           %1.3f \n"
@@ -120,7 +121,7 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     , info.obs
                     , info.sr_name.c_str() 
                     , info.sr_name.c_str() 
-                    , info.acc
+                    , (lt::is_zero(info.acc) ? 1.0/static_cast<float>(info.ngen) : info.acc)
                     , info.bkgd
                     , info.bkgd_unc
                     , info.trig_unc
@@ -144,7 +145,7 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     "bin                     %-12s%-12s\n"
                     "process                 signal      bkgd  \n"
                     "process                 0           1     \n"
-                    "rate                    %-6.5f     %-6.1f\n"
+                    "rate                    %-12.4e%-1.1f\n"
                     "### Error Matrix\n"                       
                     "------------\n"                           
                     "bkgd_unc         lnN    -           %1.3f \n"
@@ -153,7 +154,7 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     , info.obs
                     , info.sr_name.c_str() 
                     , info.sr_name.c_str() 
-                    , info.acc
+                    , (lt::is_zero(info.acc) ? 1.0/static_cast<float>(info.ngen) : info.acc)
                     , info.bkgd
                     , info.bkgd_unc
                     , info.total_unc
@@ -301,6 +302,7 @@ try
     info.bkgd_unc  = 1.0 + stop_result.bkgd.lep.frac_error(); 
 
     info.acc       = lumi*GetValueFromScanHist(hc["h_eff_"+signal_region_info.label], mass_stop, mass_lsp);
+    info.ngen      = GetValueFromScanHist(hc["h_ngen"], mass_stop, mass_lsp);
     info.trig_unc  = 1.030;
     info.lumi_unc  = 1.044;
     info.lep_unc   = 1.050;

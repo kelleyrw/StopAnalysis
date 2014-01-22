@@ -8,7 +8,7 @@ observation     2
 bin                     bdt4        bdt4        
 process                 signal      bkgd  
 process                 0           1     
-rate                    0.45302     2.9   
+rate                    4.5302e-01  2.9
 ### Error Matrix
 ------------
 bkgd_unc         lnN    -           1.379 

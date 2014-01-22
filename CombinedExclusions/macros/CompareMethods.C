@@ -12,7 +12,8 @@ using namespace std;
 
 stop::Yield::value_t ExtractExpUpperLimit
 (
-    const std::string& filename
+    const std::string& filename,
+    const float scale = 1.0
 )
 {
     TChain chain("T");
@@ -21,12 +22,15 @@ stop::Yield::value_t ExtractExpUpperLimit
     chain.SetBranchAddress("rmedian"   , &result.value);
     chain.SetBranchAddress("rmedianErr", &result.error);
     chain.GetEntry(0);
+    result.value *= scale;
+    result.error *= scale;
     return result;
 }
 
 stop::Yield::value_t ExtractObsUpperLimit
 (
-    const std::string& filename
+    const std::string& filename,
+    const float scale = 1.0
 )
 {
     TChain chain("T");
@@ -35,6 +39,8 @@ stop::Yield::value_t ExtractObsUpperLimit
     chain.SetBranchAddress("limit"   , &result.value);
     chain.SetBranchAddress("limitErr", &result.error);
     chain.GetEntry(0);
+    result.value *= scale;
+    result.error *= scale;
     return result;
 }
 
@@ -51,21 +57,21 @@ void CompareMethods
     int bin = hc_orig["heff_0"]->FindBin(mass_stop, mass_lsp);
     stop::Yield::value_t ul_obs_orig[stop::SignalRegion::static_size] =
     {
-        {1000.0*hc_orig["hxsec_0"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_1"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_2"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_3"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_4"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_5"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_0"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_1"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_2"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_3"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_4"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_5"]->GetBinContent(bin), 0},
     };
     stop::Yield::value_t ul_exp_orig[stop::SignalRegion::static_size] =
     {
-        {1000.0*hc_orig["hxsec_exp_0"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_0"]->GetBinContent(bin), hc_orig["hxsec_expm1_0"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_1"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_1"]->GetBinContent(bin), hc_orig["hxsec_expm1_1"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_2"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_2"]->GetBinContent(bin), hc_orig["hxsec_expm1_2"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_3"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_3"]->GetBinContent(bin), hc_orig["hxsec_expm1_3"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_4"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_4"]->GetBinContent(bin), hc_orig["hxsec_expm1_4"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_5"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_5"]->GetBinContent(bin), hc_orig["hxsec_expm1_5"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_0"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_0"]->GetBinContent(bin), hc_orig["hxsec_expm1_0"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_1"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_1"]->GetBinContent(bin), hc_orig["hxsec_expm1_1"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_2"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_2"]->GetBinContent(bin), hc_orig["hxsec_expm1_2"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_3"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_3"]->GetBinContent(bin), hc_orig["hxsec_expm1_3"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_4"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_4"]->GetBinContent(bin), hc_orig["hxsec_expm1_4"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_5"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_5"]->GetBinContent(bin), hc_orig["hxsec_expm1_5"]->GetBinContent(bin))},
     };
 
     const std::string limit_path = "output/lands/t2tt/";
@@ -73,61 +79,61 @@ void CompareMethods
     // get method1 a posteriori (m1a)
     stop::Yield::value_t ul_obs_m1a[stop::SignalRegion::static_size] =
     {
-        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
     stop::Yield::value_t ul_exp_m1a[stop::SignalRegion::static_size] =
     {
-        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method1_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
 
     // get method2 a posteriori (m2a)
     stop::Yield::value_t ul_obs_m2a[stop::SignalRegion::static_size] =
     {
-        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
     stop::Yield::value_t ul_exp_m2a[stop::SignalRegion::static_size] =
     {
-        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method2_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
 
     // get method3 a posteriori (m3a)
     stop::Yield::value_t ul_obs_m3a[stop::SignalRegion::static_size] =
     {
-        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
     stop::Yield::value_t ul_exp_m3a[stop::SignalRegion::static_size] =
     {
-        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_limit_method3_aposteriori_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
     
 
@@ -163,42 +169,42 @@ void CompareMethodsFromGrid
     int bin = hc_orig["heff_0"]->FindBin(mass_stop, mass_lsp);
     stop::Yield::value_t ul_obs_orig[stop::SignalRegion::static_size] =
     {
-        {1000.0*hc_orig["hxsec_0"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_1"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_2"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_3"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_4"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_5"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_0"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_1"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_2"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_3"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_4"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_5"]->GetBinContent(bin), 0},
     };
     stop::Yield::value_t ul_exp_orig[stop::SignalRegion::static_size] =
     {
-        {1000.0*hc_orig["hxsec_exp_0"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_0"]->GetBinContent(bin), hc_orig["hxsec_expm1_0"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_1"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_1"]->GetBinContent(bin), hc_orig["hxsec_expm1_1"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_2"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_2"]->GetBinContent(bin), hc_orig["hxsec_expm1_2"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_3"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_3"]->GetBinContent(bin), hc_orig["hxsec_expm1_3"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_4"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_4"]->GetBinContent(bin), hc_orig["hxsec_expm1_4"]->GetBinContent(bin))},
-        {1000.0*hc_orig["hxsec_exp_5"]->GetBinContent(bin), 1000.0*std::max(hc_orig["hxsec_expp1_5"]->GetBinContent(bin), hc_orig["hxsec_expm1_5"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_0"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_0"]->GetBinContent(bin), hc_orig["hxsec_expm1_0"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_1"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_1"]->GetBinContent(bin), hc_orig["hxsec_expm1_1"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_2"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_2"]->GetBinContent(bin), hc_orig["hxsec_expm1_2"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_3"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_3"]->GetBinContent(bin), hc_orig["hxsec_expm1_3"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_4"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_4"]->GetBinContent(bin), hc_orig["hxsec_expm1_4"]->GetBinContent(bin))},
+        {hc_orig["hxsec_exp_5"]->GetBinContent(bin), std::max(hc_orig["hxsec_expp1_5"]->GetBinContent(bin), hc_orig["hxsec_expm1_5"]->GetBinContent(bin))},
     };
 
     // lands 
     const std::string lands_path = "output/limits/lands/t2tt/";
     stop::Yield::value_t ul_obs_m3a[stop::SignalRegion::static_size] =
     {
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1l_m2lnQ.root", lands_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1t_m2lnQ.root", lands_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt2_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt3_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt4_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt5_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp)),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1l_m2lnQ.root", lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1t_m2lnQ.root", lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt2_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt3_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt4_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt5_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
     stop::Yield::value_t ul_exp_m3a[stop::SignalRegion::static_size] =
     {
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1l_m2lnQ.root", lands_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1t_m2lnQ.root", lands_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt2_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt3_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt4_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt5_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp)),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1l_m2lnQ.root", lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1t_m2lnQ.root", lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt2_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt3_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt4_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt5_m2lnQ.root" , lands_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
     
     // output table
@@ -217,7 +223,7 @@ void CompareMethodsFromGrid
 }
 
 
-stop::Yield::value_t ExtractExpUpperLimitCombine(const std::string& filename)
+stop::Yield::value_t ExtractExpUpperLimitCombine(const std::string& filename, const float scale = 1.0)
 {
     TChain chain("limit");
     chain.Add(filename.c_str());
@@ -225,10 +231,12 @@ stop::Yield::value_t ExtractExpUpperLimitCombine(const std::string& filename)
     chain.SetBranchAddress("limit"   , &result.value);
     chain.SetBranchAddress("limitErr", &result.error);
     chain.GetEntry(2);
+    result.value *= scale;
+    result.error *= scale;
     return result;
 }
 
-stop::Yield::value_t ExtractObsUpperLimitCombine(const std::string& filename)
+stop::Yield::value_t ExtractObsUpperLimitCombine(const std::string& filename, const float scale = 1.0)
 {
     TChain chain("limit");
     chain.Add(filename.c_str());
@@ -236,6 +244,8 @@ stop::Yield::value_t ExtractObsUpperLimitCombine(const std::string& filename)
     chain.SetBranchAddress("limit"   , &result.value);
     chain.SetBranchAddress("limitErr", &result.error);
     chain.GetEntry(5);
+    result.value *= scale;
+    result.error *= scale;
     return result;
 }
 
@@ -273,21 +283,21 @@ void CompareMethodsCombine
     int bin = hc_orig["heff_0"]->FindBin(mass_stop, mass_lsp);
     stop::Yield::value_t ul_obs_orig[stop::SignalRegion::static_size] =
     {
-        {1000.0*hc_orig["hxsec_0"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_1"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_2"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_3"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_4"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_5"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_0"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_1"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_2"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_3"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_4"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_5"]->GetBinContent(bin), 0},
     };
     stop::Yield::value_t ul_exp_orig[stop::SignalRegion::static_size] =
     {
-        {1000.0*hc_orig["hxsec_exp_0"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_exp_1"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_exp_2"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_exp_3"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_exp_4"]->GetBinContent(bin), 0},
-        {1000.0*hc_orig["hxsec_exp_5"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_exp_0"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_exp_1"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_exp_2"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_exp_3"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_exp_4"]->GetBinContent(bin), 0},
+        {hc_orig["hxsec_exp_5"]->GetBinContent(bin), 0},
     };
 
 
@@ -295,42 +305,42 @@ void CompareMethodsCombine
     std::string limit_path = "output/limits/lands/t2tt";
     stop::Yield::value_t ul_obs_m3a[stop::SignalRegion::static_size] =
     {
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
     stop::Yield::value_t ul_exp_m3a[stop::SignalRegion::static_size] =
     {
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp)),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1l_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt1t_m2lnQ.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt2_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt3_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt4_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimit(Form("%s/bands_t2tt_%1.0f_%1.0f_bdt5_m2lnQ.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
 
     // get method3 (m3c) -- Combine 
     limit_path = "output/limits/combine/t2tt";
     stop::Yield::value_t ul_obs_m3c[stop::SignalRegion::static_size] =
     {
-        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt1l.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt1t.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt2.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt3.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt4.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt5.root" , limit_path.c_str(), mass_stop, mass_lsp)),
+        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt1l.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt1t.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt2.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt3.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt4.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractObsUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt5.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
     stop::Yield::value_t ul_exp_m3c[stop::SignalRegion::static_size] =
     {
-        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt1l.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt1t.root", limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt2.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt3.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt4.root" , limit_path.c_str(), mass_stop, mass_lsp)),
-        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt5.root" , limit_path.c_str(), mass_stop, mass_lsp)),
+        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt1l.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt1t.root", limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt2.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt3.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt4.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
+        ExtractExpUpperLimitCombine(Form("%s/combine_t2tt_%1.0f_%1.0f_bdt5.root" , limit_path.c_str(), mass_stop, mass_lsp), 1e-3),
     };
 
     // output table
