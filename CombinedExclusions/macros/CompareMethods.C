@@ -425,7 +425,7 @@ void CompareMethodsFromHists
 
 
     // lands 
-    rt::TH1Container hc_lands("plots/limits/lands/t2tt/t2tt_bdt_limit_hists.root");
+    rt::TH1Container hc_lands("plots/limits/t2tt/lands/t2tt_bdt_limit_hists.root");
     stop::Yield::value_t ul_obs_m3a[stop::SignalRegion::static_size] =
     {
         {hc_lands["h_xsec_obs_ul_bdt1l"]->GetBinContent(bin), hc_lands["h_xsec_obs_ul_bdt1l"]->GetBinError(bin)},
@@ -446,7 +446,7 @@ void CompareMethodsFromHists
     };
 
     // Combine 
-    rt::TH1Container hc_combine("plots/limits/combine/t2tt/t2tt_bdt_limit_hists.root");
+    rt::TH1Container hc_combine("plots/limits/t2tt/combine/t2tt_bdt_limit_hists.root");
     stop::Yield::value_t ul_obs_m3c[stop::SignalRegion::static_size] =
     {
         {hc_combine["h_xsec_obs_ul_bdt1l"]->GetBinContent(bin), hc_combine["h_xsec_obs_ul_bdt1l"]->GetBinError(bin)},
@@ -570,7 +570,7 @@ void PrintComparison
     h2->Draw(draw_option.c_str());
     c1.Print(Form("%s/%s_v2.%s", path.c_str(), h2->GetName(), suffix.c_str()));
 
-    gStyle->SetPaintTextFormat("1.0f");
+    gStyle->SetPaintTextFormat("5.0f");
     h_diff->Draw("text"); c1.Print(Form("%s/%s.%s", path.c_str(), diff_name.c_str(), suffix.c_str()));
     delete h_diff;
 }
@@ -580,6 +580,7 @@ void CompareToBen(const std::string& file_name, const std::string& label = "test
     rt::TH1Container hc1a("/Users/rwk7t/temp/from_ben/exclusion2012_postLHCP_T2bwFixed/rootfiles/T2tt_BDT_histos.root");
     rt::TH1Container hc1b("/Users/rwk7t/temp/from_ben/exclusion2012_postLHCP_T2bwFixed/rootfiles/T2tt_combinePlots_BDT.root");
     rt::TH1Container hc2(file_name);
+/*     hc2.List(); */
 
     gStyle->SetCanvasDefX(1600);
     gStyle->SetCanvasDefY(1200);
@@ -593,20 +594,22 @@ void CompareToBen(const std::string& file_name, const std::string& label = "test
     lt::mkdir(path, true);
 
     PrintComparison(hc1b["hbest"         ], hc2["h_sr_best"          ], path, suffix, "text", "1.0f", 1, -1, 100);
-    PrintComparison(hc1a["hxsec_0"       ], hc2["h_xsec_obs_ul_bdt1l"], path, suffix, "text", "1.1f", 1, -1, 100);
-    PrintComparison(hc1a["hxsec_1"       ], hc2["h_xsec_obs_ul_bdt1t"], path, suffix, "text", "1.1f", 1, -1, 100);
-    PrintComparison(hc1a["hxsec_2"       ], hc2["h_xsec_obs_ul_bdt2" ], path, suffix, "text", "1.1f", 1, -1, 100);
-    PrintComparison(hc1a["hxsec_3"       ], hc2["h_xsec_obs_ul_bdt3" ], path, suffix, "text", "1.1f", 1, -1, 100);
-    PrintComparison(hc1a["hxsec_4"       ], hc2["h_xsec_obs_ul_bdt4" ], path, suffix, "text", "1.1f", 1, -1, 100);
-    PrintComparison(hc1a["hxsec_5"       ], hc2["h_xsec_obs_ul_bdt5" ], path, suffix, "text", "1.1f", 1, -1, 100);
+/*     PrintComparison(hc1a["hxsec_0"       ], hc2["h_xsec_obs_ul_bdt1l"], path, suffix, "text", "1.1f", 1, -1, 100); */
+/*     PrintComparison(hc1a["hxsec_1"       ], hc2["h_xsec_obs_ul_bdt1t"], path, suffix, "text", "1.1f", 1, -1, 100); */
+/*     PrintComparison(hc1a["hxsec_2"       ], hc2["h_xsec_obs_ul_bdt2" ], path, suffix, "text", "1.1f", 1, -1, 100); */
+/*     PrintComparison(hc1a["hxsec_3"       ], hc2["h_xsec_obs_ul_bdt3" ], path, suffix, "text", "1.1f", 1, -1, 100); */
+/*     PrintComparison(hc1a["hxsec_4"       ], hc2["h_xsec_obs_ul_bdt4" ], path, suffix, "text", "1.1f", 1, -1, 100); */
+/*     PrintComparison(hc1a["hxsec_5"       ], hc2["h_xsec_obs_ul_bdt5" ], path, suffix, "text", "1.1f", 1, -1, 100); */
     PrintComparison(hc1b["hxsec_best_exp"], hc2["h_xsec_exp_ul_best" ], path, suffix, "text", "1.1f", 1, -1, 100);
     PrintComparison(hc1b["hxsec_best"    ], hc2["h_xsec_obs_ul_best" ], path, suffix, "text", "1.1f", 1, -1, 100);
+/*     PrintComparison(hc1b["hxsec_best_exp"], hc2["h_excl_obs_best" ], path, suffix, "text", "1.1f", 1, -1, 100); */
+    PrintComparison(hc1b["hexcl_exp"     ], hc2["h_excl_exp_best"    ], path, suffix, "text", "1.0f", 1, -1, 100);
 }
 
 void CompareToLandS(const std::string& label = "test1", const std::string& suffix = "pdf")
 {
-    rt::TH1Container hc1("plots/limits/lands/t2tt/t2tt_bdt_limit_hists.root");
-    rt::TH1Container hc2("plots/limits/combine/t2tt/t2tt_bdt_limit_hists.root");
+    rt::TH1Container hc1("plots/limits/t2tt/lands/t2tt_bdt_limit_hists.root");
+    rt::TH1Container hc2("plots/limits/t2tt/combine/t2tt_bdt_limit_hists.root");
 
     gStyle->SetCanvasDefX(1600);
     gStyle->SetCanvasDefY(1200);
@@ -619,20 +622,22 @@ void CompareToLandS(const std::string& label = "test1", const std::string& suffi
     lt::mkdir(path, true);
 
     PrintComparison(hc1["h_sr_best"          ], hc2["h_sr_best"          ], path, suffix, "text", "1.0f", 1, -1, 100);
-    PrintComparison(hc1["h_xsec_obs_ul_bdt1l"], hc2["h_xsec_obs_ul_bdt1l"], path, suffix, "text", "1.1f", 1, -1, 100);
-    PrintComparison(hc1["h_xsec_obs_ul_bdt1l"], hc2["h_xsec_obs_ul_bdt1l"], path, suffix, "text", "1.1f", 1, -1, 100);
-    PrintComparison(hc1["h_xsec_obs_ul_bdt1t"], hc2["h_xsec_obs_ul_bdt1t"], path, suffix, "text", "1.1f", 1, -1, 100);
-    PrintComparison(hc1["h_xsec_obs_ul_bdt2" ], hc2["h_xsec_obs_ul_bdt2" ], path, suffix, "text", "1.1f", 1, -1, 100);
-    PrintComparison(hc1["h_xsec_obs_ul_bdt3" ], hc2["h_xsec_obs_ul_bdt3" ], path, suffix, "text", "1.1f", 1, -1, 100);
-    PrintComparison(hc1["h_xsec_obs_ul_bdt4" ], hc2["h_xsec_obs_ul_bdt4" ], path, suffix, "text", "1.1f", 1, -1, 100);
-    PrintComparison(hc1["h_xsec_obs_ul_bdt5" ], hc2["h_xsec_obs_ul_bdt5" ], path, suffix, "text", "1.1f", 1, -1, 100);
+/*     PrintComparison(hc1["h_xsec_obs_ul_bdt1l"], hc2["h_xsec_obs_ul_bdt1l"], path, suffix, "text", "1.1f", 1, -1, 100); */
+/*     PrintComparison(hc1["h_xsec_obs_ul_bdt1l"], hc2["h_xsec_obs_ul_bdt1l"], path, suffix, "text", "1.1f", 1, -1, 100); */
+/*     PrintComparison(hc1["h_xsec_obs_ul_bdt1t"], hc2["h_xsec_obs_ul_bdt1t"], path, suffix, "text", "1.1f", 1, -1, 100); */
+/*     PrintComparison(hc1["h_xsec_obs_ul_bdt2" ], hc2["h_xsec_obs_ul_bdt2" ], path, suffix, "text", "1.1f", 1, -1, 100); */
+/*     PrintComparison(hc1["h_xsec_obs_ul_bdt3" ], hc2["h_xsec_obs_ul_bdt3" ], path, suffix, "text", "1.1f", 1, -1, 100); */
+/*     PrintComparison(hc1["h_xsec_obs_ul_bdt4" ], hc2["h_xsec_obs_ul_bdt4" ], path, suffix, "text", "1.1f", 1, -1, 100); */
+/*     PrintComparison(hc1["h_xsec_obs_ul_bdt5" ], hc2["h_xsec_obs_ul_bdt5" ], path, suffix, "text", "1.1f", 1, -1, 100); */
     PrintComparison(hc1["h_xsec_exp_ul_best" ], hc2["h_xsec_exp_ul_best" ], path, suffix, "text", "1.1f", 1, -1, 100);
     PrintComparison(hc1["h_xsec_obs_ul_best" ], hc2["h_xsec_obs_ul_best" ], path, suffix, "text", "1.1f", 1, -1, 100);
+/*     PrintComparison(hc1["h_excl_obs_best"    ], hc2["h_excl_obs_best"    ], path, suffix, "text", "1.0f", 1, -1, 100); */
+    PrintComparison(hc1["h_excl_exp_best"    ], hc2["h_excl_exp_best"    ], path, suffix, "text", "1.0f", 1, -1, 100);
 }
 
 void QuickCompareHists()
 {
-/*      CompareToBen("plots/limits/lands/t2tt/t2tt_bdt_limit_hists.root"  , "lands"  , "eps"); */
-/*      CompareToBen("plots/limits/combine/t2tt/t2tt_bdt_limit_hists.root", "combine", "eps"); */
-/*      CompareToLandS("lands_combine", "eps"); */
+     CompareToBen("plots/limits/t2tt/lands/t2tt_bdt_limit_hists.root"  , "lands"  , "eps");
+     CompareToBen("plots/limits/t2tt/combine/t2tt_bdt_limit_hists.root", "combine", "eps");
+     CompareToLandS("lands_combine", "eps");
 }

@@ -198,13 +198,26 @@ void CreateLimitHists
         TH2F h_xsec_expm1_ul_best(h_bins);
         TH2F h_xsec_expp2_ul_best(h_bins);
         TH2F h_xsec_expm2_ul_best(h_bins);
-        h_sr_best           .SetNameTitle("h_sr_best"           , Form("Best Signal Region;%s;%s"                        , xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_obs_ul_best  .SetNameTitle("h_xsec_obs_ul_best"  , Form("Xsec Observed Upper Limit (pb) (Best);%s;%s"     , xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_exp_ul_best  .SetNameTitle("h_xsec_exp_ul_best"  , Form("Xsec Expected Upper Limit (pb) (Best);%s;%s"     , xbin_label.c_str(), ybin_label.c_str()));
+        h_sr_best           .SetNameTitle("h_sr_best"           , Form("Best Signal Region;%s;%s"                             , xbin_label.c_str(), ybin_label.c_str()));
+        h_xsec_obs_ul_best  .SetNameTitle("h_xsec_obs_ul_best"  , Form("Xsec Observed Upper Limit (pb) (Best);%s;%s"          , xbin_label.c_str(), ybin_label.c_str()));
+        h_xsec_exp_ul_best  .SetNameTitle("h_xsec_exp_ul_best"  , Form("Xsec Expected Upper Limit (pb) (Best);%s;%s"          , xbin_label.c_str(), ybin_label.c_str()));
         h_xsec_expp1_ul_best.SetNameTitle("h_xsec_expp1_ul_best", Form("Xsec Expected Upper Limit + 1#sigma (pb) (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
         h_xsec_expm1_ul_best.SetNameTitle("h_xsec_expm1_ul_best", Form("Xsec Expected Upper Limit + 1#sigma (pb) (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
         h_xsec_expp2_ul_best.SetNameTitle("h_xsec_expp2_ul_best", Form("Xsec Expected Upper Limit + 2#sigma (pb) (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
         h_xsec_expm2_ul_best.SetNameTitle("h_xsec_expm2_ul_best", Form("Xsec Expected Upper Limit + 2#sigma (pb) (Best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
+
+        TH2F h_excl_obs_best  (h_bins);
+        TH2F h_excl_exp_best  (h_bins);
+        TH2F h_excl_expp1_best(h_bins);
+        TH2F h_excl_expm1_best(h_bins);
+        TH2F h_excl_obsp1_best(h_bins);
+        TH2F h_excl_obsm1_best(h_bins);
+        h_excl_obs_best  .SetNameTitle("h_excl_obs_best"  , Form("Excluded Observed (best);%s;%s"               , xbin_label.c_str(), ybin_label.c_str()));
+        h_excl_exp_best  .SetNameTitle("h_excl_exp_best"  , Form("Excluded Expected (best);%s;%s"               , xbin_label.c_str(), ybin_label.c_str()));
+        h_excl_expp1_best.SetNameTitle("h_excl_expp1_best", Form("Excluded Expected + 1#sigma (best);%s;%s"     , xbin_label.c_str(), ybin_label.c_str()));
+        h_excl_expm1_best.SetNameTitle("h_excl_expm1_best", Form("Excluded Expected + 1#sigma (best);%s;%s"     , xbin_label.c_str(), ybin_label.c_str()));
+        h_excl_obsp1_best.SetNameTitle("h_excl_obsp1_best", Form("Excluded Observed + 1#sigma_{th} (best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
+        h_excl_obsm1_best.SetNameTitle("h_excl_obsm1_best", Form("Excluded Observed + 1#sigma_{th} (best);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
 
         for (size_t sr_num = 1; sr_num != stop::SignalRegion::static_size; sr_num++)
         {
@@ -304,20 +317,19 @@ void CreateLimitHists
             {
                 for (int ybin = 0; ybin != h_bins.GetNbinsY(); ybin++)
                 {
-                    const float mass_stop = h_bins.GetXaxis()->GetBinCenter(xbin);
-                    const float mass_lsp  = h_bins.GetYaxis()->GetBinCenter(ybin);
-                    if (not (lt::is_equal(mass_stop, 250.0f) and lt::is_equal(mass_lsp, 150.0f))) {continue;}
+                    //const float mass_stop = h_bins.GetXaxis()->GetBinCenter(xbin);
+                    //const float mass_lsp  = h_bins.GetYaxis()->GetBinCenter(ybin);
+                    //if (not (lt::is_equal(mass_stop, 100.0f) and lt::is_equal(mass_lsp, 0.0f))) {continue;}
                     const float xsec_exp = hc["h_xsec_exp_ul_"+sr_hist_name]->GetBinContent(xbin, ybin);
                     if (lt::is_zero(xsec_exp))
                     {
-                        std::cout << "skipping " << sr_hist_name << " for " << mass_stop << ", " << mass_lsp << endl;
+                        //std::cout << "skipping " << sr_hist_name << " for " << mass_stop << ", " << mass_lsp << endl;
                         continue;
                     }
                     else
                     {
-                        std::cout << "expected limit " << xsec_exp << " for " << sr_hist_name << ", " << mass_stop << ", " << mass_lsp << endl;
+                        //std::cout << "expected limit " << xsec_exp << " for " << sr_hist_name << ", " << mass_stop << ", " << mass_lsp << endl;
                     }
-
                     if (xsec_exp < h_xsec_exp_ul_best.GetBinContent(xbin, ybin))
                     {
                         h_sr_best           .SetBinContent(xbin, ybin, sr_num);
@@ -335,6 +347,13 @@ void CreateLimitHists
                         h_xsec_expm1_ul_best.SetBinError(xbin, ybin, hc["h_xsec_expm1_ul_"+sr_hist_name]->GetBinError(xbin, ybin));
                         h_xsec_expp2_ul_best.SetBinError(xbin, ybin, hc["h_xsec_expp2_ul_"+sr_hist_name]->GetBinError(xbin, ybin));
                         h_xsec_expm2_ul_best.SetBinError(xbin, ybin, hc["h_xsec_expm2_ul_"+sr_hist_name]->GetBinError(xbin, ybin));
+
+                        h_excl_obs_best  .SetBinContent(xbin, ybin, hc["h_excl_obs_ul_"  +sr_hist_name]->GetBinContent(xbin, ybin));
+                        h_excl_exp_best  .SetBinContent(xbin, ybin, hc["h_excl_exp_ul_"  +sr_hist_name]->GetBinContent(xbin, ybin));
+                        h_excl_expp1_best.SetBinContent(xbin, ybin, hc["h_excl_expp1_ul_"+sr_hist_name]->GetBinContent(xbin, ybin));
+                        h_excl_expm1_best.SetBinContent(xbin, ybin, hc["h_excl_expm1_ul_"+sr_hist_name]->GetBinContent(xbin, ybin));
+                        h_excl_obsp1_best.SetBinContent(xbin, ybin, hc["h_excl_obsp1_ul_"+sr_hist_name]->GetBinContent(xbin, ybin));
+                        h_excl_obsm1_best.SetBinContent(xbin, ybin, hc["h_excl_obsm1_ul_"+sr_hist_name]->GetBinContent(xbin, ybin));
                     }
                 }
             }
@@ -348,6 +367,12 @@ void CreateLimitHists
         hc.Add(h_xsec_expm1_ul_best);
         hc.Add(h_xsec_expp2_ul_best);
         hc.Add(h_xsec_expm2_ul_best);
+        hc.Add(h_excl_obs_best);
+        hc.Add(h_excl_exp_best);
+        hc.Add(h_excl_expp1_best);
+        hc.Add(h_excl_expm1_best);
+        hc.Add(h_excl_obsp1_best);
+        hc.Add(h_excl_obsm1_best);
 
         // save
         hc.Write(output_file_name);
@@ -364,6 +389,11 @@ void CreateLimits()
 {
     //CreateLimitHists("/hadoop/cms/store/user/rwkelley/limits/lands/t2tt"  , "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/t2tt/t2tt_bdt_limit_hists.root" , /*use_lands*/true );
     //CreateLimitHists("/hadoop/cms/store/user/rwkelley/limits/combine/t2tt", "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/combine/t2tt/t2tt_bdt_limit_hists.root", /*use_lands*/false);
-    //CreateLimitHists("output/limits/lands/t2tt"  , "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/lands/t2tt/t2tt_bdt_limit_hists.root" , /*use_lands*/true);
-    CreateLimitHists("output/limits/combine/t2tt", "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/combine/t2tt/t2tt_bdt_limit_hists.root", /*use_lands*/false);
+    CreateLimitHists("output/limits/t2tt/lands"  , "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/t2tt/lands/t2tt_bdt_limit_hists.root" , /*use_lands*/true);
+    CreateLimitHists("output/limits/t2tt/combine", "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/t2tt/combine/t2tt_bdt_limit_hists.root", /*use_lands*/false);
+}
+
+void CreateExpectedExclusionOverlay()
+{
+    rt::TH1Container hc_an("/Users/rwk7t/temp/from_ben/exclusion2012_postLHCP_T2bwFixed/rootfiles/T2tt_combinePlots_BDT.root");
 }
