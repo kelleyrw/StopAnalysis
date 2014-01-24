@@ -19,7 +19,7 @@ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD
 
 # set the command
 # -------------------------- #
-cmd="./lands.exe -d ${card} -n ${job_id} -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --nToysForCLsb 10000 --nToysForCLb 5000 --seed 1234 -rMin 10 -rMax 1000000"
+cmd="./lands.exe -d ${card} -n ${job_id} -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --nToysForCLsb 10000 --nToysForCLb 5000 --seed 1234 -rMin 0 -rMax 1000000"
 
 # run lands 
 # -------------------------- #
