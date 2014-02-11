@@ -31,7 +31,7 @@ scramv1 b -j20
 popd
 
 # compile sweepRoot.cc
-g++ sweepRoot.C -o sweepRoot `root-config --cflags --libs`
+g++ sweepRoot.cc -o sweepRoot `root-config --cflags --libs`
 
 # run combine
 function run_combine
@@ -40,7 +40,7 @@ function run_combine
     local job_id=$2
     local output="combine_${job_id}.root"
     local seed=1234
-    local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed --rMin 10 --rMax 1000000"
+    local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed --rMin 0 --rMax 10000"
 
     # run combine 
 
