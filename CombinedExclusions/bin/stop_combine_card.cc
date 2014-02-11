@@ -432,6 +432,106 @@ razor_card_info_t ParseRazorCard(const std::string& razor_card_filename)
     return info;
 }
 
+// print the combined card
+// -------------------------------------------------------------------------------------------------//
+
+void PrintCombinedCard(std::ostream &out, const stop_card_info_t& stop_info, const razor_card_info_t& razor_info)
+{
+    // card string
+    const std::string card = Form(
+        "imax %u number of bins\n"
+        "jmax %u number of background processeses\n"
+        "kmax %u number of nuisance parameters\n"
+        "------------------------------------------------------------------------------------------------------------------------------------------\n"
+        "shapes *         Jet2b     razor_combine_Jet2b_T2tt_MG_725.000000_MCHI_25.000000.root wJet2b:$PROCESS wJet2b:$PROCESS_$SYSTEMATIC\n"
+        "shapes *         MultiJet  razor_combine_MultiJet_T2tt_MG_725.000000_MCHI_25.000000.root wMultiJet:$PROCESS wMultiJet:$PROCESS_$SYSTEMATIC\n"
+        "------------------------------------------------------------------------------------------------------------------------------------------\n"
+        "bin          MultiJet  Jet2b     STOP    \n"
+        "observation  %-11u%-11u%-11u\n"
+        "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+        "bin                                MultiJet        MultiJet        MultiJet        MultiJet        Jet2b           Jet2b           Jet2b           STOP            STOP            STOP            STOP            STOP          \n"
+        "process                            MultiJet_T2tt   MultiJet_TTj3b  MultiJet_TTj1b  MultiJet_TTj2b  Jet2b_T2tt      Jet2b_TTj2b     Jet2b_TTj3b     signal          rare            wjets           ttslo           ttdil         \n"
+        "process                            -2              1               2               3               -1              4               5               0               6               7               8               9             \n"
+        "rate                               %-16.4f%-16.4f%-16.4f%-16.4f%-16.4f%-16.4f%-16.4f%-16.4f%-16.4f%-16.4f%-16.4f%-16.4f\n"
+        "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+        "btag                    shape      %-6.1f          -               -               -               %-6.1f          -               -               %-6.3f          -               -               -               -             \n"
+        "isr                     shape      %-6.1f          -               -               -               %-6.1f          -               -               %-6.3f          -               -               -               -             \n"
+        "jes                     shape      %-6.1f          -               -               -               %-6.1f          -               -               %-6.3f          -               -               -               -             \n"
+        "pdf                     shape      %-6.1f          -               -               -               %-6.1f          -               -               -               -               -               -               -             \n"
+        "lep                     lnN        -               -               -               -               -               -               -               %-6.2f          -               -               -               -             \n"
+        "lumi                    lnN        %-6.3f          1.0             1.0             1.0             %-6.3f          1.0             1.0             %-6.3f          -               -               -               -             \n"
+        "trigger                 lnN        %-6.2f          1.0             1.0             1.0             %-6.2f          1.0             1.0             %-6.2f          -               -               -               -             \n"
+        "rare                    lnN        -               -               -               -               -               -               -               -               %-6.3f          -               -               -             \n"
+        "wjets                   lnN        -               -               -               -               -               -               -               -               -               %-6.3f          -               -             \n"
+        "ttslo                   lnN        -               -               -               -               -               -               -               -               -               -               %-6.3f          -             \n"
+        "ttdil                   lnN        -               -               -               -               -               -               -               -               -               -               -               %-6.3f        \n"
+        "n_TTj1b_MultiJet     flatParam\n"
+        "MR0_TTj1b_MultiJet   flatParam\n"
+        "b_TTj2b_MultiJet     flatParam\n"
+        "MR0_TTj2b_MultiJet   flatParam\n"
+        "MultiJet_TTj3b_norm  flatParam\n"
+        "MultiJet_TTj2b_norm  flatParam\n"
+        "n_TTj2b_Jet2b        flatParam\n"
+        "Jet2b_TTj3b_norm     flatParam\n"
+        "R0_TTj2b_Jet2b       flatParam\n"
+        "b_TTj2b_Jet2b        flatParam\n"
+        "R0_TTj2b_MultiJet    flatParam\n"
+        "MR0_TTj2b_Jet2b      flatParam\n"
+        "MultiJet_TTj1b_norm  flatParam\n"
+        "R0_TTj1b_MultiJet    flatParam\n"
+        "Jet2b_TTj2b_norm     flatParam\n"
+        "n_TTj2b_MultiJet     flatParam\n"
+        "b_TTj1b_MultiJet     flatParam\n"
+        , stop_info.num_srs   + razor_info.num_srs
+        , stop_info.num_bkgds + razor_info.num_bkgds
+        , stop_info.num_nuis  + razor_info.num_nuis
+        , razor_info.obs_mj
+        , razor_info.obs_j2
+        , stop_info.obs
+        , razor_info.acc_mj
+        , razor_info.mj_ttj3b
+        , razor_info.mj_tt1jb
+        , razor_info.mj_ttj2b
+        , razor_info.acc_j2
+        , razor_info.j2_ttj2b
+        , razor_info.j2_ttj3b
+        , stop_info.acc
+        , stop_info.rare
+        , stop_info.wjets
+        , stop_info.ttslo
+        , stop_info.ttdil
+        , razor_info.btag_unc
+        , razor_info.btag_unc
+        , stop_info.btag_unc
+        , razor_info.isr_unc
+        , razor_info.isr_unc
+        , stop_info.isr_unc
+        , razor_info.jes_unc
+        , razor_info.jes_unc
+        , stop_info.jes_unc
+        , razor_info.pdf_unc
+        , razor_info.pdf_unc
+        , stop_info.lep_unc
+        , razor_info.lumi_unc
+        , razor_info.lumi_unc
+        , stop_info.lumi_unc
+        , razor_info.trig_unc
+        , razor_info.trig_unc
+        , stop_info.trig_unc
+        , stop_info.rare_unc
+        , stop_info.wjets_unc
+        , stop_info.ttslo_unc
+        , stop_info.ttdil_unc
+    );
+
+    // print it
+    out << card;
+
+    // done
+    return;
+}
+
+
 // main program
 int main(int argc, char* argv[])
 try
@@ -536,9 +636,20 @@ try
         PrintRazorCard(std::cout, razor_info, type);
     }
 
-    // print the result 
+    // print the combined result 
     // -------------------------------------------------------------------------------------------------//
 
+    if (output_file.empty())
+    {
+        PrintCombinedCard(std::cout, stop_info, razor_info);
+    }
+    else
+    {
+        lt::mkdir(lt::dirname(output_file), /*force=*/true);
+        std::ofstream out(output_file.c_str(), std::ofstream::out);
+        PrintCombinedCard(out, stop_info, razor_info);
+        out.close();
+    }
 
     // done
     return 0;
