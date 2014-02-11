@@ -9,6 +9,30 @@
 #include <boost/program_options.hpp>
 #include "TH2F.h"
 
+// heper functions 
+// -------------------------------------------------------------------------------------------------//
+
+// get line from the file and stip the extra whitespace
+std::vector<std::string> GetLineSplit(std::ifstream& in)
+{
+    // get a line from in
+    std::string line;
+    getline(in, line);
+
+    // split it on the spaces
+    std::vector<std::string> result = lt::string_split(line, " "); 
+
+    // remove blank strings
+    result.erase(std::remove(result.begin(), result.end(), ""), result.end());
+
+    // done
+    return result;
+}
+
+// Stop result helper classes and function
+// -------------------------------------------------------------------------------------------------//
+
+// class to hold the stop result data
 struct stop_card_info_t
 {
     stop_card_info_t() : sr_name("") {}
@@ -39,37 +63,7 @@ struct stop_card_info_t
     float total_unc;
 };
 
-const float GetValueFromScanHist(TH1* const hist, const float mass_stop, const float mass_lsp)
-{
-    TH2* const h2 = dynamic_cast<TH2*>(hist);
-    const float value = rt::GetBinContent2D(h2, mass_stop, mass_lsp);
-    if (lt::is_zero(value))
-    {
-        return 0.0;
-    }
-    else
-    {
-        return value;
-    }
-}
-
-std::vector<std::string> GetLineSplit(std::ifstream& in)
-{
-    // get a line from in
-    std::string line;
-    getline(in, line);
-
-    // split it on the spaces
-    std::vector<std::string> result = lt::string_split(line, " "); 
-
-    // remove blank strings
-    result.erase(std::remove(result.begin(), result.end(), ""), result.end());
-
-    // done
-    return result;
-}
-
-
+// print the stop card in its original format
 void PrintStopCard(std::ostream &out, const stop_card_info_t& info, const unsigned short type = 1)
 {
     std::string card;
@@ -138,6 +132,7 @@ void PrintStopCard(std::ostream &out, const stop_card_info_t& info, const unsign
     return;
 }
 
+// parse the stop card in its original format
 // This is hard coded and assumes the format produced using method 1 from
 // https://github.com/kelleyrw/StopAnalysis/blob/master/CombinedExclusions/bin/stop_create_card.cc
 stop_card_info_t ParseStopCard(const std::string& stop_card_filename)
@@ -216,11 +211,14 @@ stop_card_info_t ParseStopCard(const std::string& stop_card_filename)
     line_split = GetLineSplit(fin); info.btag_unc = boost::lexical_cast<float>(line_split[2]);
     line_split = GetLineSplit(fin); info.jes_unc  = boost::lexical_cast<float>(line_split[2]);
 
-//     std::copy(line_split.begin(), line_split.end(), std::ostream_iterator<std::string>(std::cout, ","));
-
+    // done
     return info;
 }
 
+// Razor result helper classes and function
+// -------------------------------------------------------------------------------------------------//
+
+// class to hold the razor result data
 struct razor_card_info_t
 {
     razor_card_info_t() {}
@@ -244,6 +242,7 @@ struct razor_card_info_t
     float trig_unc;
 };
 
+// print the razor card in its original format
 void PrintRazorCard(std::ostream &out, const razor_card_info_t& info, const unsigned short type = 1)
 {
     // card string
@@ -319,8 +318,8 @@ void PrintRazorCard(std::ostream &out, const razor_card_info_t& info, const unsi
     return;
 }
 
-// This is hard coded and assumes the format produced using method 1 from
-// https://github.com/kelleyrw/StopAnalysis/blob/master/CombinedExclusions/bin/stop_create_card.cc
+// print the razor card in its original format
+// This is hard coded and assumes the format produced by Javier 
 razor_card_info_t ParseRazorCard(const std::string& razor_card_filename)
 {
 // 1  Combination of MultiJet=razor_combine_MultiJet_T2tt_MG_725.000000_MCHI_25.000000.txt  Jet2b=razor_combine_Jet2b_T2tt_MG_725.000000_MCHI_25.000000.txt
@@ -432,8 +431,7 @@ razor_card_info_t ParseRazorCard(const std::string& razor_card_filename)
     getline(fin, line); // skip
     getline(fin, line); // skip
 
-//  std::copy(line_split.begin(), line_split.end(), std::ostream_iterator<std::string>(std::cout, ",")); std::cout << std::endl;
-
+    // done
     return info;
 }
 
@@ -442,19 +440,15 @@ int main(int argc, char* argv[])
 try
 {
     using namespace std;
-//     using namespace stop;
 
     // inputs
     // -------------------------------------------------------------------------------------------------//
 
     std::string syst_file    = "";
     std::string output_file  = "";
-    std::string best_sr_file = "from_ben/exclusion2012_postLHCP_T2bwFixed/rootfiles/T2tt_combinePlots_BDT.root";
-    std::string best_sr_hist = "hbest";
-    double mass_stop         = -999999.0;
-    double mass_lsp          = -999999.0;
-    double lumi              = 19.5;
-    unsigned short type      = 1;
+    std::string stop_card    = "";
+    std::string razor_card   = "";
+    unsigned short type      = 1; // hard coded for now
     bool verbose             = false;
 
     const string type_desc = "1: The first type.";
@@ -462,16 +456,11 @@ try
     namespace po = boost::program_options;
     po::options_description desc("Allowed options");
     desc.add_options()
-        ("help"        , "print this menu")
-        ("syst"        , po::value<std::string>(&syst_file)->required(), "REQUIRED: file to get the signal yields and systematics")
-        ("mass_stop"   , po::value<double>(&mass_stop)->required()     , "REQUIRED: mass stop value"                              )
-        ("mass_lsp"    , po::value<double>(&mass_lsp)->required()      , "REQUIRED: mass lsp value"                               )
-        ("best_sr_file", po::value<std::string>(&best_sr_file)         , "Best SRs file to run on"                                )
-        ("best_sr_hist", po::value<std::string>(&best_sr_hist)         , "Best SRs histogram to run on"                           )
-        ("type"        , po::value<unsigned short>(&type)              , Form("Type:\n%s", type_desc.c_str())                     )
-        ("output"      , po::value<std::string>(&output_file)          , "name of output file (blank = stdout)"                   )
-        ("lumi"        , po::value<double>(&lumi)                      , "luminosity"                                             )
-        ("verbose"     , po::value<bool>(&verbose)                     , "verbosity"                                              )
+        ("help"       , "print this menu")
+        ("stop_card"  , po::value<std::string>(&stop_card)->required() , "REQUIRED: name of stop input card"  )
+        ("razor_card" , po::value<std::string>(&razor_card)->required(), "REQUIRED: name of razor input card" )
+        ("output"     , po::value<std::string>(&output_file), "name of output file (blank = stdout)"          )
+        ("verbose"    , po::value<bool>(&verbose)           , "verbosity"                                     )
         ;
 
     // parse it
@@ -503,14 +492,10 @@ try
     if (verbose)
     {
         cout << "inputs:" << endl;
-        cout << "output_file :\t" << output_file  << endl;
-        cout << "syst_file   :\t" << syst_file    << endl;
-        cout << "best_sr_file:\t" << best_sr_file << endl;
-        cout << "best_sr_hist:\t" << best_sr_hist << endl;
-        cout << "lumi        :\t" << lumi         << endl;
-        cout << "verbose     :\t" << verbose      << endl;
-        cout << "mass_stop   :\t" << mass_stop    << endl;
-        cout << "mass_lsp    :\t" << mass_lsp     << endl;
+        cout << "output_file :\t" << output_file << endl;
+        cout << "stop_card   :\t" << stop_card   << endl;
+        cout << "razor_card  :\t" << razor_card  << endl;
+        cout << "type        :\t" << type        << endl;
     }
 
     // check that input file exists and is specified
@@ -521,78 +506,42 @@ try
         return 1;
     }
 
-    // check that best SR file exists and is specified
-    if (not best_sr_file.empty() and not lt::file_exists(best_sr_file))
+    // check that stop card exists and is specified
+    if (not stop_card.empty() and not lt::file_exists(stop_card))
     {
-        cout << "[stop_combine_card] ERROR: best SR histogram file " << best_sr_file << " not found" << endl;
+        cout << "[stop_combine_card] ERROR: stop_card file " << stop_card << " not found" << endl;
         cout << desc << "\n";
         return 1;
     }
 
-    // Get information from STOP analysis 
+    // check that razor card exists and is specified
+    if (not razor_card.empty() and not lt::file_exists(razor_card))
+    {
+        cout << "[stop_combine_card] ERROR: razor_card file " << razor_card << " not found" << endl;
+        cout << desc << "\n";
+        return 1;
+    }
+
+    // Get information from the analysis 
     // -------------------------------------------------------------------------------------------------//
 
-//     stop_card_info_t stop_info = ParseStopCard("cards/t2tt_method1/t2tt_725_25_bdt4.txt");
-//     PrintStopCard(std::cout, stop_info, type);
+    stop_card_info_t stop_info = ParseStopCard(stop_card);
+    if (verbose)
+    {
+        cout << "\n[stop_combine_card] Verifying stop card:\n";
+        PrintStopCard(std::cout, stop_info, type);
+    }
 
-    razor_card_info_t stop_info = ParseRazorCard("/Users/rwk7t/Development/CMSSW_6_1_2_Analysis/src/RazorCMS/RazorCombinedFit/cards/razor_combine_Had_T2tt_MG_725.000000_MCHI_25.000000.txt");
-    PrintRazorCard(std::cout, stop_info, type);
+    razor_card_info_t razor_info = ParseRazorCard(razor_card);
+    if (verbose)
+    {
+        cout << "\n[stop_combine_card] Verifying razor card:\n";
+        PrintRazorCard(std::cout, razor_info, type);
+    }
 
-//     // extract the best signal region 
-//     TH2F* const h_best_sr                              = rt::GetHistFromRootFile<TH2F>(best_sr_file, best_sr_hist);
-//     const int sr_num                                   = rt::GetBinContent2D(h_best_sr, mass_stop, mass_lsp);
-//     delete h_best_sr;
-//     const stop::SignalRegion::value_type signal_region = stop::GetSignalRegionFromName(Form("sr%d", sr_num));
-//     const stop::SignalRegionInfo signal_region_info    = stop::GetSignalRegionInfo(signal_region);
-//     const stop::Result& stop_result                    = stop::GetResult(signal_region);
+    // print the result 
+    // -------------------------------------------------------------------------------------------------//
 
-//     // open systematic file
-//     rt::TH1Container hc(syst_file);
-//     if (verbose)
-//     {
-//         hc.List();
-//     }
-//     
-//     // fill the card info
-//     stop_card_info_t info;
-//     info.sr_name   = stop::GetSignalRegionInfo(signal_region).label;
-//     info.obs       = stop_result.data.lep.value;
-//     info.ttdil     = stop_result.ttdil.lep.value; 
-//     info.ttslo     = stop_result.ttslo.lep.value; 
-//     info.wjets     = stop_result.wjets.lep.value; 
-//     info.rare      = stop_result.rare.lep.value; 
-//     info.bkgd      = stop_result.bkgd.lep.value; 
-//     info.ttdil_unc = 1.0 + stop_result.ttdil.lep.frac_error(); 
-//     info.ttslo_unc = 1.0 + stop_result.ttslo.lep.frac_error(); 
-//     info.wjets_unc = 1.0 + stop_result.wjets.lep.frac_error(); 
-//     info.rare_unc  = 1.0 + stop_result.rare.lep.frac_error(); 
-//     info.bkgd_unc  = 1.0 + stop_result.bkgd.lep.frac_error(); 
-// 
-//     info.acc       = lumi*GetValueFromScanHist(hc["h_eff_"+signal_region_info.label], mass_stop, mass_lsp);
-//     info.ngen      = GetValueFromScanHist(hc["h_ngen"], mass_stop, mass_lsp);
-//     info.trig_unc  = 1.030;
-//     info.lumi_unc  = 1.044;
-//     info.lep_unc   = 1.050;
-//     info.isr_unc   = 1.0 + GetValueFromScanHist(hc["h_err_noisr_"+signal_region_info.label], mass_stop, mass_lsp);
-//     info.btag_unc  = 1.0 + GetValueFromScanHist(hc["h_err_btag_" +signal_region_info.label], mass_stop, mass_lsp);
-//     info.jes_unc   = 1.0 + GetValueFromScanHist(hc["h_err_jes_"  +signal_region_info.label], mass_stop, mass_lsp);
-//     info.stat_unc  = 1.0 + GetValueFromScanHist(hc["h_err_stats_"+signal_region_info.label], mass_stop, mass_lsp);
-//     info.total_unc = 1.0 + GetValueFromScanHist(hc["h_err_total_"+signal_region_info.label], mass_stop, mass_lsp);
-// 
-//     // print the card
-//     // -------------------------------------------------------------------------------------------------//
-// 
-//     if (output_file.empty())
-//     {
-//         PrintStopCard(std::cout, info, type);
-//     }
-//     else
-//     {
-//         lt::mkdir(lt::dirname(output_file), /*force=*/true);
-//         std::ofstream out(output_file.c_str(), std::ofstream::out);
-//         PrintStopCard(out, info, type);
-//         out.close();
-//     }
 
     // done
     return 0;
