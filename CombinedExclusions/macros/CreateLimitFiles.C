@@ -392,8 +392,3 @@ void CreateLimits()
     CreateLimitHists("output/limits/t2tt/lands"  , "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/t2tt/lands/t2tt_bdt_limit_hists.root" , /*use_lands*/true);
     CreateLimitHists("output/limits/t2tt/combine", "plots/interp/t2tt/t2tt_bdt_hists.root", "plots/limits/t2tt/combine/t2tt_bdt_limit_hists.root", /*use_lands*/false);
 }
-
-void CreateExpectedExclusionOverlay()
-{
-    rt::TH1Container hc_an("/Users/rwk7t/temp/from_ben/exclusion2012_postLHCP_T2bwFixed/rootfiles/T2tt_combinePlots_BDT.root");
-}

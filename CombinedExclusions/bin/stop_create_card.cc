@@ -9,7 +9,7 @@
 
 struct card_info_t
 {
-    card_info_t() {}
+    card_info_t() : sr_name("") {}
     std::string sr_name;
     unsigned int obs;
     unsigned int ngen;
@@ -60,16 +60,16 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     "rate                    %-12.4e%-6.1f      %-6.1f      %-6.1f      %-6.1f\n"
                     "### Error Matrix\n"                                                        
                     "------------\n"                                                            
-                    "ttdil_unc        lnN    -           %1.3f       -           -           -     \n"
-                    "ttslo_unc        lnN    -           -           %1.3f       -           -     \n"
-                    "wjets_unc        lnN    -           -           -           %1.3f       -     \n"
-                    "rare_unc         lnN    -           -           -           -           %1.3f \n"
-                    "trig_unc         lnN    %1.3f       -           -           -           -     \n"
-                    "lep_unc          lnN    %1.3f       -           -           -           -     \n"
-                    "lumi_unc         lnN    %1.3f       -           -           -           -     \n"
-                    "isr_unc          lnN    %1.3f       -           -           -           -     \n"
-                    "btag_unc         lnN    %1.3f       -           -           -           -     \n"
-                    "jes_unc          lnN    %1.3f       -           -           -           -     \n"
+                    "ttdil            lnN    -           %1.3f       -           -           -     \n"
+                    "ttslo            lnN    -           -           %1.3f       -           -     \n"
+                    "wjets            lnN    -           -           -           %1.3f       -     \n"
+                    "rare             lnN    -           -           -           -           %1.3f \n"
+                    "trigger          lnN    %1.3f       -           -           -           -     \n"
+                    "lep              lnN    %1.3f       -           -           -           -     \n"
+                    "lumi             lnN    %1.3f       -           -           -           -     \n"
+                    "Isr              lnN    %1.3f       -           -           -           -     \n"
+                    "Btag             lnN    %1.3f       -           -           -           -     \n"
+                    "Jes              lnN    %1.3f       -           -           -           -     \n"
                     , info.sr_name.c_str() 
                     , info.obs
                     , info.sr_name.c_str() 
@@ -166,7 +166,7 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
     }
 
     // print it
-    out << card << std::endl;
+    out << card;
 
     // done
     return;

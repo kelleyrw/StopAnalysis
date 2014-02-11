@@ -602,7 +602,6 @@ void CompareToBen(const std::string& file_name, const std::string& label = "test
 /*     PrintComparison(hc1a["hxsec_5"       ], hc2["h_xsec_obs_ul_bdt5" ], path, suffix, "text", "1.1f", 1, -1, 100); */
     PrintComparison(hc1b["hxsec_best_exp"], hc2["h_xsec_exp_ul_best" ], path, suffix, "text", "1.1f", 1, -1, 100);
     PrintComparison(hc1b["hxsec_best"    ], hc2["h_xsec_obs_ul_best" ], path, suffix, "text", "1.1f", 1, -1, 100);
-/*     PrintComparison(hc1b["hxsec_best_exp"], hc2["h_excl_obs_best" ], path, suffix, "text", "1.1f", 1, -1, 100); */
     PrintComparison(hc1b["hexcl_exp"     ], hc2["h_excl_exp_best"    ], path, suffix, "text", "1.0f", 1, -1, 100);
 }
 
