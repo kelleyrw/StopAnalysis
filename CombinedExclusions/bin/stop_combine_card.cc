@@ -2,12 +2,9 @@
 #include <fstream>
 #include <string>
 #include <iterator>
-#include "StopAnalysis/CombinedExclusions/interface/StopYields.h"
-#include "StopAnalysis/CombinedExclusions/interface/SignalRegion.h"
 #include "AnalysisTools/LanguageTools/interface/LanguageTools.h"
 #include "AnalysisTools/RootTools/interface/RootTools.h"
 #include <boost/program_options.hpp>
-#include "TH2F.h"
 
 // heper functions 
 // -------------------------------------------------------------------------------------------------//
