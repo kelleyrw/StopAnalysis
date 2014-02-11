@@ -1,5 +1,6 @@
 <use name="root"/>
 <use name="boost"/>
+<use name="boost_program_options"/>
 <use name="FWCore/FWLite"/>
 <use name="FWCore/PythonParameterSet"/>
 <use name="StopAnalysis/CombinedExclusions"/>
@@ -7,6 +8,8 @@
   <bin file="stop_interp_plots.cc"/>
 </environment>
 <environment>
-  <use name="boost_program_options"/>
   <bin file="stop_create_card.cc"/>
+</environment>
+<environment>
+  <bin file="stop_combine_card.cc"/>
 </environment>
