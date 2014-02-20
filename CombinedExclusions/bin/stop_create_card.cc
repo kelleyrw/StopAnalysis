@@ -161,6 +161,60 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     );
             break;
 
+        case 4:
+
+            // card string
+            card = Form("imax 1 number of search regions\n"
+                    "jmax 4  number of backgrounds ('*' = automatic)\n"
+                    "kmax 10 number of nuisance parameters (sources of systematical uncertainties)\n"
+                    "------------\n"
+                    "shapes * %s FAKE\n"
+                    "------------\n"
+                    "       bin      %s\n"
+                    "observation     %u\n"
+                    "------------\n"
+                    "bin                     %-12s%-12s%-12s%-12s%-12s\n"
+                    "process                 signal      ttdil       ttslo       wjets       rare  \n"
+                    "process                 0           1           2           3           4     \n"
+                    "rate                    %-12.4e%-6.1f      %-6.1f      %-6.1f      %-6.1f\n"
+                    "### Error Matrix\n"                                                        
+                    "------------\n"                                                            
+                    "ttdil_unc        lnN    -           %1.3f       -           -           -     \n"
+                    "ttslo_unc        lnN    -           -           %1.3f       -           -     \n"
+                    "wjets_unc        lnN    -           -           -           %1.3f       -     \n"
+                    "rare_unc         lnN    -           -           -           -           %1.3f \n"
+                    "trig_unc         lnN    %1.3f       -           -           -           -     \n"
+                    "lep_unc          lnN    %1.3f       -           -           -           -     \n"
+                    "Isr_unc          lnN    %1.3f       -           -           -           -     \n"
+                    "Btag_unc         lnN    %1.3f       -           -           -           -     \n"
+                    "Jes_unc          lnN    %1.3f       -           -           -           -     \n"
+                    "lumi             lnN    %1.3f       -           -           -           -     \n"
+                    , info.sr_name.c_str() 
+                    , info.sr_name.c_str() 
+                    , info.obs
+                    , info.sr_name.c_str() 
+                    , info.sr_name.c_str() 
+                    , info.sr_name.c_str() 
+                    , info.sr_name.c_str() 
+                    , info.sr_name.c_str() 
+                    , (lt::is_zero(info.acc) ? 1.0/static_cast<float>(info.ngen) : info.acc)
+                    , info.ttdil
+                    , info.ttslo
+                    , info.wjets
+                    , info.rare
+                    , info.ttdil_unc
+                    , info.ttslo_unc
+                    , info.wjets_unc
+                    , info.rare_unc
+                    , info.trig_unc
+                    , info.lep_unc
+                    , info.isr_unc
+                    , info.btag_unc
+                    , info.jes_unc
+                    , info.lumi_unc
+                    );
+            break;
+
         default:
             throw std::runtime_error("[PrintCard] Error: method not supported");
     }

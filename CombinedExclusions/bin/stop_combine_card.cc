@@ -440,7 +440,7 @@ void PrintCombinedCard(std::ostream &out, const stop_card_info_t& stop_info, con
     // card string
     const std::string card = Form(
         "imax %u number of bins\n"
-        "jmax %u number of background processeses\n"
+        "jmax %u number of processeses - 1\n"
         "kmax %u number of nuisance parameters\n"
         "------------------------------------------------------------------------------------------------------------------------------------------\n"
         "shapes *         Jet2b     razor_combine_Jet2b_T2tt_MG_725.000000_MCHI_25.000000.root wJet2b:$PROCESS wJet2b:$PROCESS_$SYSTEMATIC\n"
