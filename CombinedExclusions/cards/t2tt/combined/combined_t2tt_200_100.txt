@@ -13,7 +13,7 @@ observation  2589.0    728.0     76.0
 bin                               MultiJet        MultiJet        MultiJet        MultiJet        Jet2b           Jet2b           Jet2b           STOP            STOP            STOP            STOP            STOP          
 process                           MultiJet_T2tt   MultiJet_TTj3b  MultiJet_TTj1b  MultiJet_TTj2b  Jet2b_T2tt      Jet2b_TTj2b     Jet2b_TTj3b     signal          rare            wjets           ttslo           ttdil         
 process                           -2              1               2               3               -1              4               5               0               6               7               8               9             
-rate                              3.3430          85.0010         1754.9990       748.9990        0.1990          704.0000        24.0140         0.0019          4.1000          5.1000          29.6000         48.1000       
+rate                              3.3430          85.0010         1754.9990       748.9990        0.1990          704.0000        24.0140         34.9770         4.1000          5.1000          29.6000         48.1000       
 ----------------------------------------------------------------------------------------------------------------------------------
 Btag                    shape     1.0             -               -               -               1.0             -               -               -               -               -               -               -             
 Btag_unc                lnN       -               -               -               -               -               -               -               1.029           -               -               -               -             
