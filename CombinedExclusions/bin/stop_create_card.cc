@@ -13,6 +13,7 @@ struct card_info_t
     std::string sr_name;
     unsigned int obs;
     unsigned int ngen;
+    float xsec;
     float ttdil;
     float ttdil_unc;
     float ttslo;
@@ -197,7 +198,7 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     , info.sr_name.c_str() 
                     , info.sr_name.c_str() 
                     , info.sr_name.c_str() 
-                    , (lt::is_zero(info.acc) ? 1.0/static_cast<float>(info.ngen) : info.acc)
+                    , (lt::is_zero(info.acc) ? 1.0/static_cast<float>(info.ngen) : info.acc) * info.xsec * 1000// lumi*xsec*acc convert to fb
                     , info.ttdil
                     , info.ttslo
                     , info.wjets
@@ -355,6 +356,7 @@ try
     info.rare_unc  = 1.0 + stop_result.rare.lep.frac_error(); 
     info.bkgd_unc  = 1.0 + stop_result.bkgd.lep.frac_error(); 
 
+    info.xsec      = rt::GetBinContent1D(hc["h_xsec"], mass_stop);
     info.acc       = lumi*GetValueFromScanHist(hc["h_eff_"+signal_region_info.label], mass_stop, mass_lsp);
     info.ngen      = GetValueFromScanHist(hc["h_ngen"], mass_stop, mass_lsp);
     info.trig_unc  = 1.030;

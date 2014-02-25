@@ -17,7 +17,7 @@ sr_min=1
 sr_max=6
 
 syst_file="plots/interp/t2tt/t2tt_bdt_hists.root"
-method=3
+method=4
 # card_stem="card_method${method}"
 card_stem="t2tt"
 
