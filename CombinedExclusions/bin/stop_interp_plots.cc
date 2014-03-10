@@ -180,6 +180,13 @@ void InterpLooper::BeginJob()
         hc.Add(new TH2F(Form("h_err_noisr_%s" , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, ISR %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_err_total_%s" , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, Total %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_err_stats_%s" , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, Statistical %s", bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_leptup_%s", sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, LepEff+ %s"     , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_num_leptdn_%s", sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, LepEff- %s"     , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_leptup_%s", sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, LepEff+ %s"    , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_leptdn_%s", sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, LepEff- %s"    , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_lept_%s"  , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, LepEff+/- %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_trig_%s"  , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, TrigEff+/- %s" , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_lumi_%s"  , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, Lumi+/- %s"    , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
     }
 
     // number of generated events (from the file)
@@ -325,10 +332,10 @@ const bool PassesPreselection
         };
 
         // apply cuts for scale type dependent variables
-        bool passes_njets4  = (temp_njets >= 4  ); 
-        bool passes_met100  = (temp_met > 100   ); 
-        bool passes_mt120   = (temp_mt > 120    ); 
-        bool passes_btag1   = (temp_nb >= 1     ); 
+        bool passes_njets4 = (temp_njets >= 4); 
+        bool passes_met100 = (temp_met > 100 ); 
+        bool passes_mt120  = (temp_mt > 120  ); 
+        bool passes_btag1  = (temp_nb >= 1   ); 
     
         // preselection decision
         bool passes_presel = passes_rho
@@ -476,6 +483,10 @@ void InterpLooper::Analyze()
     evt_weight       *= vtxw;
     evt_weight_noisr *= vtxw;
 
+    // lepton efficiency up/dn
+    const float evt_weight_leptup = evt_weight * (1.0 + m_unc_lept);
+    const float evt_weight_leptdn = evt_weight * (1.0 - m_unc_lept);
+
     // Fill hists
     // ----------------------------------------------------------------------------------------------------------------------------//
 
@@ -487,9 +498,11 @@ void InterpLooper::Analyze()
         // number of signal events (nominal)
         if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::NONE))
         {
-            rt::Fill2D(hc["h_nevt_"     +sr_label], mass_stop, mass_lsp, 1.0             ); 
-            rt::Fill2D(hc["h_num_"      +sr_label], mass_stop, mass_lsp, evt_weight      ); 
-            rt::Fill2D(hc["h_num_noisr_"+sr_label], mass_stop, mass_lsp, evt_weight_noisr); 
+            rt::Fill2D(hc["h_nevt_"      +sr_label], mass_stop, mass_lsp, 1.0             ); 
+            rt::Fill2D(hc["h_num_"       +sr_label], mass_stop, mass_lsp, evt_weight      ); 
+            rt::Fill2D(hc["h_num_noisr_" +sr_label], mass_stop, mass_lsp, evt_weight_noisr); 
+            rt::Fill2D(hc["h_num_leptup_"+sr_label], mass_stop, mass_lsp, evt_weight_leptup); 
+            rt::Fill2D(hc["h_num_leptdn_"+sr_label], mass_stop, mass_lsp, evt_weight_leptdn); 
         }
         // number of signal events (JES UP)
         if (PassesSignalRegion(signal_region, m_analysis_type, ScaleType::JES_UP))
@@ -538,12 +551,15 @@ void InterpLooper::CalculateEfficiencyAndUncertainties()
                 const float num = hc["h_num_"+sr_label]->GetBinContent(xbin, ybin);
                 const float den = hc["h_den"          ]->GetBinContent(xbin ,ybin);
 
-                float eff       = 0.0;
-                float unc_jes   = 0.0;
-                float unc_btag  = 0.0;
-                float unc_noisr = 0.0;
-                float unc_stats = 0.0;
-                float unc_total = 0.0;
+                float eff         = 0.0;
+                float unc_jes     = 0.0;
+                float unc_btag    = 0.0;
+                float unc_lept_up = 0.0;
+                float unc_lept_dn = 0.0;
+                float unc_lept    = 0.0;
+                float unc_noisr   = 0.0;
+                float unc_stats   = 0.0;
+                float unc_total   = 0.0;
                 if (den > 0.0 and num > 0.0)
                 {
                     // nominal efficiency
@@ -567,6 +583,13 @@ void InterpLooper::CalculateEfficiencyAndUncertainties()
                     const float unc_btag_dn = fabs(1.0-eff_btag_dn/eff);
                     unc_btag                = 0.5 * (unc_btag_up + unc_btag_dn);
 
+                    // lepton efficiency +/-
+                    const float num_lept_up = hc["h_num_leptup_"+sr_label]->GetBinContent(xbin, ybin);
+                    const float num_lept_dn = hc["h_num_leptdn_"+sr_label]->GetBinContent(xbin, ybin);
+                    unc_lept_up             = (num_lept_up - num)/num;
+                    unc_lept_dn             = (num_lept_dn - num)/num;
+                    unc_lept                = 0.5 * (fabs(unc_lept_up) + fabs(unc_lept_dn));
+
                     // no ISR
                     const float num_noisr = hc["h_num_noisr_"+sr_label]->GetBinContent(xbin, ybin);
                     const float eff_noisr = (num_noisr) / den;
@@ -578,16 +601,21 @@ void InterpLooper::CalculateEfficiencyAndUncertainties()
 
                     // total systematic unc
                     // lumi (4.4%), trigger (3%), lepton selection (5%), JES, ISR, btagging
-                    unc_total = sqrt(m_unc_lumi*m_unc_lumi + m_unc_trig*m_unc_trig + m_unc_lept*m_unc_lept +
+                    unc_total = sqrt(m_unc_lumi*m_unc_lumi + m_unc_trig*m_unc_trig + unc_lept*unc_lept +
                                      unc_jes*unc_jes + unc_noisr*unc_noisr + unc_btag*unc_btag);
                 }
-                hc["h_eff_"      +sr_label]->SetBinContent(xbin, ybin, eff      );
-                hc["h_eff_perc_" +sr_label]->SetBinContent(xbin, ybin, eff*100.0);
-                hc["h_err_jes_"  +sr_label]->SetBinContent(xbin, ybin, unc_jes  );
-                hc["h_err_btag_" +sr_label]->SetBinContent(xbin, ybin, unc_btag );
-                hc["h_err_noisr_"+sr_label]->SetBinContent(xbin, ybin, unc_noisr);
-                hc["h_err_stats_"+sr_label]->SetBinContent(xbin, ybin, unc_stats);
-                hc["h_err_total_"+sr_label]->SetBinContent(xbin, ybin, unc_total);
+                hc["h_eff_"       +sr_label]->SetBinContent(xbin, ybin, eff        );
+                hc["h_eff_perc_"  +sr_label]->SetBinContent(xbin, ybin, eff*100.0  );
+                hc["h_err_trig_"  +sr_label]->SetBinContent(xbin, ybin, m_unc_trig );
+                hc["h_err_lumi_"  +sr_label]->SetBinContent(xbin, ybin, m_unc_lumi );
+                hc["h_err_jes_"   +sr_label]->SetBinContent(xbin, ybin, unc_jes    );
+                hc["h_err_btag_"  +sr_label]->SetBinContent(xbin, ybin, unc_btag   );
+                hc["h_err_leptup_"+sr_label]->SetBinContent(xbin, ybin, unc_lept_up);
+                hc["h_err_leptdn_"+sr_label]->SetBinContent(xbin, ybin, unc_lept_dn);
+                hc["h_err_lept_"  +sr_label]->SetBinContent(xbin, ybin, unc_lept   );
+                hc["h_err_noisr_" +sr_label]->SetBinContent(xbin, ybin, unc_noisr  );
+                hc["h_err_stats_" +sr_label]->SetBinContent(xbin, ybin, unc_stats  );
+                hc["h_err_total_" +sr_label]->SetBinContent(xbin, ybin, unc_total  );
             }
         }
     } // end sr loop

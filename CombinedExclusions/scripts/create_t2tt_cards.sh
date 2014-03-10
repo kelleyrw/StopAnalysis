@@ -18,7 +18,6 @@ sr_max=6
 
 syst_file="plots/interp/t2tt/t2tt_bdt_hists.root"
 method=4
-# card_stem="card_method${method}"
 card_stem="t2tt"
 
 function get_sr_name
@@ -56,12 +55,10 @@ do
 				continue
 			fi
             get_sr_name $sr
-# 			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/lands/t2tt/${card_stem}_${ms}_${ml}_${sr_name}.txt"
-# 			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/t2tt/${card_stem}_${ms}_${ml}_sr${sr}.txt"
-			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/t2tt/method${method}/${card_stem}_${ms}_${ml}_${sr_name}.txt"
+			#cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/t2tt/method${method}/${card_stem}_${ms}_${ml}_${sr_name}.txt"
+			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/t2tt/method${method}b/${card_stem}_${ms}_${ml}_${sr_name}.txt"
 			echo $cmd
-			eval $cmd
+ 			eval $cmd                                                                   
 		done
 	done
 done
-

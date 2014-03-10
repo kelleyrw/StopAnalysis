@@ -26,7 +26,8 @@ struct card_info_t
     float bkgd_unc;
     float acc;
     float trig_unc;
-    float lep_unc;
+    float lep_unc_up;
+    float lep_unc_dn;
     float isr_unc;
     float lumi_unc;
     float btag_unc;
@@ -42,6 +43,7 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
 // method 1: the background and signal systematics are fully factorized into componenents.
 // method 2: the background systematic is combined into one number and signal systematics are factorized into componenents.
 // method 3: the background systematic and signal systematics are combined into one number (what was originally used). 
+// method 4: Same as method 1 with aditional fields to faciliate combination with razor 
 
     std::string card;
     switch (method)
@@ -88,7 +90,7 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     , info.wjets_unc
                     , info.rare_unc
                     , info.trig_unc
-                    , info.lep_unc
+                    , info.lep_unc_up
                     , info.lumi_unc
                     , info.isr_unc
                     , info.btag_unc
@@ -126,7 +128,7 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     , info.bkgd
                     , info.bkgd_unc
                     , info.trig_unc
-                    , info.lep_unc
+                    , info.lep_unc_up
                     , info.lumi_unc
                     , info.isr_unc
                     , info.btag_unc
@@ -180,15 +182,15 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     "rate                    %-12.4e%-6.1f      %-6.1f      %-6.1f      %-6.1f\n"
                     "### Error Matrix\n"                                                        
                     "------------\n"                                                            
-                    "ttdil_unc        lnN    -           %1.3f       -           -           -     \n"
-                    "ttslo_unc        lnN    -           -           %1.3f       -           -     \n"
-                    "wjets_unc        lnN    -           -           -           %1.3f       -     \n"
-                    "rare_unc         lnN    -           -           -           -           %1.3f \n"
-                    "trig_unc         lnN    %1.3f       -           -           -           -     \n"
-                    "lep_unc          lnN    %1.3f       -           -           -           -     \n"
-                    "Isr_unc          lnN    %1.3f       -           -           -           -     \n"
-                    "Btag_unc         lnN    %1.3f       -           -           -           -     \n"
-                    "Jes_unc          lnN    %1.3f       -           -           -           -     \n"
+                    "ttdil_1lep       lnN    -           %1.3f       -           -           -     \n"
+                    "ttslo_1lep       lnN    -           -           %1.3f       -           -     \n"
+                    "wjets_1lep       lnN    -           -           -           %1.3f       -     \n"
+                    "rare_1lep        lnN    -           -           -           -           %1.3f \n"
+                    "trig_1lep        lnN    %1.3f       -           -           -           -     \n"
+                    "lep              lnN    %1.3f/%1.3f -           -           -           -     \n"
+                    "Isr              lnN    %1.3f       -           -           -           -     \n"
+                    "Btag             lnN    %1.3f       -           -           -           -     \n"
+                    "Jes              lnN    %1.3f       -           -           -           -     \n"
                     "lumi             lnN    %1.3f       -           -           -           -     \n"
                     , info.sr_name.c_str() 
                     , info.sr_name.c_str() 
@@ -208,7 +210,8 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     , info.wjets_unc
                     , info.rare_unc
                     , info.trig_unc
-                    , info.lep_unc
+                    , info.lep_unc_dn
+                    , info.lep_unc_up
                     , info.isr_unc
                     , info.btag_unc
                     , info.jes_unc
@@ -356,17 +359,18 @@ try
     info.rare_unc  = 1.0 + stop_result.rare.lep.frac_error(); 
     info.bkgd_unc  = 1.0 + stop_result.bkgd.lep.frac_error(); 
 
-    info.xsec      = rt::GetBinContent1D(hc["h_xsec"], mass_stop);
-    info.acc       = lumi*GetValueFromScanHist(hc["h_eff_"+signal_region_info.label], mass_stop, mass_lsp);
-    info.ngen      = GetValueFromScanHist(hc["h_ngen"], mass_stop, mass_lsp);
-    info.trig_unc  = 1.030;
-    info.lumi_unc  = 1.044;
-    info.lep_unc   = 1.050;
-    info.isr_unc   = 1.0 + GetValueFromScanHist(hc["h_err_noisr_"+signal_region_info.label], mass_stop, mass_lsp);
-    info.btag_unc  = 1.0 + GetValueFromScanHist(hc["h_err_btag_" +signal_region_info.label], mass_stop, mass_lsp);
-    info.jes_unc   = 1.0 + GetValueFromScanHist(hc["h_err_jes_"  +signal_region_info.label], mass_stop, mass_lsp);
-    info.stat_unc  = 1.0 + GetValueFromScanHist(hc["h_err_stats_"+signal_region_info.label], mass_stop, mass_lsp);
-    info.total_unc = 1.0 + GetValueFromScanHist(hc["h_err_total_"+signal_region_info.label], mass_stop, mass_lsp);
+    info.xsec        = rt::GetBinContent1D(hc["h_xsec"], mass_stop);
+    info.acc         = lumi*GetValueFromScanHist(hc["h_eff_"+signal_region_info.label], mass_stop, mass_lsp);
+    info.ngen        = GetValueFromScanHist(hc["h_ngen"], mass_stop, mass_lsp);
+    info.trig_unc    = 1.0 + GetValueFromScanHist(hc["h_err_trig_"  +signal_region_info.label], mass_stop, mass_lsp);
+    info.lumi_unc    = 1.0 + GetValueFromScanHist(hc["h_err_lumi_"  +signal_region_info.label], mass_stop, mass_lsp);
+    info.lep_unc_up  = 1.0 + GetValueFromScanHist(hc["h_err_leptup_"+signal_region_info.label], mass_stop, mass_lsp);
+    info.lep_unc_dn  = 1.0 + GetValueFromScanHist(hc["h_err_leptdn_"+signal_region_info.label], mass_stop, mass_lsp);
+    info.isr_unc     = 1.0 + GetValueFromScanHist(hc["h_err_noisr_" +signal_region_info.label], mass_stop, mass_lsp);
+    info.btag_unc    = 1.0 + GetValueFromScanHist(hc["h_err_btag_"  +signal_region_info.label], mass_stop, mass_lsp);
+    info.jes_unc     = 1.0 + GetValueFromScanHist(hc["h_err_jes_"   +signal_region_info.label], mass_stop, mass_lsp);
+    info.stat_unc    = 1.0 + GetValueFromScanHist(hc["h_err_stats_" +signal_region_info.label], mass_stop, mass_lsp);
+    info.total_unc   = 1.0 + GetValueFromScanHist(hc["h_err_total_" +signal_region_info.label], mass_stop, mass_lsp);
 
     // print the card
     if (output_file.empty())
