@@ -31,7 +31,11 @@ struct card_info_t
     float isr_unc;
     float lumi_unc;
     float btag_unc;
+    float btag_unc_up;
+    float btag_unc_dn;
     float jes_unc;
+    float jes_unc_up;
+    float jes_unc_dn;
     float stat_unc;
     float total_unc;
 };
@@ -189,8 +193,8 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     "trig_1lep        lnN    %1.3f       -           -           -           -     \n"
                     "lep              lnN    %1.3f/%1.3f -           -           -           -     \n"
                     "Isr              lnN    %1.3f       -           -           -           -     \n"
-                    "Btag             lnN    %1.3f       -           -           -           -     \n"
-                    "Jes              lnN    %1.3f       -           -           -           -     \n"
+                    "Btag             lnN    %1.3f/%1.3f -           -           -           -     \n"
+                    "Jes              lnN    %1.3f/%1.3f -           -           -           -     \n"
                     "lumi             lnN    %1.3f       -           -           -           -     \n"
                     , info.sr_name.c_str() 
                     , info.sr_name.c_str() 
@@ -213,8 +217,10 @@ void PrintCard(std::ostream &out, const card_info_t& info, const unsigned short 
                     , info.lep_unc_dn
                     , info.lep_unc_up
                     , info.isr_unc
-                    , info.btag_unc
-                    , info.jes_unc
+                    , info.btag_unc_dn
+                    , info.btag_unc_up
+                    , info.jes_unc_dn
+                    , info.jes_unc_up
                     , info.lumi_unc
                     );
             break;
@@ -368,7 +374,11 @@ try
     info.lep_unc_dn  = 1.0 + GetValueFromScanHist(hc["h_err_leptdn_"+signal_region_info.label], mass_stop, mass_lsp);
     info.isr_unc     = 1.0 + GetValueFromScanHist(hc["h_err_noisr_" +signal_region_info.label], mass_stop, mass_lsp);
     info.btag_unc    = 1.0 + GetValueFromScanHist(hc["h_err_btag_"  +signal_region_info.label], mass_stop, mass_lsp);
+    info.btag_unc_up = 1.0 + GetValueFromScanHist(hc["h_err_btagup_"+signal_region_info.label], mass_stop, mass_lsp);
+    info.btag_unc_dn = 1.0 + GetValueFromScanHist(hc["h_err_btagdn_"+signal_region_info.label], mass_stop, mass_lsp);
     info.jes_unc     = 1.0 + GetValueFromScanHist(hc["h_err_jes_"   +signal_region_info.label], mass_stop, mass_lsp);
+    info.jes_unc_up  = 1.0 + GetValueFromScanHist(hc["h_err_jesup_" +signal_region_info.label], mass_stop, mass_lsp);
+    info.jes_unc_dn  = 1.0 + GetValueFromScanHist(hc["h_err_jesdn_" +signal_region_info.label], mass_stop, mass_lsp);
     info.stat_unc    = 1.0 + GetValueFromScanHist(hc["h_err_stats_" +signal_region_info.label], mass_stop, mass_lsp);
     info.total_unc   = 1.0 + GetValueFromScanHist(hc["h_err_total_" +signal_region_info.label], mass_stop, mass_lsp);
 

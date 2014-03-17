@@ -166,16 +166,20 @@ void InterpLooper::BeginJob()
         const stop::SignalRegionInfo sr_info = stop::GetSignalRegionInfo(Form("sr%d", m_sr_nums.at(i))); 
         const std::string bin_stem = Form("(%s);%s;%s", sr_info.title.c_str(), xaxis_label.c_str(), yaxis_label.c_str());
 
-        hc.Add(new TH2F(Form("h_nevt_%s"      , sr_info.label.c_str()), Form("# Raw Count Passing %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_nevt_%s"      , sr_info.label.c_str()), Form("# Raw Count Passing %s"                       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_num_%s"       , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi %s"              , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_eff_%s"       , sr_info.label.c_str()), Form("Efficiency with scale1fb*lumi %s"             , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_eff_perc_%s"  , sr_info.label.c_str()), Form("Efficiency Percentage with scale1fb*lumi %s"  , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_num_jesup_%s" , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES+ %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_num_jesdn_%s" , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, JES- %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_err_jes_%s"   , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, JES+/- %s"     , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_jesup_%s" , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, JES+ %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_jesdn_%s" , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, JES- %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_num_btagup_%s", sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG+ %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_num_btagdn_%s", sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, BTAG- %s"       , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_err_btag_%s"  , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, BTAG+/- %s"    , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_btagup_%s", sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, BTAG+ %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
+        hc.Add(new TH2F(Form("h_err_btagdn_%s", sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, BTAG- %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_num_noisr_%s" , sr_info.label.c_str()), Form("# Passing with scale1fb*lumi, ISR %s"         , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_err_noisr_%s" , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, ISR %s"        , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
         hc.Add(new TH2F(Form("h_err_total_%s" , sr_info.label.c_str()), Form("Uncertainy with scale1fb*lumi, Total %s"      , bin_stem.c_str()), nbinsx, xmin, xmax, nbinsy, ymin, ymax));
@@ -553,7 +557,11 @@ void InterpLooper::CalculateEfficiencyAndUncertainties()
 
                 float eff         = 0.0;
                 float unc_jes     = 0.0;
+                float unc_jes_up  = 0.0;
+                float unc_jes_dn  = 0.0;
                 float unc_btag    = 0.0;
+                float unc_btag_up = 0.0;
+                float unc_btag_dn = 0.0;
                 float unc_lept_up = 0.0;
                 float unc_lept_dn = 0.0;
                 float unc_lept    = 0.0;
@@ -568,20 +576,16 @@ void InterpLooper::CalculateEfficiencyAndUncertainties()
                     // JES +/-
                     const float num_jes_up = hc["h_num_jesup_"+sr_label]->GetBinContent(xbin, ybin);
                     const float num_jes_dn = hc["h_num_jesdn_"+sr_label]->GetBinContent(xbin, ybin);
-                    const float eff_jes_up = (num_jes_up) / den;
-                    const float eff_jes_dn = (num_jes_dn) / den;
-                    const float unc_jes_up = fabs(eff_jes_up/eff-1.0);
-                    const float unc_jes_dn = fabs(1.0-eff_jes_dn/eff);
-                    unc_jes                = 0.5 * (unc_jes_up + unc_jes_dn);
+                    unc_jes_up             = (num_jes_up - num)/num;
+                    unc_jes_dn             = (num_jes_dn - num)/num;
+                    unc_jes                = 0.5 * (fabs(unc_jes_up) + fabs(unc_jes_dn));
 
                     // Btag +/-
                     const float num_btag_up = hc["h_num_btagup_"+sr_label]->GetBinContent(xbin, ybin);
                     const float num_btag_dn = hc["h_num_btagdn_"+sr_label]->GetBinContent(xbin, ybin);
-                    const float eff_btag_up = (num_btag_up) / den;
-                    const float eff_btag_dn = (num_btag_dn) / den;
-                    const float unc_btag_up = fabs(eff_btag_up/eff-1.0);
-                    const float unc_btag_dn = fabs(1.0-eff_btag_dn/eff);
-                    unc_btag                = 0.5 * (unc_btag_up + unc_btag_dn);
+                    unc_btag_up             = (num_btag_up - num)/num;
+                    unc_btag_dn             = (num_btag_dn - num)/num;
+                    unc_btag                = 0.5 * (fabs(unc_btag_up) + fabs(unc_btag_dn));
 
                     // lepton efficiency +/-
                     const float num_lept_up = hc["h_num_leptup_"+sr_label]->GetBinContent(xbin, ybin);
@@ -609,7 +613,11 @@ void InterpLooper::CalculateEfficiencyAndUncertainties()
                 hc["h_err_trig_"  +sr_label]->SetBinContent(xbin, ybin, m_unc_trig );
                 hc["h_err_lumi_"  +sr_label]->SetBinContent(xbin, ybin, m_unc_lumi );
                 hc["h_err_jes_"   +sr_label]->SetBinContent(xbin, ybin, unc_jes    );
+                hc["h_err_jesup_" +sr_label]->SetBinContent(xbin, ybin, unc_jes_up );
+                hc["h_err_jesdn_" +sr_label]->SetBinContent(xbin, ybin, unc_jes_dn );
                 hc["h_err_btag_"  +sr_label]->SetBinContent(xbin, ybin, unc_btag   );
+                hc["h_err_btagup_"+sr_label]->SetBinContent(xbin, ybin, unc_btag_up);
+                hc["h_err_btagdn_"+sr_label]->SetBinContent(xbin, ybin, unc_btag_dn);
                 hc["h_err_leptup_"+sr_label]->SetBinContent(xbin, ybin, unc_lept_up);
                 hc["h_err_leptdn_"+sr_label]->SetBinContent(xbin, ybin, unc_lept_dn);
                 hc["h_err_lept_"  +sr_label]->SetBinContent(xbin, ybin, unc_lept   );
