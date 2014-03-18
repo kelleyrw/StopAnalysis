@@ -55,7 +55,6 @@ do
 				continue
 			fi
             get_sr_name $sr
-			#cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/t2tt/method${method}/${card_stem}_${ms}_${ml}_${sr_name}.txt"
 			cmd="stop_create_card --syst $syst_file --method $method --mass_stop $ms --mass_lsp $ml --sr $sr --output cards/t2tt/method${method}b/${card_stem}_${ms}_${ml}_${sr_name}.txt"
 			echo $cmd
  			eval $cmd                                                                   
