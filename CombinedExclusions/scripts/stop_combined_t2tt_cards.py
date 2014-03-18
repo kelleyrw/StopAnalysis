@@ -12,9 +12,8 @@ import sys
 # parse inputs
 # ------------------#
 
-parser = OptionParser()
-
 # parameter options
+parser = OptionParser()
 parser.add_option("--onelep_cards" , dest="onelep_path"  , default="cards/t2tt/method4b"                        , help="path to the single lepton cards"  )
 parser.add_option("--razor_cards"  , dest="razor_path"   , default="cards/t2tt/razor"                           , help="path to the razor cards"          )
 parser.add_option("--combine_cards", dest="combined_path", default="cards/t2tt/combined"                        , help="path to the combined lepton cards")
@@ -24,7 +23,7 @@ parser.add_option("--mass_stop"    , dest="mass_stop"    , default=-1           
 parser.add_option("--mass_lsp"     , dest="mass_lsp"     , default=-1                                           , help="mass LSP (-1 means full plane)"   )
 (options, args) = parser.parse_args()
 
-# convert to ints (how do i do this automatically)
+# convert to ints (how do i do this automatically?)
 options.mass_stop = int(options.mass_stop)
 options.mass_lsp  = int(options.mass_lsp )
 

@@ -60,6 +60,9 @@ x509userproxy=${PROXY}
     # 
 
     for FILE in `ls ${CARDDIR}`; do
+        if [[ $FILE == *"root"* ]]; then 
+            continue;
+        fi
 		CARD=${FILE}
 		JOBID=`echo $(basename ${FILE}) | sed 's/\.txt//g'`
         echo "
