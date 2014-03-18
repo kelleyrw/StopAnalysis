@@ -1,0 +1,25 @@
+imax 1 number of search regions
+jmax 4  number of backgrounds ('*' = automatic)
+kmax 10 number of nuisance parameters (sources of systematical uncertainties)
+------------
+shapes * bdt2 FAKE
+------------
+       bin      bdt2
+observation     56
+------------
+bin                     bdt2        bdt2        bdt2        bdt2        bdt2        
+process                 signal      ttdil       ttslo       wjets       rare  
+process                 0           1           2           3           4     
+rate                    4.5250e+00  46.4        22.2        6.2         9.8   
+### Error Matrix
+------------
+ttdil_1lep       lnN    -           1.218       -           -           -     
+ttslo_1lep       lnN    -           -           1.545       -           -     
+wjets_1lep       lnN    -           -           -           1.274       -     
+rare_1lep        lnN    -           -           -           -           1.500 
+trig_1lep        lnN    1.030       -           -           -           -     
+lep              lnN    0.950/1.050 -           -           -           -     
+Isr              lnN    1.070       -           -           -           -     
+Btag             lnN    0.995/1.011 -           -           -           -     
+Jes              lnN    0.957/1.051 -           -           -           -     
+lumi             lnN    1.044       -           -           -           -     

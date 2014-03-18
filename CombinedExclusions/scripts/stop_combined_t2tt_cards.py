@@ -160,7 +160,6 @@ def main():
 				print cmd
 				os.system(cmd)
 
-
 	except Exception, e:
 		print "[stop_combine_t2tt_cards] ERROR:", e
 		return 1
