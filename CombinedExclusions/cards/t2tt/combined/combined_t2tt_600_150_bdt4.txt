@@ -1,19 +1,19 @@
-Combination of MultiJet=cards/t2tt/razor/razor_combine_MultiJet_T2tt_MG_600.000000_MCHI_150.000000.txt  Jet2b=cards/t2tt/razor/razor_combine_Jet2b_T2tt_MG_600.000000_MCHI_150.000000.txt  singleLep=cards/t2tt/method4b/t2tt_600_150_bdt4.txt
+Combination of had=razor_combine_Had_T2tt_MG_600.000000_MCHI_150.000000.txt  onelep=t2tt_600_150_bdt4.txt
 imax 3 number of bins
 jmax 11 number of processes minus 1
 kmax 12 number of nuisance parameters
 ----------------------------------------------------------------------------------------------------------------------------------
-shapes *          Jet2b      cards/t2tt/razor/razor_combine_Jet2b_T2tt_MG_600.000000_MCHI_150.000000.root wJet2b:$PROCESS wJet2b:$PROCESS_$SYSTEMATIC
-shapes *          MultiJet   cards/t2tt/razor/razor_combine_MultiJet_T2tt_MG_600.000000_MCHI_150.000000.root wMultiJet:$PROCESS wMultiJet:$PROCESS_$SYSTEMATIC
-shapes *          singleLep  FAKE
+shapes *             had_Jet2b     razor_combine_Jet2b_T2tt_MG_600.000000_MCHI_150.000000.root wJet2b:$PROCESS wJet2b:$PROCESS_$SYSTEMATIC
+shapes *             had_MultiJet  razor_combine_MultiJet_T2tt_MG_600.000000_MCHI_150.000000.root wMultiJet:$PROCESS wMultiJet:$PROCESS_$SYSTEMATIC
+shapes *             onelep        FAKE
 ----------------------------------------------------------------------------------------------------------------------------------
-bin          MultiJet     Jet2b        singleLep  
-observation  2589.0       728.0        2.0        
+bin          had_MultiJet  had_Jet2b     onelep      
+observation  2589.0        728.0         2.0         
 ----------------------------------------------------------------------------------------------------------------------------------
-bin                                MultiJet        MultiJet        MultiJet        MultiJet        Jet2b           Jet2b           Jet2b           singleLep       singleLep       singleLep       singleLep       singleLep     
+bin                                had_MultiJet    had_MultiJet    had_MultiJet    had_MultiJet    had_Jet2b       had_Jet2b       had_Jet2b       onelep          onelep          onelep          onelep          onelep        
 process                            MultiJet_T2tt   MultiJet_TTj3b  MultiJet_TTj1b  MultiJet_TTj2b  Jet2b_T2tt      Jet2b_TTj2b     Jet2b_TTj3b     signal          rare            wjets           ttslo           ttdil         
 process                            -2              1               2               3               -1              4               5               0               6               7               8               9             
-rate                               69.8000         85.0010         1754.9990       748.9990        6.9900          704.0000        24.0140         5.1539          1.0000          0.8000          0.8000          0.3000        
+rate                               69.8000         85.0090         1754.9700       748.9780        6.9900          704.0020        23.9990         5.1539          1.0000          0.8000          0.8000          0.3000        
 ----------------------------------------------------------------------------------------------------------------------------------
 Btag                    shape?     1.0             -               -               -               1.0             -               -               0.974/1.007     -               -               -               -             
 Isr                     shape?     1.0             -               -               -               1.0             -               -               1.064           -               -               -               -             

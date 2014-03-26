@@ -19,10 +19,14 @@ echo "[driver] job_id  = ""${job_id}"
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD
 
 # setup HiggsCombine
+git config --global user.email "kelleyrw@gmail.com"
+git config --global user.name "kelleyrw"
 pushd $CMSSW_BASE/src
 git clone https://github.com/RazorCMS/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
-cd HiggsAnalysis/CombinedLimit/
-git checkout razor1dpdf
+pushd HiggsAnalysis/CombinedLimit
+git pull origin master
+git checkout onelepcomb_032614
+mv $working_dir/SimpleCacheSentry.h.rwkfix interface/SimpleCacheSentry.h
 popd
 scramv1 b clean
 scramv1 b -j20
@@ -32,14 +36,13 @@ popd
 g++ sweepRoot.cc -o sweepRoot `root-config --cflags --libs`
 
 # run combine
-function run_combine
+function run_combine_asymptotic
 {
     local card=$1
     local job_id=$2
-    local output="combine_${job_id}.root"
+    local output="combine_output_${job_id}.root"
     local seed=1234
     local options="--method Asymptotic --seed $seed"
-#     local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed --rMin 0 --rMax 10000"
 
     # run combine 
 
@@ -48,23 +51,44 @@ function run_combine
     echo $cmd
     eval $cmd
 
-#     # run combine for expected
-#     #0.5 gives you the median. use 0.16/0.84 to get the endpoints of 68% interval, 0.025/0.975 to get the 95% one)
-#     cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.50000" # median
-#     echo $cmd
-#     eval $cmd
-#     cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.84135" # median + 1 sigma
-#     echo $cmd
-#     eval $cmd
-#     cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.15865" # median - 1 sigma
-#     echo $cmd
-#     eval $cmd
-#     cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.97725" # median + 2 sigma
-#     echo $cmd
-#     eval $cmd
-#     cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.02275" # median - 2 sigma
-#     echo $cmd
-#     eval $cmd
+    # move output
+    cmd="hadd -f $output higgsCombine${job_id}.Asymptotic.mH120.${seed}.*"
+    echo $cmd
+    eval $cmd
+}
+
+function run_combine_hybridnew
+{
+    local card=$1
+    local job_id=$2
+    local output="combine_output_${job_id}.root"
+    local seed=1234
+    local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed --rMin 0 --rMax 10000"
+
+    # run combine 
+
+    # run combine for observed limit 
+    cmd="combine --datacard $card --name $job_id $options"
+    echo $cmd
+    eval $cmd
+
+    # run combine for expected
+    #0.5 gives you the median. use 0.16/0.84 to get the endpoints of 68% interval, 0.025/0.975 to get the 95% one)
+    cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.50000" # median
+    echo $cmd
+    eval $cmd
+    cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.84135" # median + 1 sigma
+    echo $cmd
+    eval $cmd
+    cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.15865" # median - 1 sigma
+    echo $cmd
+    eval $cmd
+    cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.97725" # median + 2 sigma
+    echo $cmd
+    eval $cmd
+    cmd="combine --datacard $card --name $job_id $options --expectedFromGrid 0.02275" # median - 2 sigma
+    echo $cmd
+    eval $cmd
 
     # move output
     cmd="hadd -f $output higgsCombine${job_id}.HybridNew.mH120.${seed}.*"
@@ -74,7 +98,7 @@ function run_combine
 
 # set the command
 # -------------------------- #
-cmd="run_combine ${card} ${job_id}"
+cmd="run_combine_asymptotic ${card} ${job_id}"
 
 # run combine 
 # -------------------------- #

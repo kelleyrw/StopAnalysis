@@ -14,13 +14,13 @@ import sys
 
 # parameter options
 parser = OptionParser()
-parser.add_option("--onelep_cards" , dest="onelep_path"  , default="cards/t2tt/method4b"                        , help="path to the single lepton cards"  )
-parser.add_option("--razor_cards"  , dest="razor_path"   , default="cards/t2tt/razor"                           , help="path to the razor cards"          )
-parser.add_option("--combine_cards", dest="combined_path", default="cards/t2tt/combined"                        , help="path to the combined lepton cards")
-parser.add_option("--sr_filename"  , dest="sr_filename"  , default="plots/limits/t2tt/t2tt_bdt_limit_hists.root", help="path to the combined lepton cards")
-parser.add_option("--sr_histname"  , dest="sr_histname"  , default="h_sr_best"                                  , help="path to the combined lepton cards")
-parser.add_option("--mass_stop"    , dest="mass_stop"    , default=-1                                           , help="mass stop (-1 means full plane)"  )
-parser.add_option("--mass_lsp"     , dest="mass_lsp"     , default=-1                                           , help="mass LSP (-1 means full plane)"   )
+parser.add_option("--onelep_cards" , dest="onelep_path"  , default="cards/t2tt/method4b"           , help="path to the single lepton cards"     )
+parser.add_option("--razor_cards"  , dest="razor_path"   , default="cards/t2tt/razor"              , help="path to the razor cards"             )
+parser.add_option("--combine_cards", dest="combined_path", default="cards/t2tt/combined"           , help="path to the combined lepton cards"   )
+parser.add_option("--sr_filename"  , dest="sr_filename"  , default="data/T2tt_onelep_bdt_orig.root", help="path to the onelep best SR histogram")
+parser.add_option("--sr_histname"  , dest="sr_histname"  , default="hbest"                         , help="name of the onelep best SR histogram")
+parser.add_option("--mass_stop"    , dest="mass_stop"    , default=-1                              , help="mass stop (-1 means full plane)"     )
+parser.add_option("--mass_lsp"     , dest="mass_lsp"     , default=-1                              , help="mass LSP (-1 means full plane)"      )
 (options, args) = parser.parse_args()
 
 # convert to ints (how do i do this automatically?)
@@ -55,7 +55,6 @@ def CheckOptions():
 # get the best SR 
 # ------------------#
 
-# from ROOT import gROOT, TBranch, TFile, TTree, TList, TH1
 from ROOT import TFile, TH1
 
 def GetBestSRHist():
@@ -69,9 +68,17 @@ def GetBestSRHist():
 	return hist
 
 def GetBestSR(hist, mass_stop, mass_lsp):
+	bdt_label = {
+		'1' : "bdt1l",
+		'2' : "bdt1t",
+		'3' : "bdt2",
+		'4' : "bdt3",
+		'5' : "bdt4",
+		'6' : "bdt5"
+	}
 	xbin   = hist.GetXaxis().FindBin(mass_stop)
 	ybin   = hist.GetYaxis().FindBin(mass_lsp)
-	result = int(hist.GetBinContent(xbin, ybin))
+	result = bdt_label["%1.0f" % hist.GetBinContent(xbin, ybin)]
 	return result
 
 # ---------------------------#
@@ -100,6 +107,8 @@ def GetLSPMasses():
 # "main program" 
 # ------------------#
 
+
+
 def main():
 
 	try:
@@ -108,6 +117,10 @@ def main():
 
 		# best signal region histogram
 		hist_best_sr = GetBestSRHist()
+
+		# make combined dir if doens't exist
+		if (not os.path.exists(options.combined_path)):
+			os.makedirs(options.combined_path)
 
 		# loop over the selected masses create the card
 		stop_masses = GetStopMasses()
@@ -120,43 +133,39 @@ def main():
 
 				# get the single lepton best SR's card name
 				best_sr = GetBestSR(hist_best_sr, mass_stop, mass_lsp)
-				onelep_card = options.onelep_path + "/t2tt_%1.0f_%1.0f_bdt%d.txt" % (mass_stop, mass_lsp, best_sr-1)
-				if (not os.path.isfile(onelep_card)):
-					print ("single lepton card %s does not exist -- skipping" % onelep_card)
+				onelep_card = "t2tt_%1.0f_%1.0f_%s.txt" % (mass_stop, mass_lsp, best_sr)
+				onelep_full = "%s/%s" % (options.onelep_path, onelep_card)
+				if (not os.path.isfile(onelep_full)):
+					print ("single lepton card %s does not exist -- skipping" % onelep_full)
 					continue
 
 				# get the razor card name
-				razor_multijet_card = options.razor_path + "/razor_combine_MultiJet_T2tt_MG_%1.0f.000000_MCHI_%1.0f.000000.txt" % (mass_stop, mass_lsp)
-				if (not os.path.isfile(razor_multijet_card)):
-					print ("razor card %s does not exist -- skipping" % razor_multijet_card)
+				razor_card = "razor_combine_Had_T2tt_MG_%1.0f.000000_MCHI_%1.0f.000000.txt" % (mass_stop, mass_lsp)
+				razor_full = "%s/%s" % (options.razor_path, razor_card)
+				if (not os.path.isfile(razor_full)):
+					print ("razor card %s does not exist -- skipping" % razor_full)
 					continue
-				razor_multijet_root = options.razor_path + "/razor_combine_MultiJet_T2tt_MG_%1.0f.000000_MCHI_%1.0f.000000.root" % (mass_stop, mass_lsp)
+				razor_multijet_root = "%s/razor_combine_MultiJet_T2tt_MG_%1.0f.000000_MCHI_%1.0f.000000.root" % (options.razor_path, mass_stop, mass_lsp)
 				if (not os.path.isfile(razor_multijet_root)):
-					print ("razor ROOT file %s does not exist -- skipping" % razor_multijet_card)
+					print ("razor ROOT file %s does not exist -- skipping" % razor_multijet_root)
 					continue
-
-				razor_jet2b_card = options.razor_path + "/razor_combine_Jet2b_T2tt_MG_%1.0f.000000_MCHI_%1.0f.000000.txt" % (mass_stop, mass_lsp)
-				if (not os.path.isfile(razor_jet2b_card)):
-					print ("razor card %s does not exist -- skipping" % razor_jet2b_card)
-					continue
-				razor_jet2b_root = options.razor_path + "/razor_combine_Jet2b_T2tt_MG_%1.0f.000000_MCHI_%1.0f.000000.root" % (mass_stop, mass_lsp)
+				razor_jet2b_root = "%s/razor_combine_Jet2b_T2tt_MG_%1.0f.000000_MCHI_%1.0f.000000.root" % (options.razor_path, mass_stop, mass_lsp)
 				if (not os.path.isfile(razor_jet2b_root)):
-					print ("razor ROOT file %s does not exist -- skipping" % razor_jet2b_card)
+					print ("razor ROOT file %s does not exist -- skipping" % razor_jet2b_root)
 					continue
 
 				# combine command:
-				combined_card = options.combined_path + "/combined_t2tt_%1.0f_%1.0f_bdt%d.txt" % (mass_stop, mass_lsp, best_sr-1)
-				cmd = "combineCards.py MultiJet=%s Jet2b=%s singleLep=%s > %s" % (razor_multijet_card, razor_jet2b_card, onelep_card, combined_card)
+				combined_card = "combined_t2tt_%1.0f_%1.0f_%s.txt" % (mass_stop, mass_lsp, best_sr)
+				cmd =  "cp %s %s/."        % (razor_full         , options.combined_path)
+				cmd += "; \\\n cp %s %s/." % (onelep_full        , options.combined_path)
+				cmd += "; \\\n cp %s %s/." % (razor_multijet_root, options.combined_path)
+				cmd += "; \\\n cp %s %s/." % (razor_jet2b_root   , options.combined_path)
+				cmd += "; \\\n pushd %s"   % options.combined_path
+				cmd += "; \\\n combineCards.py had=%s onelep=%s > %s" % (razor_card, onelep_card, combined_card)
+				cmd += "; \\\n popd"
 
 				# make combined dir if doens't exist
-				if (not os.path.exists(options.combined_path)):
-					os.makedirs(options.combined_path)
-				print cmd
-				os.system(cmd)
-
-				# copy relevant ROOT file
-				cmd = "cp %s %s %s/." % (razor_multijet_root, razor_jet2b_root, options.combined_path)
-				print cmd
+				#print cmd
 				os.system(cmd)
 
 	except Exception, e:
