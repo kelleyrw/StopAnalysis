@@ -40,6 +40,13 @@ namespace stop
         const std::string& analysis_type_name = "bdt"
     );
     
+    // Get the SignalRegion from a string
+    SignalRegion::value_type GetSignalRegionFromNumber
+    (
+        const unsigned int signal_region_number,
+        const std::string& analysis_type_name = "bdt"
+    );
+    
     // Get the info for the Signal region
     SignalRegionInfo GetSignalRegionInfo
     (

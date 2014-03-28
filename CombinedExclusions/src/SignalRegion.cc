@@ -30,6 +30,17 @@ namespace stop
     };
 
     // wrapper function to get the SignalRegionInfo
+    SignalRegion::value_type GetSignalRegionFromNumber
+    (
+        const unsigned int signal_region_number,
+        const std::string& analysis_type_name
+    )
+    {
+        const std::string sr_name = Form("sr%d", signal_region_number);
+        return GetSignalRegionFromName(sr_name, analysis_type_name);
+    }
+
+    // wrapper function to get the SignalRegionInfo
     SignalRegion::value_type GetSignalRegionFromName
     (
         const std::string& signal_region_name,

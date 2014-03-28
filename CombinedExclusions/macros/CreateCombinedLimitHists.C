@@ -7,6 +7,7 @@
 #include "LanguageTools.h"
 #include "Sample.h"
 #include "SignalRegion.h"
+#include "PrintFormattedXSecHist.h"
 
 using namespace std;
 
@@ -195,8 +196,10 @@ void CreateRazorCombinedLimitHists
         // dummy histogram to get the bin information
         TH2F h_bins(h_sr_best);
         h_bins.Reset();
+        h_bins.GetZaxis()->SetRangeUser(1, -1);
         const std::string xbin_label = h_bins.GetXaxis()->GetTitle();
         const std::string ybin_label = h_bins.GetYaxis()->GetTitle();
+        const std::string zbin_label = "XSec Upper Limit (pb)"; 
 
         // "best" upper limit hists
         TH2F h_xsec_obs_ul  (h_bins);
@@ -205,12 +208,12 @@ void CreateRazorCombinedLimitHists
         TH2F h_xsec_expm1_ul(h_bins);
         TH2F h_xsec_expp2_ul(h_bins);
         TH2F h_xsec_expm2_ul(h_bins);
-        h_xsec_obs_ul  .SetNameTitle("h_xsec_obs_ul"  , Form("Xsec Observed Upper Limit (pb);%s;%s"          , xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_exp_ul  .SetNameTitle("h_xsec_exp_ul"  , Form("Xsec Expected Upper Limit (pb);%s;%s"          , xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_expp1_ul.SetNameTitle("h_xsec_expp1_ul", Form("Xsec Expected Upper Limit + 1#sigma (pb);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_expm1_ul.SetNameTitle("h_xsec_expm1_ul", Form("Xsec Expected Upper Limit + 1#sigma (pb);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_expp2_ul.SetNameTitle("h_xsec_expp2_ul", Form("Xsec Expected Upper Limit + 2#sigma (pb);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
-        h_xsec_expm2_ul.SetNameTitle("h_xsec_expm2_ul", Form("Xsec Expected Upper Limit + 2#sigma (pb);%s;%s", xbin_label.c_str(), ybin_label.c_str()));
+        h_xsec_obs_ul  .SetNameTitle("h_xsec_obs_ul"  , Form("Xsec Observed Upper Limit (pb);%s;%s;%s"          , xbin_label.c_str(), ybin_label.c_str(), zbin_label.c_str()));
+        h_xsec_exp_ul  .SetNameTitle("h_xsec_exp_ul"  , Form("Xsec Expected Upper Limit (pb);%s;%s;%s"          , xbin_label.c_str(), ybin_label.c_str(), zbin_label.c_str()));
+        h_xsec_expp1_ul.SetNameTitle("h_xsec_expp1_ul", Form("Xsec Expected Upper Limit + 1#sigma (pb);%s;%s;%s", xbin_label.c_str(), ybin_label.c_str(), zbin_label.c_str()));
+        h_xsec_expm1_ul.SetNameTitle("h_xsec_expm1_ul", Form("Xsec Expected Upper Limit + 1#sigma (pb);%s;%s;%s", xbin_label.c_str(), ybin_label.c_str(), zbin_label.c_str()));
+        h_xsec_expp2_ul.SetNameTitle("h_xsec_expp2_ul", Form("Xsec Expected Upper Limit + 2#sigma (pb);%s;%s;%s", xbin_label.c_str(), ybin_label.c_str(), zbin_label.c_str()));
+        h_xsec_expm2_ul.SetNameTitle("h_xsec_expm2_ul", Form("Xsec Expected Upper Limit + 2#sigma (pb);%s;%s;%s", xbin_label.c_str(), ybin_label.c_str(), zbin_label.c_str()));
 
         TH2F h_excl_obs  (h_bins);
         TH2F h_excl_exp  (h_bins);
@@ -298,6 +301,39 @@ void CreateRazorCombinedLimitHists
         hc.Add(h_excl_obsp1);
         hc.Add(h_excl_obsm1);
 
+/*     void PrintFormattedXSecHist */
+/*     ( */
+/*         TH2& hist, */
+/*         const std::string& plot_name, */
+/*         const std::string& path, */
+/*         const std::string& suffix, */
+/*         const std::string& draw_option, */
+/*         const std::string& paint_text_option = "1.0f", */
+/*         const float zmin = 1.0f, */
+/*         const float zmax = -1.0f */
+/*    ); */
+        std::string plot_path = lt::dirname(output_file_name);
+        switch (channel_type)
+        {
+            case Channel::Razor    : plot_path += "/razor";     break;
+            case Channel::SingleLep: plot_path += "/singlelep"; break;
+            case Channel::Combined : plot_path += "/combined";  break;
+            default                : {/*do nothing*/}
+        };
+/*         stop::PrintFormattedXSecHist(h_sr_best      , "h_sr_best"      , plot_path, "eps", "colz"); */
+        stop::PrintFormattedXSecHist(h_xsec_obs_ul  , "h_xsec_obs_ul"  , plot_path, "eps", "colz");
+        stop::PrintFormattedXSecHist(h_xsec_exp_ul  , "h_xsec_exp_ul"  , plot_path, "eps", "colz");
+        stop::PrintFormattedXSecHist(h_xsec_expp1_ul, "h_xsec_expp1_ul", plot_path, "eps", "colz");
+        stop::PrintFormattedXSecHist(h_xsec_expm1_ul, "h_xsec_expm1_ul", plot_path, "eps", "colz");
+        stop::PrintFormattedXSecHist(h_xsec_expp2_ul, "h_xsec_expp2_ul", plot_path, "eps", "colz");
+        stop::PrintFormattedXSecHist(h_xsec_expm2_ul, "h_xsec_expm2_ul", plot_path, "eps", "colz");
+        stop::PrintFormattedXSecHist(h_excl_obs     , "h_excl_obs"     , plot_path, "eps", "text", "1.0f", 0, 1);
+        stop::PrintFormattedXSecHist(h_excl_exp     , "h_excl_exp"     , plot_path, "eps", "text", "1.0f", 0, 1);
+        stop::PrintFormattedXSecHist(h_excl_expp1   , "h_excl_expp1"   , plot_path, "eps", "text", "1.0f", 0, 1);
+        stop::PrintFormattedXSecHist(h_excl_expm1   , "h_excl_expm1"   , plot_path, "eps", "text", "1.0f", 0, 1);
+        stop::PrintFormattedXSecHist(h_excl_obsp1   , "h_excl_obsp1"   , plot_path, "eps", "text", "1.0f", 0, 1);
+        stop::PrintFormattedXSecHist(h_excl_obsm1   , "h_excl_obsm1"   , plot_path, "eps", "text", "1.0f", 0, 1);
+
         // save
         hc.Write(output_file_name);
     }
@@ -307,9 +343,8 @@ void CreateRazorCombinedLimitHists
     }
 }
 
-
 // convenience
-void CreateLimits()
+void CreateCombinedLimitHists()
 {
     CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine_asymptotic/t2tt", "plots/limits/lep1_razor_combine_asymptotic/t2tt/t2tt_razor_limit_hists.root"    );
     CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine_asymptotic/t2tt", "plots/limits/lep1_razor_combine_asymptotic/t2tt/t2tt_singlelep_limit_hists.root");
