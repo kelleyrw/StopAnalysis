@@ -1,6 +1,7 @@
 #!/bin/bash
 
-OUTPUT_PATH=limits/lep1_razor_combine
+#OUTPUT_PATH=limits/lep1_razor_combine
+OUTPUT_PATH=limits/lep1_razor_combine_hybridnew
 CARD_PATH=$CMSSW_BASE/src/StopAnalysis/CombinedExclusions/batch_full_combine/job_input
 
 # SUSY scans

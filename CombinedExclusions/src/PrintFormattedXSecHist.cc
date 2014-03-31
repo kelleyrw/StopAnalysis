@@ -6,7 +6,7 @@
 #include "TStyle.h"
 #include "TCanvas.h"
 #include "TColor.h"
-// #include "TPaletteAxis.h"
+// #include "TPaletteAxis.h"                                                      
 
 namespace stop
 {
@@ -47,8 +47,8 @@ namespace stop
             gStyle->SetPadRightMargin(0.15);
             gStyle->SetPaintTextFormat("1.0f");
 //             TPaletteAxis* const palette = dynamic_cast<TPaletteAxis*>(hist.GetListOfFunctions()->FindObject("palette"));
-//             palette->SetLabelFont(42);
-//             palette->SetLabelSize(0.035);
+//             palette->SetLabelFont(42);                                         
+//             palette->SetLabelSize(0.035);                                      
             gStyle->SetPadRightMargin(0.15);
         }
         {

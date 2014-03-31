@@ -42,7 +42,8 @@ function run_combine_asymptotic
     local job_id=$2
     local output="combine_output_${job_id}.root"
     local seed=1234
-    local options="--method Asymptotic --seed $seed"
+    #local options="--method Asymptotic --seed $seed"
+    local options="--method Asymptotic --minimizerTolerance 0.0001 --rRelAcc 0.0001 -v 2 --seed $seed"
 
     # run combine 
 
@@ -63,7 +64,7 @@ function run_combine_hybridnew
     local job_id=$2
     local output="combine_output_${job_id}.root"
     local seed=1234
-    local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed --rMin 0 --rMax 10000"
+    local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed"
 
     # run combine 
 
@@ -98,7 +99,8 @@ function run_combine_hybridnew
 
 # set the command
 # -------------------------- #
-cmd="run_combine_asymptotic ${card} ${job_id}"
+#cmd="run_combine_asymptotic ${card} ${job_id}"
+cmd="run_combine_hybridnew ${card} ${job_id}"
 
 # run combine 
 # -------------------------- #
