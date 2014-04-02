@@ -99,8 +99,8 @@ function run_combine_hybridnew
 
 # set the command
 # -------------------------- #
-#cmd="run_combine_asymptotic ${card} ${job_id}"
-cmd="run_combine_hybridnew ${card} ${job_id}"
+cmd="run_combine_asymptotic ${card} ${job_id}"
+#cmd="run_combine_hybridnew ${card} ${job_id}"
 
 # run combine 
 # -------------------------- #
