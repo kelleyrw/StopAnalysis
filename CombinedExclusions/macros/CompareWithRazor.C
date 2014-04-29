@@ -94,11 +94,11 @@ void CompareWithRazor(const double mass_stop, const double mass_lsp, const std::
     t1.setTable()(                                           "obs limits",     "exp limits")
                  ("Single lepton"                    , ul_obs[0].pm(fmt) , ul_exp[0].value )
                  ("Razor hadronic"                   , ul_obs[1].pm(fmt) , ul_exp[1].value )
-                 ("cobmined (uncorrelated)"          , ul_obs[2].pm(fmt) , ul_exp[2].value )
-                 ("cobmined (JES 100%% corr)"        , ul_obs[3].pm(fmt) , ul_exp[3].value )
-                 ("cobmined (Btag 100%% corr)"       , ul_obs[4].pm(fmt) , ul_exp[4].value )
-                 ("cobmined (ISR 100%% corr)"        , ul_obs[5].pm(fmt) , ul_exp[5].value )
-                 ("cobmined (lepton 100%% anti-corr)", ul_obs[6].pm(fmt) , ul_exp[6].value )
+                 ("combined (uncorrelated)"          , ul_obs[2].pm(fmt) , ul_exp[2].value )
+                 ("combined (JES 100%% corr)"        , ul_obs[3].pm(fmt) , ul_exp[3].value )
+                 ("combined (Btag 100%% corr)"       , ul_obs[4].pm(fmt) , ul_exp[4].value )
+                 ("combined (ISR 100%% corr)"        , ul_obs[5].pm(fmt) , ul_exp[5].value )
+                 ("combined (lepton 100%% anti-corr)", ul_obs[6].pm(fmt) , ul_exp[6].value )
     ;
     cout << t1 << std::endl;
 

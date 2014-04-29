@@ -2,7 +2,6 @@
 <use name="rootmath"/>
 <use name="roofitcore"/>
 <use name="roofit"/>
-<use name="rootgraphics"/>
 <use name="boost"/>
 <use name="AnalysisTools/RootTools"/>
 <use name="AnalysisTools/LanguageTools"/>

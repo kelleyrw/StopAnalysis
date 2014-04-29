@@ -158,23 +158,23 @@ LimitInfo CreateLimitInfoCombine
     chain.SetBranchAddress("limit"   , &ul    );
     chain.SetBranchAddress("limitErr", &ul_err);
     chain.GetEntry(5);
-    limit_info.obs = ul;
-    limit_info.obs_err = ul_err;
+    limit_info.obs               = limit_info.xsec * ul;
+    limit_info.obs_err           = limit_info.xsec * ul_err;
     chain.GetEntry(2);
-    limit_info.exp = ul;
-    limit_info.exp_err = ul_err;
+    limit_info.exp               = limit_info.xsec * ul;
+    limit_info.exp_err           = limit_info.xsec * ul_err;
     chain.GetEntry(3);
-    limit_info.exp_1sigma_up = ul;
-    limit_info.exp_1sigma_up_err = ul_err;
+    limit_info.exp_1sigma_up     = limit_info.xsec * ul;
+    limit_info.exp_1sigma_up_err = limit_info.xsec * ul_err;
     chain.GetEntry(0);
-    limit_info.exp_1sigma_dn = ul;
-    limit_info.exp_1sigma_dn_err = ul_err;
+    limit_info.exp_1sigma_dn     = limit_info.xsec * ul;
+    limit_info.exp_1sigma_dn_err = limit_info.xsec * ul_err;
     chain.GetEntry(4);
-    limit_info.exp_2sigma_up = ul;
-    limit_info.exp_2sigma_up_err = ul_err;
+    limit_info.exp_2sigma_up     = limit_info.xsec * ul;
+    limit_info.exp_2sigma_up_err = limit_info.xsec * ul_err;
     chain.GetEntry(1);
-    limit_info.exp_2sigma_dn = ul;
-    limit_info.exp_2sigma_dn_err = ul_err;
+    limit_info.exp_2sigma_dn     = limit_info.xsec * ul;
+    limit_info.exp_2sigma_dn_err = limit_info.xsec * ul_err;
     return limit_info;
 }
 
@@ -196,10 +196,9 @@ void CreateRazorCombinedLimitHists
         // dummy histogram to get the bin information
         TH2F h_bins(h_sr_best);
         h_bins.Reset();
-        h_bins.GetZaxis()->SetRangeUser(1, -1);
         const std::string xbin_label = h_bins.GetXaxis()->GetTitle();
         const std::string ybin_label = h_bins.GetYaxis()->GetTitle();
-        const std::string zbin_label = "XSec Upper Limit (pb)"; 
+        const std::string zbin_label = "#sigma Upper Limit (pb)"; 
 
         // "best" upper limit hists
         TH2F h_xsec_obs_ul  (h_bins);
@@ -263,12 +262,12 @@ void CreateRazorCombinedLimitHists
                 const LimitInfo limit_info = CreateLimitInfoCombine(channel_type, h_xsec, limit_file_name);
                 //cout << limit_info << endl;
 
-                rt::SetBinContent2D(&h_xsec_obs_ul  , mass_stop, mass_lsp, 1e-3*limit_info.obs          , 1e-3*limit_info.obs_err          );
-                rt::SetBinContent2D(&h_xsec_exp_ul  , mass_stop, mass_lsp, 1e-3*limit_info.exp          , 1e-3*limit_info.exp_err          );
-                rt::SetBinContent2D(&h_xsec_expp1_ul, mass_stop, mass_lsp, 1e-3*limit_info.exp_1sigma_up, 1e-3*limit_info.exp_1sigma_up_err);
-                rt::SetBinContent2D(&h_xsec_expm1_ul, mass_stop, mass_lsp, 1e-3*limit_info.exp_1sigma_dn, 1e-3*limit_info.exp_1sigma_dn_err);
-                rt::SetBinContent2D(&h_xsec_expp2_ul, mass_stop, mass_lsp, 1e-3*limit_info.exp_2sigma_up, 1e-3*limit_info.exp_2sigma_up_err);
-                rt::SetBinContent2D(&h_xsec_expm2_ul, mass_stop, mass_lsp, 1e-3*limit_info.exp_2sigma_dn, 1e-3*limit_info.exp_2sigma_dn_err);
+                rt::SetBinContent2D(&h_xsec_obs_ul  , mass_stop, mass_lsp, limit_info.obs          , limit_info.obs_err          );
+                rt::SetBinContent2D(&h_xsec_exp_ul  , mass_stop, mass_lsp, limit_info.exp          , limit_info.exp_err          );
+                rt::SetBinContent2D(&h_xsec_expp1_ul, mass_stop, mass_lsp, limit_info.exp_1sigma_up, limit_info.exp_1sigma_up_err);
+                rt::SetBinContent2D(&h_xsec_expm1_ul, mass_stop, mass_lsp, limit_info.exp_1sigma_dn, limit_info.exp_1sigma_dn_err);
+                rt::SetBinContent2D(&h_xsec_expp2_ul, mass_stop, mass_lsp, limit_info.exp_2sigma_up, limit_info.exp_2sigma_up_err);
+                rt::SetBinContent2D(&h_xsec_expm2_ul, mass_stop, mass_lsp, limit_info.exp_2sigma_dn, limit_info.exp_2sigma_dn_err);
 
                 // determin if point is excluded
                 const float xsec     = rt::GetBinContent2D(&h_xsec, mass_stop, mass_lsp);
@@ -276,12 +275,12 @@ void CreateRazorCombinedLimitHists
                 const float xsec_up  = xsec + xsec_err;
                 const float xsec_dn  = xsec - xsec_err;
 
-                if (xsec    > 1e-3*limit_info.obs          ) {rt::SetBinContent2D(&h_excl_obs  , mass_stop, mass_lsp, 1);}
-                if (xsec    > 1e-3*limit_info.exp          ) {rt::SetBinContent2D(&h_excl_exp  , mass_stop, mass_lsp, 1);}
-                if (xsec    > 1e-3*limit_info.exp_1sigma_up) {rt::SetBinContent2D(&h_excl_expp1, mass_stop, mass_lsp, 1);}
-                if (xsec    > 1e-3*limit_info.exp_1sigma_dn) {rt::SetBinContent2D(&h_excl_expp1, mass_stop, mass_lsp, 1);}
-                if (xsec_up > 1e-3*limit_info.obs          ) {rt::SetBinContent2D(&h_excl_obsp1, mass_stop, mass_lsp, 1);}
-                if (xsec_dn > 1e-3*limit_info.obs          ) {rt::SetBinContent2D(&h_excl_obsm1, mass_stop, mass_lsp, 1);}
+                if (xsec    > limit_info.obs          ) {rt::SetBinContent2D(&h_excl_obs  , mass_stop, mass_lsp, 1);}
+                if (xsec    > limit_info.exp          ) {rt::SetBinContent2D(&h_excl_exp  , mass_stop, mass_lsp, 1);}
+                if (xsec    > limit_info.exp_1sigma_up) {rt::SetBinContent2D(&h_excl_expp1, mass_stop, mass_lsp, 1);}
+                if (xsec    > limit_info.exp_1sigma_dn) {rt::SetBinContent2D(&h_excl_expp1, mass_stop, mass_lsp, 1);}
+                if (xsec_up > limit_info.obs          ) {rt::SetBinContent2D(&h_excl_obsp1, mass_stop, mass_lsp, 1);}
+                if (xsec_dn > limit_info.obs          ) {rt::SetBinContent2D(&h_excl_obsm1, mass_stop, mass_lsp, 1);}
             }
         }
 
@@ -301,17 +300,6 @@ void CreateRazorCombinedLimitHists
         hc.Add(h_excl_obsp1);
         hc.Add(h_excl_obsm1);
 
-/*     void PrintFormattedXSecHist */
-/*     ( */
-/*         TH2& hist, */
-/*         const std::string& plot_name, */
-/*         const std::string& path, */
-/*         const std::string& suffix, */
-/*         const std::string& draw_option, */
-/*         const std::string& paint_text_option = "1.0f", */
-/*         const float zmin = 1.0f, */
-/*         const float zmax = -1.0f */
-/*    ); */
         std::string plot_path = lt::dirname(output_file_name);
         switch (channel_type)
         {
@@ -320,19 +308,18 @@ void CreateRazorCombinedLimitHists
             case Channel::Combined : plot_path += "/combined";  break;
             default                : {/*do nothing*/}
         };
-/*         stop::PrintFormattedXSecHist(h_sr_best      , "h_sr_best"      , plot_path, "eps", "colz"); */
-        stop::PrintFormattedXSecHist(h_xsec_obs_ul  , "h_xsec_obs_ul"  , plot_path, "eps", "colz");
-        stop::PrintFormattedXSecHist(h_xsec_exp_ul  , "h_xsec_exp_ul"  , plot_path, "eps", "colz");
-        stop::PrintFormattedXSecHist(h_xsec_expp1_ul, "h_xsec_expp1_ul", plot_path, "eps", "colz");
-        stop::PrintFormattedXSecHist(h_xsec_expm1_ul, "h_xsec_expm1_ul", plot_path, "eps", "colz");
-        stop::PrintFormattedXSecHist(h_xsec_expp2_ul, "h_xsec_expp2_ul", plot_path, "eps", "colz");
-        stop::PrintFormattedXSecHist(h_xsec_expm2_ul, "h_xsec_expm2_ul", plot_path, "eps", "colz");
-        stop::PrintFormattedXSecHist(h_excl_obs     , "h_excl_obs"     , plot_path, "eps", "text", "1.0f", 0, 1);
-        stop::PrintFormattedXSecHist(h_excl_exp     , "h_excl_exp"     , plot_path, "eps", "text", "1.0f", 0, 1);
-        stop::PrintFormattedXSecHist(h_excl_expp1   , "h_excl_expp1"   , plot_path, "eps", "text", "1.0f", 0, 1);
-        stop::PrintFormattedXSecHist(h_excl_expm1   , "h_excl_expm1"   , plot_path, "eps", "text", "1.0f", 0, 1);
-        stop::PrintFormattedXSecHist(h_excl_obsp1   , "h_excl_obsp1"   , plot_path, "eps", "text", "1.0f", 0, 1);
-        stop::PrintFormattedXSecHist(h_excl_obsm1   , "h_excl_obsm1"   , plot_path, "eps", "text", "1.0f", 0, 1);
+        stop::PrintFormattedXSecHist(h_xsec_obs_ul  , "h_xsec_obs_ul"  , plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_xsec_exp_ul  , "h_xsec_exp_ul"  , plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_xsec_expp1_ul, "h_xsec_expp1_ul", plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_xsec_expm1_ul, "h_xsec_expm1_ul", plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_xsec_expp2_ul, "h_xsec_expp2_ul", plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_xsec_expm2_ul, "h_xsec_expm2_ul", plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_excl_obs     , "h_excl_obs"     , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
+        stop::PrintFormattedXSecHist(h_excl_exp     , "h_excl_exp"     , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
+        stop::PrintFormattedXSecHist(h_excl_expp1   , "h_excl_expp1"   , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
+        stop::PrintFormattedXSecHist(h_excl_expm1   , "h_excl_expm1"   , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
+        stop::PrintFormattedXSecHist(h_excl_obsp1   , "h_excl_obsp1"   , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
+        stop::PrintFormattedXSecHist(h_excl_obsm1   , "h_excl_obsm1"   , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
 
         // save
         hc.Write(output_file_name);
@@ -346,7 +333,13 @@ void CreateRazorCombinedLimitHists
 // convenience
 void CreateCombinedLimitHists()
 {
-    CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine_asymptotic/t2tt", "plots/limits/lep1_razor_combine_asymptotic/t2tt/t2tt_razor_limit_hists.root"    );
-    CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine_asymptotic/t2tt", "plots/limits/lep1_razor_combine_asymptotic/t2tt/t2tt_singlelep_limit_hists.root");
-    CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine_asymptotic/t2tt", "plots/limits/lep1_razor_combine_asymptotic/t2tt/t2tt_combined_limit_hists.root" );
+/*     CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine_asymptotic/t2tt", "plots/limits/lep1_razor_combine_asymptotic/t2tt/t2tt_singlelep_limit_hists.root"); */
+/*     CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine_asymptotic/t2tt", "plots/limits/lep1_razor_combine_asymptotic/t2tt/t2tt_razor_limit_hists.root"    ); */
+/*     CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine_asymptotic/t2tt", "plots/limits/lep1_razor_combine_asymptotic/t2tt/t2tt_combined_limit_hists.root" ); */
+
+    CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_singlelep_limit_hists.root");
+    CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_razor_limit_hists.root"    );
+    CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_combined_limit_hists.root" );
+
+/*     CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine_hybridnew/t2tt", "plots/limits/lep1_razor_combine_hybridnew/t2tt/t2tt_singlelep_limit_hists.root"); */
 }
