@@ -138,6 +138,9 @@ def main():
 				if (not os.path.isfile(onelep_full)):
 					print ("single lepton card %s does not exist -- skipping" % onelep_full)
 					continue
+				else:
+					cmd = "cp %s %s/." % (onelep_full, options.combined_path)
+					os.system(cmd)
 
 				# get the razor card name
 				razor_card = "razor_combine_Had_T2tt_MG_%1.0f.000000_MCHI_%1.0f.000000.txt" % (mass_stop, mass_lsp)
