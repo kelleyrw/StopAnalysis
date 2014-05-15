@@ -37,7 +37,7 @@ stop::Yield::value_t ExtractObsUpperLimitCombine(const std::string& filename, co
 void CompareAsymptoticToHybrid(const double mass_stop, const double mass_lsp, const std::string sr)
 {
     // get observed combined limits 
-    std::string limit_path = "output/limits/lep1_razor_combine_asymptotic/t2tt/combine_output";
+    std::string limit_path = "output/limits/lep1_razor_combine/asymptotic/t2tt/combine_output";
     const unsigned int num_obs   = 3;
     stop::Yield::value_t ul_obs_com[num_obs] =
     {
@@ -55,7 +55,7 @@ void CompareAsymptoticToHybrid(const double mass_stop, const double mass_lsp, co
     };
 
     // get observed combined limits 
-    limit_path = "output/limits/lep1_razor_combine_hybridnew/t2tt/combine_output";
+    limit_path = "output/limits/lep1_razor_combine/hybridnew/t2tt/combine_output";
     stop::Yield::value_t ul_obs_hyb[num_obs] =
     {
         ExtractObsUpperLimitCombine(Form("%s_t2tt_%1.0f_%1.0f_%s.root"                       , limit_path.c_str() , mass_stop , mass_lsp, sr.c_str())), 
@@ -77,7 +77,7 @@ void CompareAsymptoticToHybrid(const double mass_stop, const double mass_lsp, co
     CTable t1;
     t1.useTitle();
     t1.setTitle(Form("Comparison of limits for m_stop = %1.0f and m_lsp = %1.0f", mass_stop, mass_lsp));
-    t1.setTable()(                   "obs combined limits", "obs hybrid new limits")
+    t1.setTable()(                 "obs asymptotic limits", "obs hybrid new limits")
                  ("Single lepton" , ul_obs_com[0].pm(fmt) ,   ul_obs_hyb[0].pm(fmt))
                  ("Razor hadronic", ul_obs_com[1].pm(fmt) ,   ul_obs_hyb[1].pm(fmt))
                  ("combined"      , ul_obs_com[2].pm(fmt) ,   ul_obs_hyb[2].pm(fmt))
@@ -87,7 +87,7 @@ void CompareAsymptoticToHybrid(const double mass_stop, const double mass_lsp, co
     CTable t2;
     t2.useTitle();
     t2.setTitle(Form("Comparison of limits for m_stop = %1.0f and m_lsp = %1.0f", mass_stop, mass_lsp));
-    t2.setTable()(                 "exp combined limits", "exp hybrid new limits")
+    t2.setTable()(               "exp asymptotic limits", "exp hybrid new limits")
                  ("Single lepton" , ul_exp_com[0].value ,   ul_exp_hyb[0].value)
                  ("Razor hadronic", ul_exp_com[1].value ,   ul_exp_hyb[1].value)
                  ("combined"      , ul_exp_com[2].value ,   ul_exp_hyb[2].value)
