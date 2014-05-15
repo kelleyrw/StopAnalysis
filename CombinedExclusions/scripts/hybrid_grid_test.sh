@@ -1,7 +1,6 @@
 #!/bin/bash
 
 seed=1234
-options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed --clsAcc 0.1"
 
 function run_cmd
 {
@@ -12,6 +11,7 @@ function run_cmd
 
 function create_grid
 {
+    local options="--method HybridNew --frequentist --testStat LHC --seed $seed --clsAcc 0 -T 1000 --iterations 1 --fullBToys"
     local card=$1
     local rvalue=$2
     local name="_grid_${card}_r$(echo $rvalue | sed -e "s/\./p/")"
@@ -23,31 +23,32 @@ function run_combine_grid
     local card=${1}.txt
     local name="_${1}_grid"
     local grid=$2
-    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --grid=${grid}"
-    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --grid=${grid} --expectedFromGrid 0.5"
-    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --grid=${grid} --expectedFromGrid 0.16"
-    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --grid=${grid} --expectedFromGrid 0.84"
-    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --grid=${grid} --expectedFromGrid 0.025"
-    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --grid=${grid} --expectedFromGrid 0.975"
-    run_cmd "hadd -f higgsCombine_${card}.HybridNew.grid.root higgsCombine${name}.HybridNew.mH120.*"
+    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --clsAcc 0.005 --grid=${grid}"
+    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --clsAcc 0.005 --grid=${grid} --expectedFromGrid 0.5"
+    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --clsAcc 0.005 --grid=${grid} --expectedFromGrid 0.16"
+    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --clsAcc 0.005 --grid=${grid} --expectedFromGrid 0.84"
+    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --clsAcc 0.005 --grid=${grid} --expectedFromGrid 0.025"
+    run_cmd "combine ${card} --name ${name} --method HybridNew --frequentist --seed $seed --clsAcc 0.005 --grid=${grid} --expectedFromGrid 0.975"
+    run_cmd "hadd -f higgsCombine_${card%.*}.HybridNew.grid.root higgsCombine${name}.HybridNew.mH120.*"
 }
 
 function run_combine_nogrid
 {
     local card=${1}.txt
     local name="_${1}_nogrid"
+    local options="--method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --seed $seed --clsAcc 0.005"
     run_cmd "combine ${card} --name $name $options"
     run_cmd "combine ${card} --name $name $options --expectedFromGrid 0.5"
     run_cmd "combine ${card} --name $name $options --expectedFromGrid 0.16"
     run_cmd "combine ${card} --name $name $options --expectedFromGrid 0.84"
     run_cmd "combine ${card} --name $name $options --expectedFromGrid 0.025"
     run_cmd "combine ${card} --name $name $options --expectedFromGrid 0.975"
-    run_cmd "hadd -f higgsCombine_${card}.HybridNew.nogrid.root higgsCombine${name}.HybridNew.mH120.*"
+    run_cmd "hadd -f higgsCombine_${card%.*}.HybridNew.nogrid.root higgsCombine${name}.HybridNew.mH120.*"
 }
 
 function create_limits
 {
-    # create the grid
+    ## create the grid
     local card=$1
     local rmin=$2
     local rmax=$3
@@ -59,15 +60,17 @@ function create_limits
         create_grid $card $rvalue
     done
 
-    local name="higgsCombine_grid_${card}"
+    local name="higgsCombine_grid_${card%.*}"
     local grid="${name}_n${n}.root"
     run_cmd "hadd -f ${grid} ${name}_r*.root" 
 
-    # limit with grid
+    ## limit with grid
     run_combine_grid   $card $grid
 
     # limit without grid
     run_combine_nogrid $card $grid
 }
 
-create_limits t2tt_200_100_bdt5 0.25 2.25 100 
+# create_limits t2tt_200_100_bdt5 0.25 2.25 10 
+create_limits combined_t2tt_200_100_bdt5 0.25 2.25 10 
+
