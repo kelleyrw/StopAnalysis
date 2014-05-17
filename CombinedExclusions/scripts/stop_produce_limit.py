@@ -243,21 +243,44 @@ def HybridLimitWithGrid():
     return
 
 # ------------------#
+# rename output file
+# ------------------#
+def RenameOutputFile():
+	"""Standardize the output name"""
+	
+	# original name
+	if   (options.method==1): old_name = "higgsCombine_%s.Asymptotic.mH120.%d.root" % (GetCardStem(), options.seed) 
+	elif (options.method==2): old_name = "higgsCombine_%s_nogrid.HybridNew.%d.root" % (GetCardStem(), options.seed) 
+	elif (options.method==3): old_name = "higgsCombine_%s_grid.HybridNew.%d.root"   % (GetCardStem(), options.seed) 
+	
+	# new name
+	new_name = "combine_output_%s.root" % GetCardStem()
+	
+	# execuse rename
+	cmd = "cp %s %s" % (old_name, new_name)
+	print cmd
+	os.system(cmd)
+	return
+
+# ------------------#
 # "main program" 
 # ------------------#
 
 def main():
     
     try:
-	# check the options
-	CheckOptions()
+		# check the options
+		CheckOptions()
 
-	# run assymptotic limit
-	if   (options.method == 1): AsymptoticLimit()
-	elif (options.method == 2): HybridLimitNoGrid()
-	elif (options.method == 3): HybridLimitWithGrid()
+		# run assymptotic limit
+		if   (options.method == 1): AsymptoticLimit()
+		elif (options.method == 2): HybridLimitNoGrid()
+		elif (options.method == 3): HybridLimitWithGrid()
 
-	return 0
+		# rename output file
+		RenameOutputFile()
+
+		return 0
 
     except Exception, e:
     	print "[stop_produce_limit] ERROR:", e

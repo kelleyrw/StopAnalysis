@@ -5,7 +5,7 @@ chmod +x appendTimeStamp.sh
 # args
 
 CARD="$1"
-JOBID="$2"
+METHOD="$2"
 COPYDIR="$3"
 
 echo "[wrapper] List of args = $@" | ./appendTimeStamp.sh
@@ -13,9 +13,9 @@ for arg in "$@"; do
 	echo "[wrapper] $arg"
 done
 
-echo "[wrapper] CARD    =" "${CARD}"    | ./appendTimeStamp.sh
-echo "[wrapper] JOBID   =" "${JOBID}"   | ./appendTimeStamp.sh
-echo "[wrapper] COPYDIR =" "${COPYDIR}" | ./appendTimeStamp.sh
+echo "[wrapper] CARD    = ${CARD}"    | ./appendTimeStamp.sh
+echo "[wrapper] METHOD  = ${METHOD}"  | ./appendTimeStamp.sh
+echo "[wrapper] COPYDIR = ${COPYDIR}" | ./appendTimeStamp.sh
 echo
 
 
@@ -101,7 +101,7 @@ echo -e "
 #!/bin/bash
 
 # run the driver script
-./driver.sh ${CARD} ${JOBID}
+./driver.sh ${CARD} ${METHOD}
 
 # test the output
 JOB_EXIT_CODE=`echo $?`
@@ -177,12 +177,13 @@ echo
 
 echo
 echo "[wrapper] copying file" | ./appendTimeStamp.sh
+JOBID=`echo $(basename ${CARD}) | sed 's/\.txt//g'`
 OUTPUT=combine_output_${JOBID}.root
 ls $OUTPUT | ./appendTimeStamp.sh
 JOB_EXIT_CODE=`echo $?`
 if [[ $? -ne 0 ]] ; then
    echo
-   echo "[wrapper] *m2lnQ.root file not found!  Exiting." | ./appendTimeStamp.sh
+   echo "[wrapper] $OUTPUT file not found!  Exiting." | ./appendTimeStamp.sh
    echo
 fi
 cmd="./sweepRoot -o limit $OUTPUT"
@@ -205,6 +206,6 @@ echo
 
 echo
 echo "[wrapper] cleaning up" | ./appendTimeStamp.sh
-find . -not -name "*stderr" -not -name "*stdout" -exec rm -rf {} \;
+find . -not -name "*stderr" -not -name "*stdout" -exec rm -rf {} \;            
 echo "[wrapper] cleaned up"
 ls
