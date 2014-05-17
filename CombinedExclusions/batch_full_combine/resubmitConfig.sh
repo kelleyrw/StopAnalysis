@@ -40,13 +40,12 @@ while read line ; do
 done < "${condor_script_filename}"
 num_args=${#arg_list[@]}
 
-# get output path
-output_path=$(echo ${arg_list[0]} | awk '{print $3}' | sed s/\"//g)
-
 # output files to find -- if found, the index is stored
 for (( i=0; i < $num_args; i++ )); 
 do
-	input_file=$(echo ${arg_list[$i]} | awk '{print $2}')
+	output_path=$(echo ${arg_list[$i]} | awk '{print $3}' | sed s/\"//g)
+#     echo $output_path
+	input_file=$(echo ${arg_list[$i]} | awk '{print $1}' | sed s/\.txt//g)
 	file=combine_output_$(basename ${input_file}).root
 #     echo find $output_path -type f -name $file
 	if [ ! $(find $output_path -type f -name $file) ]; then

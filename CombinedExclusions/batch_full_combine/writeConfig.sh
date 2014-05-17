@@ -32,14 +32,15 @@ cd ${DIR}
 SAMPLE="$1"
 CARDDIR="$2"
 COPYDIRBASE="$3"
+METHOD=$4
 COPYDIR="/hadoop/cms/store/user/$USER/${COPYDIRBASE}"
+OUTPUT=condor_${COPYDIRBASE##*/}_method${METHOD}.cmd
 
 #
 # write configuration
 #
 
-echo "
-universe=${UNIVERSE}
+echo "universe=${UNIVERSE}
 Grid_Resource=gt2 osg-gw-6.t2.ucsd.edu:2119/jobmanager-condor
 when_to_transfer_output = ON_EXIT
 #the actual executable to run is not transfered by its name.
@@ -52,8 +53,7 @@ output=${OUT}
 error =${ERR}
 notification=Never
 x509userproxy=${PROXY}
-" > condor_${COPYDIRBASE##*/}.cmd
-
+" > ${OUTPUT}
     #
     # now set the rest of the arguments 
     # for each job
@@ -64,13 +64,12 @@ x509userproxy=${PROXY}
             continue;
         fi
 		CARD=${FILE}
-		JOBID=`echo $(basename ${FILE}) | sed 's/\.txt//g'`
         echo "
 executable=${EXE}
 transfer_executable=True
-arguments=\"${SAMPLE}/$(basename ${FILE}) ${JOBID} ${COPYDIR}\"
+arguments=\"${SAMPLE}/$(basename ${FILE}) ${METHOD} ${COPYDIR}\"
 queue
-" >> condor_${COPYDIRBASE##*/}.cmd
+" >> ${OUTPUT}
     done
 
-echo "[writeConfig] wrote condor_${COPYDIRBASE##*/}.cmd" 
+echo "[writeConfig] wrote ${OUTPUT}" 
