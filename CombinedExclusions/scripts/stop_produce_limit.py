@@ -49,7 +49,7 @@ def AsymptoticLimit():
     cmd += " --name _%s" % GetCardStem() 
 
     # options
-    cmd += " --method Asymptotic --verbose 2"
+    cmd += " --method Asymptotic --minimizerTolerance 0.0001 --rRelAcc 0.0001 --verbose 2"
 
     # options
     cmd += " --seed %d" % options.seed
