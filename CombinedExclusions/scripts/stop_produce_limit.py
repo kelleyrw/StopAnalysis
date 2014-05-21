@@ -41,7 +41,7 @@ def GetCardStem():
 
 def AsymptoticLimit():
     """Run the asympotic limit"""
-   
+
     # command
     cmd = "combine %s" % options.card
 
@@ -96,17 +96,17 @@ def ExtractAsymptoticLimit():
     chain.GetEntry(2); limits[2] = entry.limit # exp
     chain.GetEntry(3); limits[3] = entry.limit # exp + 1s
     chain.GetEntry(4); limits[4] = entry.limit # exp + 2s
-    chain.GetEntry(5); limits[5] = entry.limit # obs 
+    chain.GetEntry(5); limits[5] = entry.limit # obs
 
     return limits
-    
+
 # ------------------#
 # hybrid with no grid 
 # ------------------#
 
 def HybridLimitNoGridSingleQuantile(quantile=-1):
     """Run the hybrid limit without using a pre-generated grid for a single quantile"""
-   
+
     # command
     cmd = "combine %s" % options.card
 
@@ -131,7 +131,7 @@ def HybridLimitNoGridSingleQuantile(quantile=-1):
 
 def HybridLimitNoGrid():
     """Run the hybrid limit without using a pre-generated grid for a obs and expected limits"""
-   
+
     # run combine for each quantile
     print "[stop_produce_limit] running hybrid new without pre-generated grid"
     HybridLimitNoGridSingleQuantile(quantile=-1   )
@@ -169,7 +169,7 @@ def GenerateRValues():
 
 def GenerateGrid():
     """Create a pre-generated grid for the hybrid new calculation"""
-    
+
     # generate grid
     rvalues = GenerateRValues()
     seed_delta=0
@@ -201,12 +201,12 @@ def GenerateGrid():
 
 def HybridLimitWithGridSingleQuantile(quantile=-1):
     """Run the hybrid limit witt using a pre-generated grid for a single quantile"""
-   
+
     # command
     cmd = "combine %s" % options.card
 
     # output
-    cmd += " --name _%s_grid" % GetCardStem() 
+    cmd += " --name _%s_grid" % GetCardStem()
 
     # options
     grid_file = "higgsCombine_grid_%s_n%d.root" % (GetCardStem(), options.ngrid)
@@ -254,9 +254,9 @@ def RenameOutputFile():
     """Standardize the output name"""
     
     # original name
-    if   (options.method==1): old_name = "higgsCombine_%s.Asymptotic.mH120.%d.root" % (GetCardStem(), options.seed) 
-    elif (options.method==2): old_name = "higgsCombine_%s_nogrid.HybridNew.%d.root" % (GetCardStem(), options.seed) 
-    elif (options.method==3): old_name = "higgsCombine_%s_grid.HybridNew.%d.root"   % (GetCardStem(), options.seed) 
+    if   (options.method==1): old_name = "higgsCombine_%s.Asymptotic.mH120.%d.root" % (GetCardStem(), options.seed)
+    elif (options.method==2): old_name = "higgsCombine_%s_nogrid.HybridNew.%d.root" % (GetCardStem(), options.seed)
+    elif (options.method==3): old_name = "higgsCombine_%s_grid.HybridNew.%d.root"   % (GetCardStem(), options.seed)
     
     # new name
     new_name = "combine_output_%s.root" % GetCardStem()
