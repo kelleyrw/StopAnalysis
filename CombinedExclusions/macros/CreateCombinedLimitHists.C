@@ -308,18 +308,18 @@ void CreateRazorCombinedLimitHists
             case Channel::Combined : plot_path += "/combined";  break;
             default                : {/*do nothing*/}
         };
-        stop::PrintFormattedXSecHist(h_xsec_obs_ul  , "h_xsec_obs_ul"  , plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
-        stop::PrintFormattedXSecHist(h_xsec_exp_ul  , "h_xsec_exp_ul"  , plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
-        stop::PrintFormattedXSecHist(h_xsec_expp1_ul, "h_xsec_expp1_ul", plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
-        stop::PrintFormattedXSecHist(h_xsec_expm1_ul, "h_xsec_expm1_ul", plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
-        stop::PrintFormattedXSecHist(h_xsec_expp2_ul, "h_xsec_expp2_ul", plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
-        stop::PrintFormattedXSecHist(h_xsec_expm2_ul, "h_xsec_expm2_ul", plot_path, "png", "colz", "1.2f", 1e-3, 1e2);
-        stop::PrintFormattedXSecHist(h_excl_obs     , "h_excl_obs"     , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
-        stop::PrintFormattedXSecHist(h_excl_exp     , "h_excl_exp"     , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
-        stop::PrintFormattedXSecHist(h_excl_expp1   , "h_excl_expp1"   , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
-        stop::PrintFormattedXSecHist(h_excl_expm1   , "h_excl_expm1"   , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
-        stop::PrintFormattedXSecHist(h_excl_obsp1   , "h_excl_obsp1"   , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
-        stop::PrintFormattedXSecHist(h_excl_obsm1   , "h_excl_obsm1"   , plot_path, "png", "text", "1.0f", 0.0 , 1.0);
+        stop::PrintFormattedXSecHist(h_xsec_obs_ul  , "h_xsec_obs_ul"  , plot_path, "eps", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_xsec_exp_ul  , "h_xsec_exp_ul"  , plot_path, "eps", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_xsec_expp1_ul, "h_xsec_expp1_ul", plot_path, "eps", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_xsec_expm1_ul, "h_xsec_expm1_ul", plot_path, "eps", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_xsec_expp2_ul, "h_xsec_expp2_ul", plot_path, "eps", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_xsec_expm2_ul, "h_xsec_expm2_ul", plot_path, "eps", "colz", "1.2f", 1e-3, 1e2);
+        stop::PrintFormattedXSecHist(h_excl_obs     , "h_excl_obs"     , plot_path, "eps", "text", "1.0f", 0.0 , 1.0);
+        stop::PrintFormattedXSecHist(h_excl_exp     , "h_excl_exp"     , plot_path, "eps", "text", "1.0f", 0.0 , 1.0);
+        stop::PrintFormattedXSecHist(h_excl_expp1   , "h_excl_expp1"   , plot_path, "eps", "text", "1.0f", 0.0 , 1.0);
+        stop::PrintFormattedXSecHist(h_excl_expm1   , "h_excl_expm1"   , plot_path, "eps", "text", "1.0f", 0.0 , 1.0);
+        stop::PrintFormattedXSecHist(h_excl_obsp1   , "h_excl_obsp1"   , plot_path, "eps", "text", "1.0f", 0.0 , 1.0);
+        stop::PrintFormattedXSecHist(h_excl_obsm1   , "h_excl_obsm1"   , plot_path, "eps", "text", "1.0f", 0.0 , 1.0);
 
         // save
         hc.Write(output_file_name);
@@ -333,11 +333,19 @@ void CreateRazorCombinedLimitHists
 // convenience
 void CreateCombinedLimitHists()
 {
-    CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_singlelep_limit_hists.root");
-    CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_razor_limit_hists.root"    );
-    CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_combined_limit_hists.root" );
+/*     CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_singlelep_limit_hists.root"); */
+/*     CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_razor_limit_hists.root"    ); */
+/*     CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_combined_limit_hists.root" ); */
 
     CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/hybridnew/t2tt", "plots/limits/lep1_razor_combine/hybridnew/t2tt/t2tt_singlelep_limit_hists.root");
     CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/hybridnew/t2tt", "plots/limits/lep1_razor_combine/hybridnew/t2tt/t2tt_razor_limit_hists.root"    );
     CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/hybridnew/t2tt", "plots/limits/lep1_razor_combine/hybridnew/t2tt/t2tt_combined_limit_hists.root" );
+
+/*     CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/asymptotic_new/t2tt", "plots/limits/lep1_razor_combine/asymptotic_new/t2tt/t2tt_singlelep_limit_hists.root"); */
+/*     CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/asymptotic_new/t2tt", "plots/limits/lep1_razor_combine/asymptotic_new/t2tt/t2tt_razor_limit_hists.root"    ); */
+/*     CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/asymptotic_new/t2tt", "plots/limits/lep1_razor_combine/asymptotic_new/t2tt/t2tt_combined_limit_hists.root" ); */
+/*  */
+/*     CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/hybrid/t2tt", "plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_singlelep_limit_hists.root"); */
+/*     CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/hybrid/t2tt", "plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_razor_limit_hists.root"    ); */
+/*     CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/hybrid/t2tt", "plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_combined_limit_hists.root" ); */
 }

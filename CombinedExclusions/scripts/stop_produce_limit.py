@@ -18,7 +18,7 @@ parser = OptionParser()
 parser.add_option("--card"  , dest="card"                , type="string", help="card to run on"                                                 )
 parser.add_option("--method", dest="method", default=1   , type="int"   , help="method -- 1: asymptotic, 2: hybrid no grid, 3: hybrid with grid")
 parser.add_option("--ngrid" , dest="ngrid" , default=10  , type="int"   , help="number of points on the grid (method 3 only)"                   )
-parser.add_option("--seed"  , dest="seed"  , default=1234, type="int"   , help="seed for the combine job"                                       )
+parser.add_option("--seed"  , dest="seed"  , default=1000, type="int"   , help="seed for the combine job"                                       )
 (options, args) = parser.parse_args()
 
 # check for validity
@@ -49,7 +49,7 @@ def AsymptoticLimit():
     cmd += " --name _%s" % GetCardStem() 
 
     # options
-    cmd += " --method Asymptotic --minimizerTolerance 0.0001 --rRelAcc 0.0001 -v 2"
+    cmd += " --method Asymptotic --verbose 2"
 
     # options
     cmd += " --seed %d" % options.seed
@@ -114,7 +114,7 @@ def HybridLimitNoGridSingleQuantile(quantile=-1):
     cmd += " --name _%s_nogrid" % GetCardStem() 
 
     # options
-    cmd += " --method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --clsAcc 0.005"
+    cmd += " --method HybridNew --frequentist --testStat LHC --hintMethod Asymptotic --clsAcc 0.005 --fork 10"
 
     #quantile
     if (quantile > 0):
@@ -159,40 +159,45 @@ def GenerateRValues():
 
     AsymptoticLimit()
     limits    = ExtractAsymptoticLimit()
-    limit_min = math.floor(10*limits[0]) / 10.0
-    limit_max = math.ceil (10*limits[4]) / 10.0
+    limit_min = math.floor(10*0.5*limits[0]) / 10.0
+    limit_max = math.ceil (10*1.5*limits[4]) / 10.0
     step      = (limit_max-limit_min)/(options.ngrid-1)
     rvalues   = [limit_min + n*step for n in range(0, options.ngrid)]
+    print "[stop_produce_limit] generating grid with values: ", rvalues
 
     return rvalues
 
 def GenerateGrid():
-    """Create a pre-generated grid for the hybrid new calculation"""
-
-    # generate grid
-    rvalues = GenerateRValues()
-    for r in rvalues:
-	# command
-	cmd = "combine %s" % options.card
+	"""Create a pre-generated grid for the hybrid new calculation"""
 	
-	# output
-	cmd += " --name _grid_%s_r%s" % (GetCardStem(), ("%1.4f" % r).replace(".", "p"))
-
-	# options
-	cmd += " --method HybridNew --frequentist --testStat LHC --clsAcc 0 -T 1000 --iterations 1 --fullBToys --singlePoint %1.4f --saveToys --saveHybridResult" % r
-
-	# seed
-	cmd += " --seed %d" % options.seed
-
-	# run it
+	# generate grid
+	rvalues = GenerateRValues()
+	seed_delta=0
+	for r in rvalues:
+		# command
+		cmd = "combine %s" % options.card
+		
+		# output
+		cmd += " --name _grid_%s_r%s" % (GetCardStem(), ("%1.4f" % r).replace(".", "p"))
+	
+		# options
+		cmd += " --method HybridNew --frequentist --testStat LHC --clsAcc 0 --toysH 1000 --iterations 1 --fullBToys --singlePoint %1.4f --saveToys --saveHybridResult --fork 10 --rMin %1.0f --rMax %1.0f" % (r, 0, 1.5*r)
+	
+		# seed
+		seed = seed_delta + options.seed
+		cmd += " --seed %d" % seed
+		seed_delta += 1
+	
+		# run it
+		print cmd
+		os.system(cmd)
+	
+	# combine the grid files
+	cmd = "hadd -f higgsCombine_grid_%s_n%d.root higgsCombine_grid_*_r*.root" % (GetCardStem(), options.ngrid)
 	print cmd
 	os.system(cmd)
 
-    # add the grid files
-    cmd = "hadd -f higgsCombine_grid_%s_n%d.root higgsCombine_grid_*_r*.root" % (GetCardStem(), options.ngrid)
-    print cmd
-    os.system(cmd)
-    return
+	return
 
 def HybridLimitWithGridSingleQuantile(quantile=-1):
     """Run the hybrid limit witt using a pre-generated grid for a single quantile"""
@@ -205,7 +210,7 @@ def HybridLimitWithGridSingleQuantile(quantile=-1):
 
     # options
     grid_file = "higgsCombine_grid_%s_n%d.root" % (GetCardStem(), options.ngrid)
-    cmd += " --method HybridNew --frequentist --clsAcc 0.005 --grid=%s" % grid_file
+    cmd += " --method HybridNew --frequentist --clsAcc 0.005 --grid=%s --verbose 2 --fork 10" % grid_file
 
     #quantile
     if (quantile > 0):
