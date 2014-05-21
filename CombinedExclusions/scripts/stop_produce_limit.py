@@ -27,7 +27,7 @@ def CheckOptions():
 
     # check that input exists
     if (not options.card or not os.path.isfile(options.card)):
-    	raise Exception("required card is missing is invalid")
+        raise Exception("required card is missing is invalid")
 
     return
 
@@ -73,19 +73,19 @@ def ExtractAsymptoticLimit():
 
     # set branches from TChain 
     gROOT.ProcessLine( 
-	"struct entry_t\
-	{\
-	    double limit;\
-	    double limitErr;\
-	    double mh;\
-	    double syst;\
-	    int iToy;\
-	    int iSeed;\
-	    int iChannel;\
-	    float t_cpu;\
-	    float t_rea;\
-	    double quantileExpected;\
-	};")
+    "struct entry_t\
+    {\
+        double limit;\
+        double limitErr;\
+        double mh;\
+        double syst;\
+        int iToy;\
+        int iSeed;\
+        int iChannel;\
+        float t_cpu;\
+        float t_rea;\
+        double quantileExpected;\
+    };")
     entry = entry_t()
     chain.SetBranchAddress("limit", AddressOf(entry, "limit"))
 
@@ -118,7 +118,7 @@ def HybridLimitNoGridSingleQuantile(quantile=-1):
 
     #quantile
     if (quantile > 0):
-	cmd += " --expectedFromGrid %f" % quantile
+    cmd += " --expectedFromGrid %f" % quantile
 
     # seed
     cmd += " --seed %d" % options.seed
@@ -168,36 +168,36 @@ def GenerateRValues():
     return rvalues
 
 def GenerateGrid():
-	"""Create a pre-generated grid for the hybrid new calculation"""
-	
-	# generate grid
-	rvalues = GenerateRValues()
-	seed_delta=0
-	for r in rvalues:
-		# command
-		cmd = "combine %s" % options.card
-		
-		# output
-		cmd += " --name _grid_%s_r%s" % (GetCardStem(), ("%1.4f" % r).replace(".", "p"))
-	
-		# options
-		cmd += " --method HybridNew --frequentist --testStat LHC --clsAcc 0 --toysH 1000 --iterations 1 --fullBToys --singlePoint %1.4f --saveToys --saveHybridResult --fork 10 --rMin %1.0f --rMax %1.0f" % (r, 0, 1.5*r)
-	
-		# seed
-		seed = seed_delta + options.seed
-		cmd += " --seed %d" % seed
-		seed_delta += 1
-	
-		# run it
-		print cmd
-		os.system(cmd)
-	
-	# combine the grid files
-	cmd = "hadd -f higgsCombine_grid_%s_n%d.root higgsCombine_grid_*_r*.root" % (GetCardStem(), options.ngrid)
-	print cmd
-	os.system(cmd)
+    """Create a pre-generated grid for the hybrid new calculation"""
+    
+    # generate grid
+    rvalues = GenerateRValues()
+    seed_delta=0
+    for r in rvalues:
+        # command
+        cmd = "combine %s" % options.card
+        
+        # output
+        cmd += " --name _grid_%s_r%s" % (GetCardStem(), ("%1.4f" % r).replace(".", "p"))
+    
+        # options
+        cmd += " --method HybridNew --frequentist --testStat LHC --clsAcc 0 --toysH 1000 --iterations 1 --fullBToys --singlePoint %1.4f --saveToys --saveHybridResult --fork 10 --rMin %1.0f --rMax %1.0f" % (r, 0, 1.5*r)
+    
+        # seed
+        seed = seed_delta + options.seed
+        cmd += " --seed %d" % seed
+        seed_delta += 1
+    
+        # run it
+        print cmd
+        os.system(cmd)
+    
+    # combine the grid files
+    cmd = "hadd -f higgsCombine_grid_%s_n%d.root higgsCombine_grid_*_r*.root" % (GetCardStem(), options.ngrid)
+    print cmd
+    os.system(cmd)
 
-	return
+    return
 
 def HybridLimitWithGridSingleQuantile(quantile=-1):
     """Run the hybrid limit witt using a pre-generated grid for a single quantile"""
@@ -214,7 +214,7 @@ def HybridLimitWithGridSingleQuantile(quantile=-1):
 
     #quantile
     if (quantile > 0):
-	cmd += " --expectedFromGrid %f" % quantile
+    cmd += " --expectedFromGrid %f" % quantile
 
     # options
     cmd += " --seed %d" % options.seed
@@ -251,21 +251,21 @@ def HybridLimitWithGrid():
 # rename output file
 # ------------------#
 def RenameOutputFile():
-	"""Standardize the output name"""
-	
-	# original name
-	if   (options.method==1): old_name = "higgsCombine_%s.Asymptotic.mH120.%d.root" % (GetCardStem(), options.seed) 
-	elif (options.method==2): old_name = "higgsCombine_%s_nogrid.HybridNew.%d.root" % (GetCardStem(), options.seed) 
-	elif (options.method==3): old_name = "higgsCombine_%s_grid.HybridNew.%d.root"   % (GetCardStem(), options.seed) 
-	
-	# new name
-	new_name = "combine_output_%s.root" % GetCardStem()
-	
-	# execuse rename
-	cmd = "cp %s %s" % (old_name, new_name)
-	print cmd
-	os.system(cmd)
-	return
+    """Standardize the output name"""
+    
+    # original name
+    if   (options.method==1): old_name = "higgsCombine_%s.Asymptotic.mH120.%d.root" % (GetCardStem(), options.seed) 
+    elif (options.method==2): old_name = "higgsCombine_%s_nogrid.HybridNew.%d.root" % (GetCardStem(), options.seed) 
+    elif (options.method==3): old_name = "higgsCombine_%s_grid.HybridNew.%d.root"   % (GetCardStem(), options.seed) 
+    
+    # new name
+    new_name = "combine_output_%s.root" % GetCardStem()
+    
+    # execuse rename
+    cmd = "cp %s %s" % (old_name, new_name)
+    print cmd
+    os.system(cmd)
+    return
 
 # ------------------#
 # "main program" 
@@ -274,25 +274,25 @@ def RenameOutputFile():
 def main():
     
     try:
-		# check the options
-		CheckOptions()
+        # check the options
+        CheckOptions()
 
-		# run assymptotic limit
-		if   (options.method == 1): AsymptoticLimit()
-		elif (options.method == 2): HybridLimitNoGrid()
-		elif (options.method == 3): HybridLimitWithGrid()
+        # run assymptotic limit
+        if   (options.method == 1): AsymptoticLimit()
+        elif (options.method == 2): HybridLimitNoGrid()
+        elif (options.method == 3): HybridLimitWithGrid()
 
-		# rename output file
-		RenameOutputFile()
+        # rename output file
+        RenameOutputFile()
 
-		return 0
+        return 0
 
     except Exception, e:
-    	print "[stop_produce_limit] ERROR:", e
-    	return 1
+        print "[stop_produce_limit] ERROR:", e
+        return 1
     except:
-    	print "[stop_produce_limit] ERROR:", sys.exc_info()[0]
-    	return 1
+        print "[stop_produce_limit] ERROR:", sys.exc_info()[0]
+        return 1
 
 # do it
 if __name__ == '__main__':
