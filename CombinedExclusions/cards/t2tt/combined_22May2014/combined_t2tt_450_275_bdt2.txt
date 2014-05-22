@@ -1,0 +1,46 @@
+Combination of had=razor_combine_Had_T2tt_MG_450.000000_MCHI_275.000000.txt  onelep=t2tt_450_275_bdt2.txt
+imax 3 number of bins
+jmax 11 number of processes minus 1
+kmax 12 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes *             had_Jet2b     razor_combine_Jet2b_T2tt_MG_450.000000_MCHI_275.000000.root wJet2b:$PROCESS wJet2b:$PROCESS_$SYSTEMATIC
+shapes *             had_MultiJet  razor_combine_MultiJet_T2tt_MG_450.000000_MCHI_275.000000.root wMultiJet:$PROCESS wMultiJet:$PROCESS_$SYSTEMATIC
+shapes *             onelep        FAKE
+----------------------------------------------------------------------------------------------------------------------------------
+bin          had_MultiJet  had_Jet2b     onelep      
+observation  2589.0        728.0         56.0        
+----------------------------------------------------------------------------------------------------------------------------------
+bin                                had_MultiJet    had_MultiJet    had_MultiJet    had_MultiJet    had_Jet2b       had_Jet2b       had_Jet2b       onelep          onelep          onelep          onelep          onelep        
+process                            MultiJet_T2tt   MultiJet_TTj3b  MultiJet_TTj1b  MultiJet_TTj2b  Jet2b_T2tt      Jet2b_TTj2b     Jet2b_TTj3b     signal          rare            wjets           ttslo           ttdil         
+process                            -2              1               2               3               -1              4               5               0               6               7               8               9             
+rate                               6.8640          85.0150         1754.9450       748.9590        0.1480          701.8940        24.8270         5.2098          9.8000          6.2000          22.2000         46.4000       
+----------------------------------------------------------------------------------------------------------------------------------
+Btag                    shape?     1.0             -               -               -               1.0             -               -               1.000/1.016     -               -               -               -             
+Isr                     shape?     1.0             -               -               -               1.0             -               -               1.189           -               -               -               -             
+Jes                     shape?     1.0             -               -               -               1.0             -               -               0.961/1.061     -               -               -               -             
+Pdf                     shape      1.0             -               -               -               1.0             -               -               -               -               -               -               -             
+lep                     lnN        -               -               -               -               -               -               -               0.950/1.050     -               -               -               -             
+lumi                    lnN        1.026           1.0             1.0             1.0             1.026           1.0             1.0             1.044           -               -               -               -             
+rare_1lep               lnN        -               -               -               -               -               -               -               -               1.5             -               -               -             
+trig_1lep               lnN        -               -               -               -               -               -               -               1.03            -               -               -               -             
+trigger                 lnN        1.05            1.0             1.0             1.0             1.05            1.0             1.0             -               -               -               -               -             
+ttdil_1lep              lnN        -               -               -               -               -               -               -               -               -               -               -               1.218         
+ttslo_1lep              lnN        -               -               -               -               -               -               -               -               -               -               1.545           -             
+wjets_1lep              lnN        -               -               -               -               -               -               -               -               -               1.274           -               -             
+n_TTj1b_MultiJet  flatParam
+MR0_TTj1b_MultiJet  flatParam
+b_TTj2b_MultiJet  flatParam
+MR0_TTj2b_MultiJet  flatParam
+MultiJet_TTj3b_norm  flatParam
+MultiJet_TTj2b_norm  flatParam
+n_TTj2b_Jet2b  flatParam
+Jet2b_TTj3b_norm  flatParam
+R0_TTj2b_Jet2b  flatParam
+b_TTj2b_Jet2b  flatParam
+R0_TTj2b_MultiJet  flatParam
+MR0_TTj2b_Jet2b  flatParam
+MultiJet_TTj1b_norm  flatParam
+R0_TTj1b_MultiJet  flatParam
+Jet2b_TTj2b_norm  flatParam
+n_TTj2b_MultiJet  flatParam
+b_TTj1b_MultiJet  flatParam

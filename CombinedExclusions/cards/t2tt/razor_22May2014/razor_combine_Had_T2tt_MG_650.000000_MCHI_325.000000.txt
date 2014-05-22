@@ -1,0 +1,39 @@
+Combination of MultiJet=razor_combine_MultiJet_T2tt_MG_650.000000_MCHI_325.000000.txt  Jet2b=razor_combine_Jet2b_T2tt_MG_650.000000_MCHI_325.000000.txt
+imax 2 number of bins
+jmax 6 number of processes minus 1
+kmax 6 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes *         Jet2b     razor_combine_Jet2b_T2tt_MG_650.000000_MCHI_325.000000.root wJet2b:$PROCESS wJet2b:$PROCESS_$SYSTEMATIC
+shapes *         MultiJet  razor_combine_MultiJet_T2tt_MG_650.000000_MCHI_325.000000.root wMultiJet:$PROCESS wMultiJet:$PROCESS_$SYSTEMATIC
+----------------------------------------------------------------------------------------------------------------------------------
+bin          MultiJet  Jet2b   
+observation  2589.0    728.0   
+----------------------------------------------------------------------------------------------------------------------------------
+bin                               MultiJet        MultiJet        MultiJet        MultiJet        Jet2b           Jet2b           Jet2b         
+process                           MultiJet_T2tt   MultiJet_TTj3b  MultiJet_TTj1b  MultiJet_TTj2b  Jet2b_T2tt      Jet2b_TTj2b     Jet2b_TTj3b   
+process                           -1              1               2               3               0               4               5             
+rate                              25.8720         85.0150         1754.9450       748.9590        1.8850          701.8940        24.8270       
+----------------------------------------------------------------------------------------------------------------------------------
+Btag                    shape     1.0             -               -               -               1.0             -               -             
+Isr                     shape     1.0             -               -               -               1.0             -               -             
+Jes                     shape     1.0             -               -               -               1.0             -               -             
+Pdf                     shape     1.0             -               -               -               1.0             -               -             
+lumi                    lnN       1.026           1.0             1.0             1.0             1.026           1.0             1.0           
+trigger                 lnN       1.05            1.0             1.0             1.0             1.05            1.0             1.0           
+n_TTj1b_MultiJet  flatParam
+MR0_TTj1b_MultiJet  flatParam
+b_TTj2b_MultiJet  flatParam
+MR0_TTj2b_MultiJet  flatParam
+MultiJet_TTj3b_norm  flatParam
+MultiJet_TTj2b_norm  flatParam
+n_TTj2b_Jet2b  flatParam
+Jet2b_TTj3b_norm  flatParam
+R0_TTj2b_Jet2b  flatParam
+b_TTj2b_Jet2b  flatParam
+R0_TTj2b_MultiJet  flatParam
+MR0_TTj2b_Jet2b  flatParam
+MultiJet_TTj1b_norm  flatParam
+R0_TTj1b_MultiJet  flatParam
+Jet2b_TTj2b_norm  flatParam
+n_TTj2b_MultiJet  flatParam
+b_TTj1b_MultiJet  flatParam

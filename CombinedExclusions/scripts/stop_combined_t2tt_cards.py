@@ -14,7 +14,7 @@ import sys
 
 # parameter options
 parser = OptionParser()
-parser.add_option("--onelep_cards" , dest="onelep_path"  , default="cards/t2tt/method4b"           , help="path to the single lepton cards"     )
+parser.add_option("--onelep_cards" , dest="onelep_path"  , default="cards/t2tt/singlelep"          , help="path to the single lepton cards"     )
 parser.add_option("--razor_cards"  , dest="razor_path"   , default="cards/t2tt/razor"              , help="path to the razor cards"             )
 parser.add_option("--combine_cards", dest="combined_path", default="cards/t2tt/combined"           , help="path to the combined lepton cards"   )
 parser.add_option("--sr_filename"  , dest="sr_filename"  , default="data/T2tt_onelep_bdt_orig.root", help="path to the onelep best SR histogram")
