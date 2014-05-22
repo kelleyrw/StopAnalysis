@@ -1,7 +1,7 @@
 #!/bin/bash
 
-UNIVERSE="grid"
-#UNIVERSE="vanilla"
+#UNIVERSE="grid"
+UNIVERSE="vanilla"
 EXE="wrapper.sh"
 INPUT="wrapper.sh, job_input/input.tgz, appendTimeStamp.sh"
 SITE="UCSD"
@@ -40,8 +40,8 @@ OUTPUT=condor_${COPYDIRBASE##*/}_method${METHOD}.cmd
 # write configuration
 #
 
+# Grid_Resource=gt2 osg-gw-6.t2.ucsd.edu:2119/jobmanager-condor                  
 echo "universe=${UNIVERSE}
-Grid_Resource=gt2 osg-gw-6.t2.ucsd.edu:2119/jobmanager-condor
 when_to_transfer_output = ON_EXIT
 #the actual executable to run is not transfered by its name.
 #In fact, some sites may do weird things like renaming it and such.
