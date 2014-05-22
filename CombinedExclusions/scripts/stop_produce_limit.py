@@ -46,7 +46,7 @@ def AsymptoticLimit():
     cmd = "combine %s" % options.card
 
     # output
-    cmd += " --name _%s" % GetCardStem() 
+    cmd += " --name _%s" % GetCardStem()
 
     # options
     cmd += " --method Asymptotic --minimizerTolerance 0.0001 --rRelAcc 0.0001 --verbose 2"
@@ -72,7 +72,7 @@ def ExtractAsymptoticLimit():
     chain.Add(root_file)
 
     # set branches from TChain 
-    gROOT.ProcessLine( 
+    gROOT.ProcessLine(
     "struct entry_t\
     {\
         double limit;\
@@ -252,15 +252,15 @@ def HybridLimitWithGrid():
 # ------------------#
 def RenameOutputFile():
     """Standardize the output name"""
-    
+
     # original name
     if   (options.method==1): old_name = "higgsCombine_%s.Asymptotic.mH120.%d.root" % (GetCardStem(), options.seed)
     elif (options.method==2): old_name = "higgsCombine_%s_nogrid.HybridNew.%d.root" % (GetCardStem(), options.seed)
     elif (options.method==3): old_name = "higgsCombine_%s_grid.HybridNew.%d.root"   % (GetCardStem(), options.seed)
-    
+
     # new name
     new_name = "combine_output_%s.root" % GetCardStem()
-    
+
     # execuse rename
     cmd = "cp %s %s" % (old_name, new_name)
     print cmd
@@ -272,7 +272,7 @@ def RenameOutputFile():
 # ------------------#
 
 def main():
-    
+
     try:
         # check the options
         CheckOptions()
