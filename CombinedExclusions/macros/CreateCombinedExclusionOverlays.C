@@ -25,9 +25,9 @@ TGraph* GetContourTGraph
 {
     using namespace std;
     TCanvas c("c_GetContourTGraph_temp", "c_GetContourTGraph_temp");
-    const float min   = hist.GetMinimum();
-    const float max   = hist.GetMaximum();
-    double contours[] = {min, level, max};
+    const float min         = hist.GetMinimum();
+    const float max         = hist.GetMaximum();
+    const double contours[] = {min, level, max};
     hist.SetContour(2, contours);
     hist.Draw("CONT Z LIST");
     c.Update();
@@ -150,7 +150,7 @@ void CreateExpectedExclusionOverlay
     TGraph* const g_excl_exp_2 = GetContourTGraph(*h_excl_exp_split.second, kRed  , 0.0);
     TGraph* const g_excl_obs_1 = GetContourTGraph(*h_excl_obs_split.first , kBlack, 0.0);
     TGraph* const g_excl_obs_2 = GetContourTGraph(*h_excl_obs_split.second, kBlack, 0.0);
-/*  */
+
     // legend
     float stat_y1 = 1.0 - gStyle->GetPadTopMargin() - 0.01;
     float stat_y2 = 0.70;
@@ -201,13 +201,13 @@ void CreateCombinedExclusionOverlays()
 /*     TH2& h_excl_exp_cb    = *dynamic_cast<TH2F*>(hc_cb["h_excl_exp"   ]->Clone("h_excl_exp_cb"   )); */
 /*     TH2& h_xsec_exp_ul_cb = *dynamic_cast<TH2F*>(hc_cb["h_xsec_exp_ul"]->Clone("h_xsec_exp_ul_cb")); */
 /*     CreateExpectedExclusionOverlay(h_excl_exp_cb, h_excl_obs_cb, h_xsec_exp_ul_cb, "plots/limits/lep1_razor_combine/asymptotic/t2tt/combined/p_obs_excl_curve", suffix); */
-
-    rt::TH1Container hc_sl("plots/limits/lep1_razor_combine/hybridnew/t2tt/t2tt_singlelep_limit_hists.root");
-    TH2& h_excl_obs_sl    = *dynamic_cast<TH2F*>(hc_sl["h_excl_obs"   ]->Clone("h_excl_obs_sl"   ));
-    TH2& h_excl_exp_sl    = *dynamic_cast<TH2F*>(hc_sl["h_excl_exp"   ]->Clone("h_excl_exp_sl"   ));
-    TH2& h_xsec_exp_ul_sl = *dynamic_cast<TH2F*>(hc_sl["h_xsec_exp_ul"]->Clone("h_xsec_exp_ul_sl"));
-    CreateExpectedExclusionOverlay(h_excl_exp_sl, h_excl_obs_sl, h_xsec_exp_ul_sl, "plots/limits/lep1_razor_combine/hybridnew/t2tt/singlelep/p_obs_excl_curve", suffix);
-
+/*  */
+/*     rt::TH1Container hc_sl("plots/limits/lep1_razor_combine/hybridnew/t2tt/t2tt_singlelep_limit_hists.root"); */
+/*     TH2& h_excl_obs_sl    = *dynamic_cast<TH2F*>(hc_sl["h_excl_obs"   ]->Clone("h_excl_obs_sl"   )); */
+/*     TH2& h_excl_exp_sl    = *dynamic_cast<TH2F*>(hc_sl["h_excl_exp"   ]->Clone("h_excl_exp_sl"   )); */
+/*     TH2& h_xsec_exp_ul_sl = *dynamic_cast<TH2F*>(hc_sl["h_xsec_exp_ul"]->Clone("h_xsec_exp_ul_sl")); */
+/*     CreateExpectedExclusionOverlay(h_excl_exp_sl, h_excl_obs_sl, h_xsec_exp_ul_sl, "plots/limits/lep1_razor_combine/hybridnew/t2tt/singlelep/p_obs_excl_curve", suffix); */
+/*  */
     // asymptotic new batch
 /*     rt::TH1Container hc_sl("plots/limits/lep1_razor_combine/asymptotic_new/t2tt/t2tt_singlelep_limit_hists.root"); */
 /*     TH2& h_excl_obs_sl    = *dynamic_cast<TH2F*>(hc_sl["h_excl_obs"   ]->Clone("h_excl_obs_sl"   )); */
@@ -228,22 +228,22 @@ void CreateCombinedExclusionOverlays()
 /*     CreateExpectedExclusionOverlay(h_excl_exp_cb, h_excl_obs_cb, h_xsec_exp_ul_cb, "plots/limits/lep1_razor_combine/asymptotic_new/t2tt/combined/p_obs_excl_curve", suffix); */
     
     // hybrid 
-/*     rt::TH1Container hc_sl("plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_singlelep_limit_hists.root"); */
-/*     TH2& h_excl_obs_sl    = *dynamic_cast<TH2F*>(hc_sl["h_excl_obs"   ]->Clone("h_excl_obs_sl"   )); */
-/*     TH2& h_excl_exp_sl    = *dynamic_cast<TH2F*>(hc_sl["h_excl_exp"   ]->Clone("h_excl_exp_sl"   )); */
-/*     TH2& h_xsec_exp_ul_sl = *dynamic_cast<TH2F*>(hc_sl["h_xsec_exp_ul"]->Clone("h_xsec_exp_ul_sl")); */
-/*     CreateExpectedExclusionOverlay(h_excl_exp_sl, h_excl_obs_sl, h_xsec_exp_ul_sl, "plots/limits/lep1_razor_combine/hybrid/t2tt/singlelep/p_obs_excl_curve", suffix); */
-/*  */
-/*     rt::TH1Container hc_rz("plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_razor_limit_hists.root"); */
-/*     TH2& h_excl_obs_rz    = *dynamic_cast<TH2F*>(hc_rz["h_excl_obs"   ]->Clone("h_excl_obs_rz"   )); */
-/*     TH2& h_excl_exp_rz    = *dynamic_cast<TH2F*>(hc_rz["h_excl_exp"   ]->Clone("h_excl_exp_rz"   )); */
-/*     TH2& h_xsec_exp_ul_rz = *dynamic_cast<TH2F*>(hc_rz["h_xsec_exp_ul"]->Clone("h_xsec_exp_ul_rz")); */
-/*     CreateExpectedExclusionOverlay(h_excl_exp_rz, h_excl_obs_rz, h_xsec_exp_ul_rz, "plots/limits/lep1_razor_combine/hybrid/t2tt/razor/p_obs_excl_curve", suffix); */
-/*  */
-/*     rt::TH1Container hc_cb("plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_combined_limit_hists.root"); */
-/*     TH2& h_excl_obs_cb    = *dynamic_cast<TH2F*>(hc_cb["h_excl_obs"   ]->Clone("h_excl_obs_cb"   )); */
-/*     TH2& h_excl_exp_cb    = *dynamic_cast<TH2F*>(hc_cb["h_excl_exp"   ]->Clone("h_excl_exp_cb"   )); */
-/*     TH2& h_xsec_exp_ul_cb = *dynamic_cast<TH2F*>(hc_cb["h_xsec_exp_ul"]->Clone("h_xsec_exp_ul_cb")); */
-/*     CreateExpectedExclusionOverlay(h_excl_exp_cb, h_excl_obs_cb, h_xsec_exp_ul_cb, "plots/limits/lep1_razor_combine/hybrid/t2tt/combined/p_obs_excl_curve", suffix); */
+    rt::TH1Container hc_sl("plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_singlelep_limit_hists.root");
+    TH2& h_excl_obs_sl    = *dynamic_cast<TH2F*>(hc_sl["h_excl_obs"   ]->Clone("h_excl_obs_sl"   ));
+    TH2& h_excl_exp_sl    = *dynamic_cast<TH2F*>(hc_sl["h_excl_exp"   ]->Clone("h_excl_exp_sl"   ));
+    TH2& h_xsec_exp_ul_sl = *dynamic_cast<TH2F*>(hc_sl["h_xsec_exp_ul"]->Clone("h_xsec_exp_ul_sl"));
+    CreateExpectedExclusionOverlay(h_excl_exp_sl, h_excl_obs_sl, h_xsec_exp_ul_sl, "plots/limits/lep1_razor_combine/hybrid/t2tt/singlelep/p_obs_excl_curve", suffix);
+
+    rt::TH1Container hc_rz("plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_razor_limit_hists.root");
+    TH2& h_excl_obs_rz    = *dynamic_cast<TH2F*>(hc_rz["h_excl_obs"   ]->Clone("h_excl_obs_rz"   ));
+    TH2& h_excl_exp_rz    = *dynamic_cast<TH2F*>(hc_rz["h_excl_exp"   ]->Clone("h_excl_exp_rz"   ));
+    TH2& h_xsec_exp_ul_rz = *dynamic_cast<TH2F*>(hc_rz["h_xsec_exp_ul"]->Clone("h_xsec_exp_ul_rz"));
+    CreateExpectedExclusionOverlay(h_excl_exp_rz, h_excl_obs_rz, h_xsec_exp_ul_rz, "plots/limits/lep1_razor_combine/hybrid/t2tt/razor/p_obs_excl_curve", suffix);
+
+    rt::TH1Container hc_cb("plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_combined_limit_hists.root");
+    TH2& h_excl_obs_cb    = *dynamic_cast<TH2F*>(hc_cb["h_excl_obs"   ]->Clone("h_excl_obs_cb"   ));
+    TH2& h_excl_exp_cb    = *dynamic_cast<TH2F*>(hc_cb["h_excl_exp"   ]->Clone("h_excl_exp_cb"   ));
+    TH2& h_xsec_exp_ul_cb = *dynamic_cast<TH2F*>(hc_cb["h_xsec_exp_ul"]->Clone("h_xsec_exp_ul_cb"));
+    CreateExpectedExclusionOverlay(h_excl_exp_cb, h_excl_obs_cb, h_xsec_exp_ul_cb, "plots/limits/lep1_razor_combine/hybrid/t2tt/combined/p_obs_excl_curve", suffix);
 }
 

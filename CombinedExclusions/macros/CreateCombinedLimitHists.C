@@ -336,16 +336,16 @@ void CreateCombinedLimitHists()
 /*     CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_singlelep_limit_hists.root"); */
 /*     CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_razor_limit_hists.root"    ); */
 /*     CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/asymptotic/t2tt", "plots/limits/lep1_razor_combine/asymptotic/t2tt/t2tt_combined_limit_hists.root" ); */
-
-    CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/hybridnew/t2tt", "plots/limits/lep1_razor_combine/hybridnew/t2tt/t2tt_singlelep_limit_hists.root");
-    CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/hybridnew/t2tt", "plots/limits/lep1_razor_combine/hybridnew/t2tt/t2tt_razor_limit_hists.root"    );
-    CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/hybridnew/t2tt", "plots/limits/lep1_razor_combine/hybridnew/t2tt/t2tt_combined_limit_hists.root" );
+/*  */
+/*     CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/hybridnew/t2tt", "plots/limits/lep1_razor_combine/hybridnew/t2tt/t2tt_singlelep_limit_hists.root"); */
+/*     CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/hybridnew/t2tt", "plots/limits/lep1_razor_combine/hybridnew/t2tt/t2tt_razor_limit_hists.root"    ); */
+/*     CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/hybridnew/t2tt", "plots/limits/lep1_razor_combine/hybridnew/t2tt/t2tt_combined_limit_hists.root" ); */
 
 /*     CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/asymptotic_new/t2tt", "plots/limits/lep1_razor_combine/asymptotic_new/t2tt/t2tt_singlelep_limit_hists.root"); */
 /*     CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/asymptotic_new/t2tt", "plots/limits/lep1_razor_combine/asymptotic_new/t2tt/t2tt_razor_limit_hists.root"    ); */
 /*     CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/asymptotic_new/t2tt", "plots/limits/lep1_razor_combine/asymptotic_new/t2tt/t2tt_combined_limit_hists.root" ); */
-/*  */
-/*     CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/hybrid/t2tt", "plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_singlelep_limit_hists.root"); */
-/*     CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/hybrid/t2tt", "plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_razor_limit_hists.root"    ); */
-/*     CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/hybrid/t2tt", "plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_combined_limit_hists.root" ); */
+
+    CreateRazorCombinedLimitHists(Channel::SingleLep, "output/limits/lep1_razor_combine/hybrid/t2tt", "plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_singlelep_limit_hists.root");
+    CreateRazorCombinedLimitHists(Channel::Razor    , "output/limits/lep1_razor_combine/hybrid/t2tt", "plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_razor_limit_hists.root"    );
+    CreateRazorCombinedLimitHists(Channel::Combined , "output/limits/lep1_razor_combine/hybrid/t2tt", "plots/limits/lep1_razor_combine/hybrid/t2tt/t2tt_combined_limit_hists.root" );
 }
